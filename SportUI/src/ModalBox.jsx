@@ -23,7 +23,7 @@ return(
             value={weight}
             onChange={(e) => setWeight(e.target.value)} />
 
-            <label>Calories Burned(cal):{ans}</label>
+            <h2>Calories Burned(cal): {ans}</h2>
         </div>
 
         <div className="buttons">
