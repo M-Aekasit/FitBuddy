@@ -8,10 +8,16 @@ function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [distance, setDistance] = useState("0");
   const [weight, setWeight] = useState("0");
+  const [ans, setAns] = useState(0);
+  const[Save] = useState("0");
 
   const handleSave = () => {
     console.log(`save: distance = ${distance}, weight = ${weight}`);
   };
+const OK = () => 
+{
+  setAns(weight*distance*1.036) 
+};
 
   return (
     <>
@@ -27,6 +33,10 @@ function App() {
     setDistance = {setDistance} 
     weight = {weight}
     setWeight = {setWeight}
+    Save = {handleSave}
+    ans={ans}
+    OK={OK}
+
     />
     
     </>
