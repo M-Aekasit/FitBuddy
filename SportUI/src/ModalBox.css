@@ -1,51 +1,66 @@
 .modal {
-    position: fixed;
-    top:0; left:0;
-    width: 1320px; height: 2868px;
-    background-color: rgba(31, 8, 8, 0.5);
-    overflow: auto;
-  }
+  position: fixed;
+  top:0; left:0;
+  width: 390px; height: 844px;
+  background-color: rgba(31, 8, 8, 0.5);
+  overflow: auto;
+}
   
-  .modal-input {
-    top: 100px;
-    background: rgb(247, 213, 231);
-    padding: 50px;
-    border-radius: 10px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .close {
-    color: #060101;
-    font-size: 50px;
-    font-weight: bold;
-    position: absolute;
-    top: 10px;  
-    Right: 200px;
-  }
+.modal-input {
+  top: 100px;
+  background: rgb(247, 213, 231);
+  padding: 50px;
+  border-radius: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-  label{
-    padding: 10px;
-    font-size: 20px;
-    color: black;
-  }
-  input {
-    display: block;
-    margin: auto;
-    padding: 5px;
-    font-size: 20px;
-    width: 60%;
-  }
-  
-  .buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 50px;
-    /* align-items: center; */
-    justify-content: center;
-  }
+.close {
+  color: #434343;
+  font-size: 30px;
+  font-weight: bold;
+  position: absolute;
+  top: 2px;  
+  Right: 20px;
+}
+
+label{
+  padding: 10px;
+  font-size: 20px;
+  color: black;
+}
+input {
+  display: block;
+  margin: auto;
+  padding: 5px;
+  font-size: 20px;
+  width: 60%;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 50px;
+  /* align-items: center; */
+  justify-content: center;
+}
+
+.modal img {
+  display: block;
+  margin: 0 auto;
+  width: 200px;  
+  height: 200px; 
+}
+
+.modal h1{
+  color: #060101;
+}
+
+.modal h2{
+  font-size: 20px;
+}
 /*   
   button {
     padding: 10px;
