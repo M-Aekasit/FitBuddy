@@ -1,14 +1,21 @@
 .modal {
   position: fixed;
-  top:0; left:0;
-  width: 390px; height: 844px;
-  background-color: rgba(31, 8, 8, 0.5);
-  overflow: auto;
+  top: 0;
+  left: 0;
+  width: 450px;
+  height: 900px;
+  background-color: #000;
+  border-radius: 50px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.4);
+  border: 10px solid #333;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
   
 .modal-input {
   top: 100px;
-  background: rgb(247, 213, 231);
+  background: rgb(222, 222, 222);
   padding: 50px;
   border-radius: 10px;
   text-align: center;
@@ -18,12 +25,12 @@
 }
 
 .close {
-  color: #434343;
+  color: #adabab;
   font-size: 30px;
   font-weight: bold;
   position: absolute;
   top: 2px;  
-  Right: 20px;
+  Right: 15px;
 }
 
 label{
@@ -55,7 +62,8 @@ input {
 }
 
 .modal h1{
-  color: #060101;
+  color: #ffffff;
+  text-align: center;
 }
 
 .modal h2{

@@ -5,13 +5,16 @@ import runImage from './run.png'
 import cyclingImage from './cycling.png'
 import badmintonImage from './badminton.png' 
 import zumbaImage from './zumba.png' 
+import hulahoopImage from './hulahoop.png'
+import walkImage from './walk.png'
+import aerobicImage from './aerobic.png'
+import tennisImage from './tennis.png'
+import karateImage from './karate.png'
+import swimmingImage from './swimming.png'
+
 
 const ModalBox = ({ isOpen, onClose, distance, setDistance, weight, setWeight, ans, OK, Save,sportType,time,setTime  }) => {
     if (!isOpen) return null;
-
-// const [distance, setDistance] = useState(0);
-// const [weight, setWeight] = useState(0);
-// const[Save] = useState("0");
 
 return(
     <div className="modal">
@@ -59,6 +62,72 @@ return(
         {sportType === 'ZUMBA' && (
             <>
                 <img src={zumbaImage}/>
+                <label>Time(hours):</label>
+                <input
+                type="number"
+                value={time}
+                onChange={(e) => setTime(e.target.value)} />
+            </>
+        )}
+
+        {sportType === 'HULA-HOOP' && (
+            <>
+                <img src={hulahoopImage}/>
+                <label>Time(hours):</label>
+                <input
+                type="number"
+                value={time}
+                onChange={(e) => setTime(e.target.value)} />
+            </>
+        )}
+
+        {sportType === 'WALK' && (
+            <>
+                <img src={walkImage}/>
+                <label>Time(hours):</label>
+                <input
+                type="number"
+                value={time}
+                onChange={(e) => setTime(e.target.value)} />
+            </>
+        )}
+
+        {sportType === 'AEROBIC' && (
+            <>
+                <img src={aerobicImage}/>
+                <label>Time(hours):</label>
+                <input
+                type="number"
+                value={time}
+                onChange={(e) => setTime(e.target.value)} />
+            </>
+        )}
+
+        {sportType === 'TENNIS' && (
+            <>
+                <img src={tennisImage}/>
+                <label>Time(hours):</label>
+                <input
+                type="number"
+                value={time}
+                onChange={(e) => setTime(e.target.value)} />
+            </>
+        )}
+
+        {sportType === 'KARATE' && (
+            <>
+                <img src={karateImage}/>
+                <label>Time(hours):</label>
+                <input
+                type="number"
+                value={time}
+                onChange={(e) => setTime(e.target.value)} />
+            </>
+        )}
+
+    {sportType === 'SWIMMING' && (
+            <>
+                <img src={swimmingImage}/>
                 <label>Time(hours):</label>
                 <input
                 type="number"

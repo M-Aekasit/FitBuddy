@@ -3,7 +3,6 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import ModalBox from './ModalBox';
-
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [distance, setDistance] = useState("0");
@@ -13,42 +12,51 @@ function App() {
   const [sportType, setSportType] = useState('RUN');
   const[Save] = useState("0");
 
-  const handleSave = () => {
-    console.log(`save: distance = ${distance}, weight = ${weight}`);
-  };
-const OK = () => 
-{
+const handleSave = () => {
+  console.log(`save: distance = ${distance}, weight = ${weight}`);
+};
+
+const OK = () => {
   if (sportType === 'RUN') {
     setAns(weight * distance * 1.036);
   } else if (sportType === 'CYCLING') {
-    setAns(time * 450); 
-  } else if (sportType === 'BADMINTON'){
-    setAns(time *350);
+    setAns(time * 450);
+  } else if (sportType === 'BADMINTON') {
+    setAns(time * 350);
   } else if (sportType === 'ZUMBA') {
-    setAns(time *500);
+    setAns(time * 500);
+  } else if (sportType === 'HULA-HOOP') {
+    setAns(time * 430);
+  } else if (sportType === 'WALK'){
+    setAns(time *282);
+  } else if (sportType === 'AEROBIC'){
+    setAns(time *363);
+  } else if (sportType === 'TENNIS'){
+    setAns(time *728);
+  } else if (sportType === 'KARATE'){
+    setAns(time *750);
+  }else if (sportType === 'SWIMMING'){
+    setAns(time *550);
   }
-    
+};
+
+const openModal = (sport) => {
+  setSportType(sport);
+  setIsOpen(true);
 };
 
   return (
     <>
+    <div className="iphone-frame">
     <h1>sport</h1>
-    <div className="run">
-      <button className="run-button" onClick={() => {setSportType('RUN'); setIsOpen(true)}}>RUN</button>
-    </div>
+    {["RUN", "CYCLING", "BADMINTON", "ZUMBA", "HULA-HOOP" ,"WALK" ,"AEROBIC" ,"TENNIS" ,"KARATE" ,"SWIMMING"].map((sport) => (
+        <button key={sport} className={`${sport.toLowerCase()}-button`} onClick={() => openModal(sport)}>
+          {sport}
+        </button>
+      ))}
 
-    <div className='cycling'>
-      <button className='cycling-button' onClick={() => { setSportType('CYCLING'); setIsOpen(true); }}>CYCLING</button>
     </div>
-
-    <div className='badminton'>
-      <button className='badminton-button' onClick={() => { setSportType('BADMINTON'); setIsOpen(true); }}>BADMINTON</button>
-    </div>
-
-    <div className='zumba'>
-      <button className='zumba-button' onClick={() => { setSportType('ZUMBA'); setIsOpen(true); }}>ZUMBA</button>
-    </div>
-
+    
     <ModalBox
       isOpen = {isOpen} 
       onClose = {() => { setIsOpen(false); setAns(0); setTime(0); setDistance(0); setWeight(0);}}
@@ -62,9 +70,6 @@ const OK = () =>
       time={time}
       setTime={setTime}
       sportType={sportType}/>
-
-    
-    
     </>
   )
 }
