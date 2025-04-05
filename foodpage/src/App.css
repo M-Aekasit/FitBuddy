@@ -68,7 +68,7 @@ body {
   list-style-type: none;
 }
 
-.item {
+/* .item {
   padding: 15px;
   background-color: #edebeb;
   margin-bottom: 10px;
@@ -77,10 +77,23 @@ body {
   align-items: center;
   font-size: 20px;
 
+} */
+
+.item {
+  padding: 15px;
+  background-color: #f9f9f9;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
+
 
 .menupage {
   text-align: center;
+
 }
 
 .menuselected {
@@ -128,4 +141,11 @@ body {
   border-radius: 8px;
   margin-top: 20px;
   font-weight: bold;
+}
+
+.scroll-area {
+  overflow-y: auto;
+  flex: 1;
+  width: 90%;
+  padding: 0 20px 80px 20px;
 }
