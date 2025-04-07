@@ -22,7 +22,7 @@ return(
         <h1>{sportType}</h1> 
 
         <div className="modal-input">
-        {sportType === 'RUN' && (
+        {sportType === 'RUNNING' && (
             <>
             <img src={runImage}/>
             <label>distance(km):</label>
@@ -81,7 +81,7 @@ return(
             </>
         )}
 
-        {sportType === 'WALK' && (
+        {sportType === 'WALKING' && (
             <>
                 <img src={walkImage}/>
                 <label>Time(hours):</label>

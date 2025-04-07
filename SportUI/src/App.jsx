@@ -17,7 +17,7 @@ const handleSave = () => {
 };
 
 const OK = () => {
-  if (sportType === 'RUN') {
+  if (sportType === 'RUNNING') {
     setAns(weight * distance * 1.036);
   } else if (sportType === 'CYCLING') {
     setAns(time * 450);
@@ -27,7 +27,7 @@ const OK = () => {
     setAns(time * 500);
   } else if (sportType === 'HULA-HOOP') {
     setAns(time * 430);
-  } else if (sportType === 'WALK'){
+  } else if (sportType === 'WALKING'){
     setAns(time *282);
   } else if (sportType === 'AEROBIC'){
     setAns(time *363);
