@@ -8,7 +8,6 @@ export default function IPhoneCalorieCalculator() {
   const [trackedCalories, setTrackedCalories] = useState(0);
   const [dietaryFilter, setDietaryFilter] = useState("All");
 
-
   const menuItems = [
     // meals --------------------------------------------------------
     { id: 1, name: "Fried Chicken Rice", calories: 695, 
