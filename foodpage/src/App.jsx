@@ -8,7 +8,9 @@ export default function IPhoneCalorieCalculator() {
   const [trackedCalories, setTrackedCalories] = useState(0);
   const [dietaryFilter, setDietaryFilter] = useState("All");
 
+
   const menuItems = [
+    // meals --------------------------------------------------------
     { id: 1, name: "Fried Chicken Rice", calories: 695, 
       protein: "25-35", carbs: "50-70", fats: "20-30", 
       ingredients: "Chicken, Rice, Garlic, Ginger, Soy Sauce, Flour, Oil", 
@@ -39,27 +41,81 @@ export default function IPhoneCalorieCalculator() {
       ingredients: "Crispy Pork, Cooked Rice, Kale, Garlic, Soy Sauce, Oyster Sauce, Sugar, Oil", 
       type: "Meals", image: "/Kale Fried Rice with Crispy Pork.webp"},
 
-    { id: 7, name: "Banana", calories: 120, 
+    { id: 7, name: "Vegetable Omelette", calories: 210, 
+      protein: "10-12", carbs: "4-6", fats: "15-18", 
+      ingredients: "Eggs, Carrot, Onion, Tomato, Cabbage, Spring Onion, Salt, Pepper, Oil", 
+      type: "Meals", image: "/Vegetable Omelette.jpg"},
+
+    { id: 8, name: "Riceberry Rice with Steamed Fish", calories: 350, 
+      protein: "25-30", carbs: "35-40", fats: "8-10", 
+      ingredients: "Riceberry Rice, Steamed Fish (Sea Bass or Tilapia), Garlic, Lime, Chili, Fish Sauce", 
+      type: "Meals", image: "/Riceberry Rice with Steamed Fish.jpeg"},
+
+    { id: 9, name: "Clear Soup with Tofu and Minced Pork", calories: 180,
+      protein: "15-18", carbs: "5-8", fats: "8-10",
+      ingredients: "Soft Tofu, Minced Pork, Cabbage, Carrot, Spring Onion, Garlic, Pepper, Fish Sauce, Water",
+      type: "Meals", image: "/Clear Soup with Tofu and Minced Pork.jpg"
+    },
+         
+    { id: 10, name: "Brown Rice Fried with Shrimp", calories: 420,
+      protein: "20-24", carbs: "50-55", fats: "10-14",
+      ingredients: "Brown Rice, Shrimp, Egg, Garlic, Carrot, Onion, Soy Sauce, Oil, Spring Onion",
+      type: "Meals", image: "/Brown Rice Fried with Shrimp.jpg"
+    },
+
+    // Desserts --------------------------------------------------------
+    { id: 11, name: "Banana", calories: 120, 
       protein: "1.3", carbs: "27", fats: "0.3", 
       ingredients: "Banana", 
       type: "Desserts", image: "/Banana.jpg"},
 
-    { id: 8, name: "Ripe mango", calories: 135, 
+    { id: 12, name: "Ripe mango", calories: 135, 
       protein: "1", carbs: "35", fats: "0.6", 
       ingredients: "Ripe Mango", 
       type: "Desserts", image: "/Ripe Mango.jpg" },
   
-    { id: 9, name: "Thai Coconut Pancakes", calories: 230, 
+    { id: 13, name: "Thai Coconut Pancakes", calories: 230, 
       protein: "2-4", carbs: "30-40", fats: "10-15", 
       ingredients: "Coconut Milk, Rice Flour, Sugar, Salt, Pandan, Spring Onion", 
       type: "Desserts", image: "/Khanom Krok.webp" },
+
+    { id: 14, name: "Yogurt Fruit", calories: 150, 
+      protein: "6-8", carbs: "18-22", fats: "2-4", 
+      ingredients: "Plain Yogurt, Strawberry, Blueberry, Banana, Honey", 
+      type: "Desserts", image: "/Yogurt Fruit.jpg" },  
+
+    { id: 15, name: "Chocolate Almond Truffles", calories: 180, 
+      protein: "3-4", carbs: "15-18", fats: "12-14", 
+      ingredients: "Dark Chocolate, Almonds, Cocoa Powder, Coconut Milk, Honey, Vanilla Extract", 
+      type: "Desserts", image: "/Chocolate Almond Truffles.jpg" },  
+
+    { id: 16, name: "Pumpkin Chocolate Chip Oatmeal Bars", calories: 200,
+      protein: "4-5", carbs: "25-30", fats: "8-10",
+      ingredients: "Pumpkin Puree, Rolled Oats, Chocolate Chips, Egg, Maple Syrup, Cinnamon, Baking Powder, Vanilla Extract",
+      type: "Desserts", image: "/Pumpkin Chocolate Chip Oatmeal Bars.webp"
+    },
+      
     
-    { id: 10, name: "Coca-Cola", calories: 140, 
+    // Drinks --------------------------------------------------------
+    { id: 17, name: "Green Tea", calories: 0,
+      protein: "0", carbs: "0", fats: "0",
+      ingredients: "Green Tea Leaves, Hot Water",
+      type: "Drinks", image: "/Green Tea.jpg"
+    },
+    
+    { id: 18, name: "Cranberry Juice", calories: 116,
+      protein: "0", carbs: "30-32", fats: "0",
+      ingredients: "Cranberry Juice (100%), Water",
+      type: "Drinks",
+      image: "/Cranberry Juice.jpg"
+    },
+    
+    { id: 19, name: "Coca-Cola", calories: 140, 
       protein: "0", carbs: "39", fats: "0", 
       ingredients: "Carbonated Water, Sugar, Caramel Color, Phosphoric Acid, Caffeine", 
       type: "Drinks", image: "/Coca-Cola.jpg"},
 
-    { id: 11, name: "Hot Chocolate", calories: 190, 
+    { id: 20, name: "Hot Chocolate", calories: 190, 
       protein: "5", carbs: "30", fats: "6", 
       ingredients: "Milk, Cocoa Powder, Sugar, Vanilla Extract", 
       type: "Drinks", image: "/Hot Chocolate.jpg"},
