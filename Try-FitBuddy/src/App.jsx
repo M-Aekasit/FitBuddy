@@ -29,37 +29,68 @@ export default function IPhoneCalorieCalculator() {
           </div>
 
           <div className="scroll-area">
-            {page === "friends" && (
+            {page === "main" && (
               <div>
-                <h2>Friends List</h2>
-                <button className="Add" onClick={() => alert("Invite sent!")}>
-                  ➕ Invite New Friend
+                <button className="Add" onClick={() => setPage("main")}>
+                   food
                 </button>
-                <div className="friend-card">
-                  <h3>👤 Alex</h3>
-                  <p>🔥 Calories Burned: 450 / 600</p>
-                  <div className="progress-bar">
-                    <div className="fill" style={{ width: "75%", backgroundColor: "#ff7675" }}></div>
-                  </div>
-                  <p>💧 Water Intake: 6 / 8 glasses</p>
-                  <div className="progress-bar">
-                    <div className="fill" style={{ width: "75%", backgroundColor: "#74b9ff" }}></div>
-                  </div>
-                </div>
+              </div>
+            )}
 
-                <div className="friend-card">
-                  <h3>👤 Jordan</h3>
-                  <p>🔥 Calories Burned: 300 / 600</p>
-                  <div className="progress-bar">
-                    <div className="fill" style={{ width: "50%", backgroundColor: "#ff7675" }}></div>
+            {page === "friends" && (
+              <div className="friends-container">
+                <div>
+                  <button className="Add" onClick={() => alert("Invite sent!")}>
+                    ➕ Invite New Friend
+                  </button>
+                  <div className="friend-card">
+                    <h3>👤 Bee</h3>
+                    <p>🔥 Calories Burned: 450 / 700</p>
+                    <div className="progress-bar">
+                      <div className="fill" style={{ width: "75%", backgroundColor: "#ff7675" }}></div>
+                    </div>
+                    <p>💧 Water Intake: 7 / 8 glasses</p>
+                    <div className="progress-bar">
+                      <div className="fill" style={{ width: "75%", backgroundColor: "#74b9ff" }}></div>
+                    </div>
                   </div>
-                  <p>💧 Water Intake: 5 / 8 glasses</p>
-                  <div className="progress-bar">
-                    <div className="fill" style={{ width: "62.5%", backgroundColor: "#74b9ff" }}></div>
+                  <div className="friend-card">
+                    <h3>👤 Copter</h3>
+                    <p>🔥 Calories Burned: 250 / 600</p>
+                    <div className="progress-bar">
+                      <div className="fill" style={{ width: "50%", backgroundColor: "#ff7675" }}></div>
+                    </div>
+                    <p>💧 Water Intake: 5 / 8 glasses</p>
+                    <div className="progress-bar">
+                      <div className="fill" style={{ width: "62.5%", backgroundColor: "#74b9ff" }}></div>
+                    </div>
+                  </div>
+                  <div className="friend-card">
+                    <h3>👤 Kay</h3>
+                    <p>🔥 Calories Burned: 120 / 300</p>
+                    <div className="progress-bar">
+                      <div className="fill" style={{ width: "50%", backgroundColor: "#ff7675" }}></div>
+                    </div>
+                    <p>💧 Water Intake: 6 / 8 glasses</p>
+                    <div className="progress-bar">
+                      <div className="fill" style={{ width: "62.5%", backgroundColor: "#74b9ff" }}></div>
+                    </div>
+                  </div>
+                  <div className="friend-card">
+                    <h3>👤 Mild</h3>
+                    <p>🔥 Calories Burned: 50 / 250</p>
+                    <div className="progress-bar">
+                      <div className="fill" style={{ width: "50%", backgroundColor: "#ff7675" }}></div>
+                    </div>
+                    <p>💧 Water Intake: 8 / 8 glasses</p>
+                    <div className="progress-bar">
+                      <div className="fill" style={{ width: "62.5%", backgroundColor: "#74b9ff" }}></div>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
+
 
             {page === "diary" && (
               <div>
