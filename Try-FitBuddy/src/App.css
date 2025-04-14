@@ -114,7 +114,7 @@ body {
 .Back, .Add {
   width: 75%;
   padding: 12px;
-  margin-top: 20px;
+  margin-top: 80px;
   margin-left: 20px;
   margin-right: 20px;
   border-radius: 8px;
@@ -148,6 +148,7 @@ body {
   flex: 1;
   width: 90%;
   padding: 0 20px 80px 20px;
+  padding-bottom: 150px;
 }
 
 .nav-bar {
@@ -193,4 +194,29 @@ body {
 .fill {
   height: 100%;
   border-radius: 5px;
+}
+
+.rating-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.rating-container span {
+  font-size: 32px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  padding: 10px;
+  border-radius: 50%;
+}
+
+.rating-container span:hover {
+  background-color: #f1f2f6;
+  transform: scale(1.2);
+}
+
+.rating-container .selected {
+  background-color: #ffeaa7;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }

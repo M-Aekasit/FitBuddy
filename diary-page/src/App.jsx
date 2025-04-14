@@ -13,9 +13,9 @@ export default function IPhoneCalorieCalculator() {
       rating,
       notes: diaryNotes
     };
-    setHistory([newEntry, ...history]); // Add the new entry to the history
-    setDiaryNotes(""); // Clear the current diary notes
-    setRating(0); // Reset the rating
+    setHistory([newEntry, ...history]); 
+    setDiaryNotes(""); 
+    setRating(0); 
   };
 
   return (
@@ -33,14 +33,20 @@ export default function IPhoneCalorieCalculator() {
           <h2>Diary Notes</h2>
           <div>
             <h3>Rate How Was Your Day</h3>
-            <div className="rating">
-              <span onClick={() => setRating(1)}>1 😞</span>
-              <span onClick={() => setRating(2)}>2 😐</span>
-              <span onClick={() => setRating(3)}>3 😌</span>
-              <span onClick={() => setRating(4)}>4 🙂</span>
-              <span onClick={() => setRating(5)}>5 😀</span>
-            </div>
-            <p>Your rating: {rating} {rating > 0 && "🌟"}</p>
+            <div className="rating-container">
+                  <span className={rating === 1 ? "selected" : ""} onClick={() => setRating(1)}>😞</span>
+                  <span className={rating === 2 ? "selected" : ""} onClick={() => setRating(2)}>😐</span>
+                  <span className={rating === 3 ? "selected" : ""} onClick={() => setRating(3)}>😌</span>
+                  <span className={rating === 4 ? "selected" : ""} onClick={() => setRating(4)}>🙂</span>
+                  <span className={rating === 5 ? "selected" : ""} onClick={() => setRating(5)}>😀</span>
+                </div>
+                <p>Your rating: {" "}
+                  {rating === 1 && "Such a bad day😞"}
+                  {rating === 2 && "Could be better😐"}
+                  {rating === 3 && "Just okay😌"}
+                  {rating === 4 && "Pretty good🙂"}
+                  {rating === 5 && "Awesome!😀"}
+                </p>
           </div>
 
           <textarea

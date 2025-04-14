@@ -17,6 +17,8 @@ export default function IPhoneCalorieCalculator() {
     setRating(0);
   };
 
+
+
   return (
     <div className="app-container">
       <div className="iphone-frame">
@@ -31,7 +33,7 @@ export default function IPhoneCalorieCalculator() {
           <div className="scroll-area">
             {page === "main" && (
               <div>
-                <button className="Add" onClick={() => setPage("main")}>
+                <button className="Add" onClick={() => setPage("menu")}>
                    food
                 </button>
               </div>
@@ -47,44 +49,44 @@ export default function IPhoneCalorieCalculator() {
                     <h3>👤 Bee</h3>
                     <p>🔥 Calories Burned: 450 / 700</p>
                     <div className="progress-bar">
-                      <div className="fill" style={{ width: "75%", backgroundColor: "#ff7675" }}></div>
+                      <div className="fill" style={{ width: `${(450 / 700) * 100}%`, backgroundColor: "#ff7675" }}></div>
                     </div>
                     <p>💧 Water Intake: 7 / 8 glasses</p>
                     <div className="progress-bar">
-                      <div className="fill" style={{ width: "75%", backgroundColor: "#74b9ff" }}></div>
+                      <div className="fill" style={{ width: `${(7 / 8) * 100}%`, backgroundColor: "#74b9ff" }}></div>
                     </div>
                   </div>
                   <div className="friend-card">
                     <h3>👤 Copter</h3>
                     <p>🔥 Calories Burned: 250 / 600</p>
                     <div className="progress-bar">
-                      <div className="fill" style={{ width: "50%", backgroundColor: "#ff7675" }}></div>
+                      <div className="fill" style={{ width: `${(250 / 600) * 100}%`, backgroundColor: "#ff7675" }}></div>
                     </div>
                     <p>💧 Water Intake: 5 / 8 glasses</p>
                     <div className="progress-bar">
-                      <div className="fill" style={{ width: "62.5%", backgroundColor: "#74b9ff" }}></div>
+                      <div className="fill" style={{ width: `${(5 / 8) * 100}%`, backgroundColor: "#74b9ff" }}></div>
                     </div>
                   </div>
                   <div className="friend-card">
                     <h3>👤 Kay</h3>
                     <p>🔥 Calories Burned: 120 / 300</p>
                     <div className="progress-bar">
-                      <div className="fill" style={{ width: "50%", backgroundColor: "#ff7675" }}></div>
+                      <div className="fill" style={{ width: `${(120 / 300) * 100}%`, backgroundColor: "#ff7675" }}></div>
                     </div>
                     <p>💧 Water Intake: 6 / 8 glasses</p>
                     <div className="progress-bar">
-                      <div className="fill" style={{ width: "62.5%", backgroundColor: "#74b9ff" }}></div>
+                      <div className="fill" style={{ width: `${(6 / 8) * 100}%`, backgroundColor: "#74b9ff" }}></div>
                     </div>
                   </div>
                   <div className="friend-card">
                     <h3>👤 Mild</h3>
                     <p>🔥 Calories Burned: 50 / 250</p>
                     <div className="progress-bar">
-                      <div className="fill" style={{ width: "50%", backgroundColor: "#ff7675" }}></div>
+                      <div className="fill" style={{ width: `${(50 / 250) * 100}%`, backgroundColor: "#ff7675" }}></div>
                     </div>
                     <p>💧 Water Intake: 8 / 8 glasses</p>
                     <div className="progress-bar">
-                      <div className="fill" style={{ width: "62.5%", backgroundColor: "#74b9ff" }}></div>
+                      <div className="fill" style={{ width: `${(8 / 8) * 100}%`, backgroundColor: "#74b9ff" }}></div>
                     </div>
                   </div>
                 </div>
@@ -96,14 +98,20 @@ export default function IPhoneCalorieCalculator() {
               <div>
                 <h2>Diary Notes</h2>
                 <h3>Rate How Was Your Day</h3>
-                <div className="rating">
-                  <span onClick={() => setRating(1)}>1 😞</span>
-                  <span onClick={() => setRating(2)}>2 😐</span>
-                  <span onClick={() => setRating(3)}>3 😌</span>
-                  <span onClick={() => setRating(4)}>4 🙂</span>
-                  <span onClick={() => setRating(5)}>5 😀</span>
+                <div className="rating-container">
+                  <span className={rating === 1 ? "selected" : ""} onClick={() => setRating(1)}>😞</span>
+                  <span className={rating === 2 ? "selected" : ""} onClick={() => setRating(2)}>😐</span>
+                  <span className={rating === 3 ? "selected" : ""} onClick={() => setRating(3)}>😌</span>
+                  <span className={rating === 4 ? "selected" : ""} onClick={() => setRating(4)}>🙂</span>
+                  <span className={rating === 5 ? "selected" : ""} onClick={() => setRating(5)}>😀</span>
                 </div>
-                <p>Your rating: {rating} {rating > 0 && "🌟"}</p>
+                <p>Your rating: {" "}
+                  {rating === 1 && "Such a bad day😞"}
+                  {rating === 2 && "Could be better😐"}
+                  {rating === 3 && "Just okay😌"}
+                  {rating === 4 && "Pretty good🙂"}
+                  {rating === 5 && "Awesome!😀"}
+                </p>
                 <textarea
                   rows="6"
                   cols="30"
@@ -162,5 +170,4 @@ export default function IPhoneCalorieCalculator() {
         </div>
       </div>
     </div>
-  );
-}
+  )};
