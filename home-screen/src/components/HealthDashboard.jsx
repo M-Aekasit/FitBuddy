@@ -1,11 +1,11 @@
 // components/HealthDashboard.jsx
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
 const HealthMetric = ({ title, value, goal, icon, link = "#" }) => {
   return (
-    <Link 
-      to={link} 
+    <Link
+      to={link}
       className="block p-3 rounded-lg hover:bg-gray-50 transition-colors hover:scale-[1.02]"
     >
       <div className="flex items-start">
@@ -21,10 +21,10 @@ const HealthMetric = ({ title, value, goal, icon, link = "#" }) => {
 };
 
 const HealthDashboard = () => {
-  const today = new Date().toLocaleDateString('en-US', { 
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
+  const today = new Date().toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
   });
 
   return (
@@ -41,46 +41,47 @@ const HealthDashboard = () => {
       {/* Health Metrics */}
       <div className="space-y-6">
         {/* Water */}
-        <HealthMetric 
-          title="Water" 
-          value="2100 ml" 
-          goal="Daily goal 3.5L" 
+        <HealthMetric
+          title="Water"
+          value="2100 ml"
+          goal="Daily goal 3.5L"
           icon="💧"
           link="/water"
         />
 
-        {/* Weight */}
-        <HealthMetric 
-          title="Weight" 
-          value="75 kg" 
-          goal="Goal 65kg" 
-          icon="⚖️"
+        {/* Sport*/}
+        <HealthMetric
+          title="Sport"
+          value="30 mins"
+          goal="Daily 60 mins"
+          icon="🏃‍♂️"
+          link="/sport" // เพิ่มลิงก์ถ้าต้องการ
         />
 
         {/* BMI - Link toHealthCalculatorUI page */}
-        <HealthMetric 
-          title="BMI" 
-          value="22.5" 
-          goal="Normal" 
+        <HealthMetric
+          title="BMI"
+          value="22.5"
+          goal="Normal"
           icon="📊"
           link="/bmi"
         />
 
         {/* Calories */}
-        <HealthMetric 
-          title="Calories" 
-          value="750 kcal" 
-          goal="Left 2500 kcal" 
+        <HealthMetric
+          title="Calories"
+          value="750 kcal"
+          goal="Left 2500 kcal"
           icon="🔥"
         />
 
-        {/* BPM */}
-        <HealthMetric 
-          title="HealthDashboard" 
-          value="105 bpm" 
-          goal="Last check 2d" 
-          icon="❤️"
-          link="/HealthDashboard"
+        {/* Food */}
+        <HealthMetric
+          title="Food"
+          value="1200 kcal"
+          goal="Daily 2000 kcal"
+          icon="🍎"
+          link="/food"
         />
       </div>
 
@@ -88,9 +89,11 @@ const HealthDashboard = () => {
 
       {/* Today's Meal */}
       <div className="mt-6">
-        <h2 className="text-lg font-semibold text-gray-700 mb-4">Today's meal</h2>
+        <h2 className="text-lg font-semibold text-gray-700 mb-4">
+          Today's meal
+        </h2>
         <p className="text-blue-500 mb-4">New plan</p>
-        
+
         <h3 className="font-medium text-gray-700 mb-2">Breakfast</h3>
         <p className="text-gray-600">Oatmeal with fruits</p>
         <p className="text-gray-600">Protein shake</p>
