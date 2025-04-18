@@ -1,7 +1,32 @@
-// components/HealthDashboard.js
+// components/HealthDashboard.jsx
 import React from 'react';
+import { Link } from 'react-router-dom';
+
+const HealthMetric = ({ title, value, goal, icon, link = "#" }) => {
+  return (
+    <Link 
+      to={link} 
+      className="block p-3 rounded-lg hover:bg-gray-50 transition-colors hover:scale-[1.02]"
+    >
+      <div className="flex items-start">
+        <span className="text-2xl mr-3">{icon}</span>
+        <div>
+          <h3 className="font-medium text-gray-700">{title}</h3>
+          <p className="text-xl font-semibold">{value}</p>
+          <p className="text-sm text-gray-500">{goal}</p>
+        </div>
+      </div>
+    </Link>
+  );
+};
 
 const HealthDashboard = () => {
+  const today = new Date().toLocaleDateString('en-US', { 
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
+
   return (
     <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
       {/* Header */}
@@ -11,7 +36,7 @@ const HealthDashboard = () => {
       </div>
 
       {/* Date */}
-      <h2 className="text-lg font-semibold text-gray-700 mb-4">August 28 2022</h2>
+      <h2 className="text-lg font-semibold text-gray-700 mb-4">{today}</h2>
 
       {/* Health Metrics */}
       <div className="space-y-6">
@@ -31,6 +56,15 @@ const HealthDashboard = () => {
           icon="⚖️"
         />
 
+        {/* BMI - Link toHealthCalculatorUI page */}
+        <HealthMetric 
+          title="BMI" 
+          value="22.5" 
+          goal="Normal" 
+          icon="📊"
+          link="/bmi"
+        />
+
         {/* Calories */}
         <HealthMetric 
           title="Calories" 
@@ -41,10 +75,11 @@ const HealthDashboard = () => {
 
         {/* BPM */}
         <HealthMetric 
-          title="BPM" 
+          title="HealthDashboard" 
           value="105 bpm" 
           goal="Last check 2d" 
           icon="❤️"
+          link="/HealthDashboard"
         />
       </div>
 
@@ -56,24 +91,10 @@ const HealthDashboard = () => {
         <p className="text-blue-500 mb-4">New plan</p>
         
         <h3 className="font-medium text-gray-700 mb-2">Breakfast</h3>
-        <p className="text-gray-600">Br</p>
-        <p className="text-gray-600">A</p>
+        <p className="text-gray-600">Oatmeal with fruits</p>
+        <p className="text-gray-600">Protein shake</p>
       </div>
     </div>
   );
 };
-
-const HealthMetric = ({ title, value, goal, icon }) => {
-  return (
-    <div className="flex items-start">
-      <span className="text-2xl mr-3">{icon}</span>
-      <div>
-        <h3 className="font-medium text-gray-700">{title}</h3>
-        <p className="text-xl font-semibold">{value}</p>
-        <p className="text-sm text-gray-500">{goal}</p>
-      </div>
-    </div>
-  );
-};
-
 export default HealthDashboard;
