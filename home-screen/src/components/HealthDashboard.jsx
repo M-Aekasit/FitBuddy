@@ -46,6 +46,7 @@ const HealthDashboard = () => {
           value="2100 ml" 
           goal="Daily goal 3.5L" 
           icon="💧"
+          link="/water"
         />
 
         {/* Weight */}
