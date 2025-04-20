@@ -4,6 +4,7 @@ import HealthDashboard from "./components/HealthDashboard";
 import HealthCalculatorUI from "./components/HealthCalculatorUI";
 import Water from "./components/Water";
 import SportPage from "./components/SportPage";
+import Food from "./components/Food";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/bmi" element={<HealthCalculatorUI />} />
         <Route path="/water" element={<Water />} />
         <Route path="/sport" element={<SportPage />} />
+        <Route path="/food" element={<Food />} />
       </Routes>
     </Router>
   );
