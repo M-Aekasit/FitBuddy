@@ -2,16 +2,16 @@ import { useState } from 'react';
 import ModalBox from './ModalBox';
 
 // Using public folder path
-const runImage = '/images/run.png';
-const cyclingImage = '/images/cycling.png';
-const badmintonImage = '/images/badminton.png';
-const zumbaImage = '/images/zumba.png';
-const hulahoopImage = '/images/hulahoop.png';
-const walkImage = '/images/walk.png';
-const aerobicImage = '/images/aerobic.png';
-const tennisImage = '/images/tennis.png';
-const karateImage = '/images/karate.png';
-const swimmingImage = '/images/swimming.png';
+const runImage = '/images/sport/run.png';
+const cyclingImage = '/images/sport/cycling.png';
+const badmintonImage = '/images/sport/badminton.png';
+const zumbaImage = '/images/sport/zumba.png';
+const hulahoopImage = '/images/sport/hulahoop.png';
+const walkImage = '/images/sport/walk.png';
+const aerobicImage = '/images/sport/aerobic.png';
+const tennisImage = '/images/sport/tennis.png';
+const karateImage = '/images/sport/karate.png';
+const swimmingImage = '/images/sport/swimming.png';
 
 const SportPage = () => {
   const [isOpen, setIsOpen] = useState(false);
