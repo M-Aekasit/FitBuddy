@@ -1,15 +1,11 @@
-import { useState } from "react";
-import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
-import Navigation from "./components/์Navigation.jsx";
-import HealthDashboard from "./components/HealthDashboard.jsx";
-import HealthCalculatorUI from "./components/HealthCalculatorUI.jsx";
-import Water from "./components/Water.jsx";
+import Navigation from "./components/์Navigation";
+import HealthDashboard from "./components/HealthDashboard";
+import HealthCalculatorUI from "./components/HealthCalculatorUI";
+import Water from "./components/Water";
+import SportPage from "./components/SportPage";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <Router>
       <Navigation />
@@ -17,6 +13,7 @@ function App() {
         <Route path="/HealthDashboard" element={<HealthDashboard />} />
         <Route path="/bmi" element={<HealthCalculatorUI />} />
         <Route path="/water" element={<Water />} />
+        <Route path="/sport" element={<SportPage />} />
       </Routes>
     </Router>
   );
