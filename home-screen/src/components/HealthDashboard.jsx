@@ -55,7 +55,7 @@ const HealthDashboard = () => {
           value="30 mins"
           goal="Daily 60 mins"
           icon="🏃‍♂️"
-          link="/sport" // เพิ่มลิงก์ถ้าต้องการ
+          link="/sport" 
         />
 
         {/* BMI - Link toHealthCalculatorUI page */}
@@ -65,14 +65,6 @@ const HealthDashboard = () => {
           goal="Normal"
           icon="📊"
           link="/bmi"
-        />
-
-        {/* Calories */}
-        <HealthMetric
-          title="Calories"
-          value="750 kcal"
-          goal="Left 2500 kcal"
-          icon="🔥"
         />
 
         {/* Food */}
