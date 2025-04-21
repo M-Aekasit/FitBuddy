@@ -1,16 +1,16 @@
 import React from 'react';
 
 const sportImages = {
-  'RUNNING': '/images/run.png',
-  'CYCLING': '/images/cycling.png',
-  'BADMINTON': '/images/badminton.png',
-  'ZUMBA': '/images/zumba.png',
-  'HULA-HOOP': '/images/hulahoop.png',
-  'WALKING': '/images/walk.png',
-  'AEROBIC': '/images/aerobic.png',
-  'TENNIS': '/images/tennis.png',
-  'KARATE': '/images/karate.png',
-  'SWIMMING': '/images/swimming.png'
+  'RUNNING': '/images/sport/run.png',
+  'CYCLING': '/images/sport/cycling.png',
+  'BADMINTON': '/images/sport/badminton.png',
+  'ZUMBA': '/images/sport/zumba.png',
+  'HULA-HOOP': '/images/sport/hulahoop.png',
+  'WALKING': '/images/sport/walk.png',
+  'AEROBIC': '/images/sport/aerobic.png',
+  'TENNIS': '/images/sport/tennis.png',
+  'KARATE': '/images/sport/karate.png',
+  'SWIMMING': '/images/sport/swimming.png'
 };
 
 const ModalBox = ({ 
