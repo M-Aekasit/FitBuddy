@@ -7,6 +7,7 @@ import SportPage from "./components/SportPage";
 import Food from "./components/Food";
 import FriendPage from "./components/FriendPage";
 import DiaryPage from "./components/DiaryPage";
+import Notification from "./components/Notification";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/food" element={<Food />} />
         <Route path='/FriendPage' element={<FriendPage />} />
         <Route path='/DiaryPage' element={<DiaryPage />} />
+        <Route path='/Notification' element={<Notification />} />
       </Routes>
     </Router>
   );
