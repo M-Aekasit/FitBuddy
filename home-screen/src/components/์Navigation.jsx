@@ -7,6 +7,7 @@ const Navigation = () => (
     <Link to="/FriendPage" className="hover:text-blue-500">Friend</Link>
     <Link to="/DiaryPage" className="hover:text-blue-500">Diary</Link>
     <Link to="/Notification" className='hover:text-blue-500'>Notification</Link>
+    <Link to="/SettingPage" className="hover:text-blue-500">Setting</Link>
   </nav>
 );
 
