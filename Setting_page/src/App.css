@@ -1,0 +1,384 @@
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #1e1e1e;
+  color: #000000;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 20px;
+}
+
+.iphone-frame {
+  width: 450px;
+  height: 900px;
+  background-color: #000;
+  border-radius: 80px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.4);
+  border: 10px solid #333;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.edge {
+  width: 100%;
+  height: 20px;
+  background: black;
+  position: absolute;
+  top: 0;
+}
+
+.app-content {
+  background: linear-gradient(to bottom, #ffffff, #ffffff);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border-radius: 0px;
+  overflow-y: auto;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.app-content.dark-mode {
+  background: linear-gradient(to bottom, #121212, #1e1e1e);
+  color: #ffffff;
+}
+
+.header {
+  background-color: black;
+  color: white;
+  width: 100%;
+  padding: 16px 0;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Profile Section */
+.profile-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dark-mode .profile-section {
+  border-bottom: 1px solid #333;
+}
+
+.back-button {
+  position: absolute;
+  left: 0;
+  top: 0;
+  cursor: pointer;
+}
+
+.profile-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-name {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.bmi-info {
+  width: 100%;
+  max-width: 250px;
+  margin-bottom: 15px;
+}
+
+.bmi-row {
+  font-size: 16px;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.dark-mode .bmi-row {
+  color: #aaa;
+}
+
+.upgrade-button {
+  background-color: #ff4d6d;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.upgrade-button:hover {
+  background-color: #ff3a5f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Settings Section */
+.settings-section {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.settings-section h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+}
+
+.dark-mode .setting-item {
+  border-bottom: 1px solid #333;
+}
+
+.setting-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+}
+
+.dark-mode .dark-mode-icon {
+  background-color: #333;
+}
+
+.dark-mode-icon {
+  background-color: #f0f0f0;
+}
+
+.notification-icon,
+.privacy-icon,
+.security-icon {
+  background-color: #ffebee;
+}
+
+.dark-mode .notification-icon,
+.dark-mode .privacy-icon,
+.dark-mode .security-icon {
+  background-color: #3d2a2d;
+}
+
+.setting-text {
+  flex: 1;
+  font-size: 18px;
+}
+
+.setting-control {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Toggle Switch */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196f3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* Sub Pages (Privacy & Security) */
+.sub-page {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sub-page-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.sub-page-header h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 auto;
+}
+
+.sub-page-header .back-button {
+  position: relative;
+  margin-right: 20px;
+}
+
+.sub-page-content {
+  flex: 1;
+}
+
+.setting-group {
+  margin-bottom: 30px;
+}
+
+.setting-group h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #555;
+}
+
+.dark-mode .setting-group h3 {
+  color: #aaa;
+}
+
+/* Edit fields */
+.edit-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edit-input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: #fff;
+  color: #000;
+}
+
+.edit-input.dark-mode {
+  background-color: #333;
+  color: #fff;
+  border-color: #555;
+}
+
+.save-button {
+  background-color: #ff4d6d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.edit-icon {
+  cursor: pointer;
+}
+
+/* Clickable fields */
+.clickable-field {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.clickable-field:hover {
+  background-color: #f9f9f9;
+}
+
+.dark-mode .clickable-field:hover {
+  background-color: #2a2a2a;
+}
+
+.clickable-field span {
+  margin-right: 5px;
+}
+
+/* Dark mode specific styles */
+.dark-mode {
+  color: #ffffff;
+}
+
+.dark-mode .app-content {
+  background: linear-gradient(to bottom, #121212, #1e1e1e);
+}
+
+.dark-mode .setting-item {
+  border-bottom-color: #333;
+}
+
+.dark-mode .profile-section {
+  border-bottom-color: #333;
+}
+
+.dark-mode .clickable-field:hover {
+  background-color: #2a2a2a;
+}
