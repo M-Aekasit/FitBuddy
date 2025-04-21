@@ -40,8 +40,17 @@ const HealthDashboard = () => {
 
       {/* Health Metrics */}
       <div className="space-y-6">
-        {/* Water */}
+        {/* Food */}
         <HealthMetric
+          title="Food"
+          value="1200 kcal"
+          goal="Daily 2000 kcal"
+          icon="🍎"
+          link="/food"
+        />
+
+                {/* Water */}
+                <HealthMetric
           title="Water"
           value="2100 ml"
           goal="Daily goal 3.5L"
@@ -65,15 +74,6 @@ const HealthDashboard = () => {
           goal="Normal"
           icon="📊"
           link="/bmi"
-        />
-
-        {/* Food */}
-        <HealthMetric
-          title="Food"
-          value="1200 kcal"
-          goal="Daily 2000 kcal"
-          icon="🍎"
-          link="/food"
         />
       </div>
 
