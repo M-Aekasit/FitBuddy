@@ -5,6 +5,8 @@ import HealthCalculatorUI from "./components/HealthCalculatorUI";
 import Water from "./components/Water";
 import SportPage from "./components/SportPage";
 import Food from "./components/Food";
+import FriendPage from "./components/FriendPage";
+import DiaryPage from "./components/DiaryPage";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
         <Route path="/water" element={<Water />} />
         <Route path="/sport" element={<SportPage />} />
         <Route path="/food" element={<Food />} />
+        <Route path='/FriendPage' element={<FriendPage />} />
+        <Route path='/DiaryPage' element={<DiaryPage />} />
       </Routes>
     </Router>
   );
