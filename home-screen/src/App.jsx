@@ -8,6 +8,7 @@ import Food from "./components/Food";
 import FriendPage from "./components/FriendPage";
 import DiaryPage from "./components/DiaryPage";
 import Notification from "./components/Notification";
+import SettingPage from "./components/SettingPage";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path='/FriendPage' element={<FriendPage />} />
         <Route path='/DiaryPage' element={<DiaryPage />} />
         <Route path='/Notification' element={<Notification />} />
+        <Route path='/SettingPage' element={<SettingPage />} />
       </Routes>
     </Router>
   );
