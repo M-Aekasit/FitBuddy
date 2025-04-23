@@ -31,7 +31,7 @@ const HealthDashboard = () => {
     <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Good Afternoon</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Good </h1>
         <p className="text-green-500">You've gain 2kg yesterday keep it up!</p>
       </div>
 
