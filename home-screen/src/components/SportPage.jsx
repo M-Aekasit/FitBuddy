@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import ModalBox from './ModalBox';
+import { useNavigate } from "react-router-dom";
 
 // Using public folder path
 const runImage = '/images/sport/run.png';
@@ -20,11 +21,11 @@ const SportPage = () => {
   const [ans, setAns] = useState(0);
   const [time, setTime] = useState("0");
   const [sportType, setSportType] = useState('RUNNING');
-
-  const handleSave = () => {
-    console.log(`Saved: ${sportType}`, { distance, weight, time, calories: ans });
-  };
-
+  const [totalTime, setTotalTime] = useState(0);
+  const [lastUpdateDate, setLastUpdateDate] = useState(new Date().toDateString());
+  
+  const navigate = useNavigate();
+  
   const calculateCalories = () => {
     const calculations = {
       'RUNNING': weight * distance * 1.036,
@@ -41,6 +42,22 @@ const SportPage = () => {
     setAns(calculations[sportType] || 0);
   };
 
+  const handleSave = () => {
+    const today = new Date().toDateString();
+    const newTime = Number(time);
+    if (lastUpdateDate !== today) {
+      setTotalTime(newTime);
+      setLastUpdateDate(today);
+    } else {
+      setTotalTime(prev => prev + newTime);
+    }
+  
+    console.log(`Saved: ${sportType}`, { distance, weight, time, calories: ans });
+      
+  };
+
+
+
   const sports = [
     { name: 'RUNNING', image: runImage },
     { name: 'CYCLING', image: cyclingImage },
@@ -56,8 +73,19 @@ const SportPage = () => {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold text-center mb-8">Sports Tracker</h1>
+      <div className="flex items-center space-x-4 mb-8">
+        <button
+        onClick={() => navigate('/HealthDashboard')}
+        className=" px-4 py-2 text-2xl  rounded hover:bg-gray-200">
+        ←</button>
+        <h2 className="text-2xl font-bold ">Sports Tracker</h2>
+      </div>
       
+      <div className="bg-orange-200 py-6 px-2 rounded-lg mb-8 ">
+        <h1 className="text-lg text-center text-orange-700">Today's Activity</h1>
+        <p className="text-5xl font-bold text-center mt-4 text-orange-700">⏱️ Total Time: {totalTime} hours</p>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {sports.map((sport) => (
           <button
@@ -66,15 +94,17 @@ const SportPage = () => {
               setSportType(sport.name);
               setIsOpen(true);
             }}
-            className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+            className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow flex flex-col items-center justify-center"
           >
-            <div className="flex items-center">
-              <img src={sport.image} alt={sport.name} className="w-16 h-16 mr-4"/>
-              <span className="text-lg font-medium">{sport.name}</span>
+            <div className="flex items-center  gap-2">
+              <img src={sport.image} alt={sport.name} className="w-20 h-20 "/>
+              <span className="text-lg font-medium text-center">{sport.name}</span>
             </div>
           </button>
         ))}
       </div>
+
+
 
       <ModalBox
         isOpen={isOpen}
@@ -97,6 +127,8 @@ const SportPage = () => {
         sportType={sportType}
       />
     </div>
+
+    
   );
 };
 
