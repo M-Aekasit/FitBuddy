@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function IPhoneCalorieCalculator() {
+export default function FoodPage() {
   const [page, setPage] = useState("menu");
   const [selectedItem, setSelectedItem] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -119,6 +119,7 @@ export default function IPhoneCalorieCalculator() {
 
   const addToTracker = (calories) => {
     setTrackedCalories(trackedCalories + calories);
+    setPage("menu");
   };
 
   const filteredItems = menuItems.filter(
@@ -128,114 +129,99 @@ export default function IPhoneCalorieCalculator() {
   );
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-800 p-4">
-      {/* iPhone Frame */}
-      <div className="w-[450px] h-[900px] bg-black rounded-[70px] shadow-xl border-[10px] border-gray-700 overflow-hidden flex flex-col relative">
-        {/* Top Edge */}
-        <div className="w-full h-5 bg-black absolute top-0"></div>
-        
-        {/* App Content */}
-        <div className="flex-1 bg-white flex flex-col items-center pt-5 rounded-[40px] overflow-hidden">
-          {/* Header */}
-          <div className="w-full bg-black text-white py-4 text-center">
-            <h1 className="text-4xl font-bold">🍝 Food Page</h1>
-          </div>
+    <div className="flex flex-col min-h-screen bg-gray-100 p-6 text-gray-800">
+      {/* Header */}
+      <header className="text-center mb-8">
+        <h1 className="text-5xl font-bold mb-2">Food Page</h1>
+      </header>
 
-          {/* Scrollable Content */}
-          <div className="overflow-y-auto flex-1 w-full px-5 pb-20">
-            {page === "menu" && (
-              <div className="p-4">
-                {/* Search and Filter */}
-                <input 
-                  type="text" 
-                  placeholder="Search..." 
-                  className="w-full text-xl p-3 mt-8 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={searchQuery} 
-                  onChange={(e) => setSearchQuery(e.target.value)} 
-                />
-                <select 
-                  className="w-full text-xl p-3 mt-4 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  onChange={(e) => setDietaryFilter(e.target.value)}
+      {/* Content */}
+      <main className="flex-1 p-8">
+        {page === "menu" && (
+          <div>
+            {/* Search and Filter */}
+            <div className="flex flex-col md:flex-row md:space-x-4 mb-8">
+              <input
+                type="text"
+                placeholder="Search food..."
+                className="flex-1 p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-yellow-400"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <select
+                className="flex-1 p-3 rounded-lg border border-gray-300 mt-4 md:mt-0 shadow-sm focus:ring-2 focus:ring-yellow-400"
+                onChange={(e) => setDietaryFilter(e.target.value)}
+              >
+                <option value="All">All Categories</option>
+                <option value="Meals">Meals</option>
+                <option value="Drinks">Drinks</option>
+                <option value="Desserts">Desserts</option>
+              </select>
+            </div>
+
+            {/* Food Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+              {filteredItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg cursor-pointer transition-transform transform hover:scale-105"
+                  onClick={() => selectItem(item)}
                 >
-                  <option value="All">All</option>
-                  <option value="Meals">Meals</option>
-                  <option value="Drinks">Drinks</option>
-                  <option value="Desserts">Desserts</option>
-                </select>
-                
-                {/* Menu Items */}
-                <ul className="mt-6 space-y-3">
-                  {filteredItems.map((item) => (
-                    <li 
-                      key={item.id} 
-                      className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
-                      onClick={() => selectItem(item)}
-                    >
-                      {item.image && (
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-12 h-12 object-cover rounded-md mr-3"
-                        />
-                      )}
-                      <span className="text-lg">{item.name}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {page === "details" && selectedItem && (
-              <div className="p-4">
-                <h2 className="text-2xl font-bold mb-4 text-center">{selectedItem.name}</h2>
-                
-                {selectedItem.image && (
                   <img
-                    src={selectedItem.image}
-                    alt={selectedItem.name}
-                    className="w-full h-48 object-cover rounded-lg mb-6"
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-48 object-cover rounded-lg mb-4"
                   />
-                )}
-                
-                <div className="bg-blue-50 p-4 rounded-lg mb-4">
-                  <p className="text-lg font-semibold">🔥 Calories: {selectedItem.calories} kcal</p>
-                  <p className="mt-2">
-                    🥩 Protein: {selectedItem.protein}g | 
-                    🍞 Carbs: {selectedItem.carbs}g | 
-                    🥑 Fats: {selectedItem.fats}g
-                  </p>
+                  <h2 className="text-xl font-bold text-center text-yellow-800">{item.name}</h2>
                 </div>
-                
-                <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                  <p className="font-semibold">📝 Ingredients:</p>
-                  <p className="whitespace-pre-line mt-2">{selectedItem.ingredients}</p>
-                </div>
-
-                <div className="flex space-x-4">
-                  <button 
-                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg transition-colors"
-                    onClick={() => setPage("menu")}
-                  >
-                    ⬅ Back
-                  </button>
-                  <button 
-                    className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg transition-colors"
-                    onClick={() => addToTracker(selectedItem.calories)}
-                  >
-                    ➕ Add to Tracker
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Calorie Tracker */}
-            <div className="mt-6 p-4 bg-yellow-50 rounded-lg text-center">
-              <p className="text-xl font-semibold">
-                Total Calories Tracked: <span className="text-blue-600">{trackedCalories}</span> kcal
-              </p>
+              ))}
             </div>
           </div>
-        </div>
+        )}
+
+        {page === "details" && selectedItem && (
+          <div className="max-w-3xl mx-auto">
+            <button
+              className="text-blue-600 hover:underline mb-4"
+              onClick={() => setPage("menu")}
+            >
+              ← Back to Menu
+            </button>
+
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <img
+                src={selectedItem.image}
+                alt={selectedItem.name}
+                className="w-full h-72 object-cover rounded-lg mb-6"
+              />
+
+              <h2 className="text-4xl font-extrabold text-center text-yellow-800 mb-6">{selectedItem.name}</h2>
+
+              <div className="text-center text-lg space-y-4">
+                <p>🔥 <span className="font-bold">Calories:</span> {selectedItem.calories} kcal</p>
+                <p>🥩 <span className="font-bold">Protein:</span> {selectedItem.protein}g | 🍞 <span className="font-bold">Carbs:</span> {selectedItem.carbs}g | 🥑 <span className="font-bold">Fats:</span> {selectedItem.fats}g</p>
+                <div>
+                  <p className="font-bold">📝 Ingredients:</p>
+                  <p>{selectedItem.ingredients}</p>
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <button
+                  className="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-2xl text-lg font-bold shadow-md"
+                  onClick={() => addToTracker(selectedItem.calories)}
+                >
+                  ➕ Add to Tracker
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Calorie Tracker */}
+      <div className="bg-blue-400 p-5 text-center text-xl font-extrabold shadow-inner">
+        Total Calories: {trackedCalories} kcal
       </div>
     </div>
   );

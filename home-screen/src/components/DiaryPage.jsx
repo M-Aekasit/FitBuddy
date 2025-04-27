@@ -59,12 +59,10 @@ export default function DiaryPage() {
     const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const cells = [];
 
-    // Fill empty cells before the first day
     for (let i = 0; i < firstDayOfMonth; i++) {
       cells.push(null);
     }
 
-    // Fill days of the month
     for (let day = 1; day <= days; day++) {
       cells.push(day);
     }
