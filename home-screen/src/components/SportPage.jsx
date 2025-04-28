@@ -65,10 +65,17 @@ export default function SportPage() {
       {page === "menu" && (
         <div className="flex items-center space-x-4">
           <button
-            onClick={() => navigate('/HealthDashboard')}
-            className="px-4 py-2 text-2xl font-bold rounded hover:bg-gray-200"
+            key={sport.name}
+            onClick={() => {
+              setSportType(sport.name);
+              setIsOpen(true);
+            }}
+            className="bg-white p-3 rounded-lg shadow-md hover:shadow-lg transition-shadow flex flex-col items-center justify-center"
           >
-            ← Back
+            <div className="flex items-center flex-col gap-2">
+              <img src={sport.image} alt={sport.name} className="w-30 h-30 object-contain"/>
+              <span className="text-lg font-medium ">{sport.name}</span>
+            </div>
           </button>
         </div>
       )}
