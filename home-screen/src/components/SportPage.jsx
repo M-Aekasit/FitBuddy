@@ -82,8 +82,13 @@ export default function SportPage() {
 
       {/* Header */}
       <header className="text-center">
-        <h1 className="text-5xl font-bold">Sport Tracker</h1>
+        <h1 className="text-5xl font-bold mb-8">Sport Tracker</h1>
       </header>
+
+      {/* Calorie Tracker */}
+      <div className="text-center text-3xl font-medium text-gray-500">
+        Total Calories Burned : {Math.round(trackedCalories)} kcal
+      </div>
 
       {/* Content */}
       <main className="flex-1 p-8">
@@ -180,11 +185,6 @@ export default function SportPage() {
           </div>
         )}
       </main>
-
-      {/* Calorie Tracker */}
-      <div className="bg-blue-400 p-5 text-center text-xl font-extrabold shadow-inner">
-        Total Calories Burned: {Math.round(trackedCalories)} kcal
-      </div>
     </div>
   );
 }

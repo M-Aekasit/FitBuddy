@@ -110,7 +110,7 @@ const HealthDashboard = () => {
       >
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-bold text-gray-800">BMI</h2>
-          <p className="text-2xl font-bold text-green-600">40.5</p>
+          <p className="text-2xl font-bold text-green-600">22.5</p>
         </div>
 
         <div className="space-y-2">
