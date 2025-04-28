@@ -94,11 +94,11 @@ const SportPage = () => {
               setSportType(sport.name);
               setIsOpen(true);
             }}
-            className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow flex flex-col items-center justify-center"
+            className="bg-white p-3 rounded-lg shadow-md hover:shadow-lg transition-shadow flex flex-col items-center justify-center"
           >
-            <div className="flex items-center  gap-2">
-              <img src={sport.image} alt={sport.name} className="w-20 h-20 "/>
-              <span className="text-lg font-medium text-center">{sport.name}</span>
+            <div className="flex items-center flex-col gap-2">
+              <img src={sport.image} alt={sport.name} className="w-30 h-30 object-contain"/>
+              <span className="text-lg font-medium ">{sport.name}</span>
             </div>
           </button>
         ))}
