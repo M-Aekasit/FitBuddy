@@ -46,7 +46,7 @@ const ModalBox = ({
           <img 
             src={sportImages[sportType]} 
             alt={sportType}
-            className="w-32 h-32 object-contain"
+            className="w-52 h-52 object-contain"
           />
         </div>
 
@@ -75,6 +75,17 @@ const ModalBox = ({
                   step="0.1"
                 />
               </div>
+              <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">Time (hours)</label>
+              <input
+                type="number"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                className="w-full p-2 border rounded-md"
+                min="0"
+                step="0.1"
+              />
+            </div>
             </>
           )}
 
