@@ -1,135 +1,183 @@
-import { useState } from 'react';
-import ModalBox from './ModalBox';
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// Using public folder path
-const runImage = '/images/sport/run.png';
-const cyclingImage = '/images/sport/cycling.png';
-const badmintonImage = '/images/sport/badminton.png';
-const zumbaImage = '/images/sport/zumba.png';
-const hulahoopImage = '/images/sport/hulahoop.png';
-const walkImage = '/images/sport/walk.png';
-const aerobicImage = '/images/sport/aerobic.png';
-const tennisImage = '/images/sport/tennis.png';
-const karateImage = '/images/sport/karate.png';
-const swimmingImage = '/images/sport/swimming.png';
+export default function SportPage() {
+  const [page, setPage] = useState("menu");
+  const [selectedSport, setSelectedSport] = useState(null);
+  const [trackedCalories, setTrackedCalories] = useState(0);
+  const [inputData, setInputData] = useState({ distance: "", weight: "", time: "" });
 
-const SportPage = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [distance, setDistance] = useState("0");
-  const [weight, setWeight] = useState("0");
-  const [ans, setAns] = useState(0);
-  const [time, setTime] = useState("0");
-  const [sportType, setSportType] = useState('RUNNING');
-  const [totalTime, setTotalTime] = useState(0);
-  const [lastUpdateDate, setLastUpdateDate] = useState(new Date().toDateString());
-  
   const navigate = useNavigate();
-  
-  const calculateCalories = () => {
-    const calculations = {
-      'RUNNING': weight * distance * 1.036,
-      'CYCLING': time * 450,
-      'BADMINTON': time * 350,
-      'ZUMBA': time * 500,
-      'HULA-HOOP': time * 430,
-      'WALKING': time * 282,
-      'AEROBIC': time * 363,
-      'TENNIS': time * 728,
-      'KARATE': time * 750,
-      'SWIMMING': time * 550
-    };
-    setAns(calculations[sportType] || 0);
-  };
-
-  const handleSave = () => {
-    const today = new Date().toDateString();
-    const newTime = Number(time);
-    if (lastUpdateDate !== today) {
-      setTotalTime(newTime);
-      setLastUpdateDate(today);
-    } else {
-      setTotalTime(prev => prev + newTime);
-    }
-  
-    console.log(`Saved: ${sportType}`, { distance, weight, time, calories: ans });
-      
-  };
-
-
 
   const sports = [
-    { name: 'RUNNING', image: runImage },
-    { name: 'CYCLING', image: cyclingImage },
-    { name: 'BADMINTON', image: badmintonImage },
-    { name: 'ZUMBA', image: zumbaImage },
-    { name: 'HULA-HOOP', image: hulahoopImage },
-    { name: 'WALKING', image: walkImage },
-    { name: 'AEROBIC', image: aerobicImage },
-    { name: 'TENNIS', image: tennisImage },
-    { name: 'KARATE', image: karateImage },
-    { name: 'SWIMMING', image: swimmingImage }
+    { id: 1, name: "Running", type: "RUNNING", image: "/images/sport/run.png" },
+    { id: 2, name: "Cycling", type: "CYCLING", image: "/images/sport/cycling.png" },
+    { id: 3, name: "Badminton", type: "BADMINTON", image: "/images/sport/badminton.png" },
+    { id: 4, name: "Zumba", type: "ZUMBA", image: "/images/sport/zumba.png" },
+    { id: 5, name: "Hula Hoop", type: "HULA-HOOP", image: "/images/sport/hulahoop.png" },
+    { id: 6, name: "Walking", type: "WALKING", image: "/images/sport/walk.png" },
+    { id: 7, name: "Aerobic", type: "AEROBIC", image: "/images/sport/aerobic.png" },
+    { id: 8, name: "Tennis", type: "TENNIS", image: "/images/sport/tennis.png" },
+    { id: 9, name: "Karate", type: "KARATE", image: "/images/sport/karate.png" },
+    { id: 10, name: "Swimming", type: "SWIMMING", image: "/images/sport/swimming.png" },
   ];
 
+  const selectSport = (sport) => {
+    setSelectedSport(sport);
+    setInputData({ distance: "", weight: "", time: "" });
+    setPage("details");
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setInputData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const calculateCalories = () => {
+    const { distance, weight, time } = inputData;
+    let calories = 0;
+
+    if (selectedSport.type === "RUNNING") {
+      calories = weight * distance * 1.036;
+    } else {
+      const caloriesPerHour = {
+        CYCLING: 450,
+        BADMINTON: 350,
+        ZUMBA: 500,
+        "HULA-HOOP": 430,
+        WALKING: 282,
+        AEROBIC: 363,
+        TENNIS: 728,
+        KARATE: 750,
+        SWIMMING: 550,
+      };
+      calories = time * (caloriesPerHour[selectedSport.type] || 0);
+    }
+
+    setTrackedCalories(trackedCalories + calories);
+    setPage("menu");
+  };
+
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="flex items-center space-x-4 mb-8">
-        <button
-        onClick={() => navigate('/HealthDashboard')}
-        className=" px-4 py-2 text-2xl  rounded hover:bg-gray-200">
-        ←</button>
-        <h2 className="text-2xl font-bold ">Sports Tracker</h2>
-      </div>
-      
-      <div className="bg-orange-200 py-6 px-2 rounded-lg mb-8 ">
-        <h1 className="text-lg text-center text-orange-700">Today's Activity</h1>
-        <p className="text-5xl font-bold text-center mt-4 text-orange-700">⏱️ Total Time: {totalTime} hours</p>
-      </div>
+    <div className="flex flex-col min-h-screen bg-gray-100 p-6 text-gray-800">
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {sports.map((sport) => (
+      {/* Back Home */}
+      {page === "menu" && (
+        <div className="flex items-center space-x-4">
           <button
-            key={sport.name}
-            onClick={() => {
-              setSportType(sport.name);
-              setIsOpen(true);
-            }}
-            className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow flex flex-col items-center justify-center"
+            onClick={() => navigate('/HealthDashboard')}
+            className="px-4 py-2 text-2xl font-bold rounded hover:bg-gray-200"
           >
-            <div className="flex items-center  gap-2">
-              <img src={sport.image} alt={sport.name} className="w-20 h-20 "/>
-              <span className="text-lg font-medium text-center">{sport.name}</span>
-            </div>
+            ← Back
           </button>
-        ))}
+        </div>
+      )}
+
+      {/* Header */}
+      <header className="text-center">
+        <h1 className="text-5xl font-bold">Sport Tracker</h1>
+      </header>
+
+      {/* Content */}
+      <main className="flex-1 p-8">
+        {page === "menu" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+            {sports.map((sport) => (
+              <div
+                key={sport.id}
+                className="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg cursor-pointer transition-transform transform hover:scale-105"
+                onClick={() => selectSport(sport)}
+              >
+                <img
+                  src={sport.image}
+                  alt={sport.name}
+                  className="w-full h-100 object-cover rounded-lg mb-4"
+                />
+                <div className="p-4">
+                  <h2 className="text-xl font-semibold">{sport.name}</h2>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {page === "details" && selectedSport && (
+          <div className="max-w-3xl mx-auto">
+            <button
+              className="text-blue-600 text-xl hover:underline mb-4"
+              onClick={() => setPage("menu")}
+            >
+              ← Back to Menu
+            </button>
+
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <img
+                src={selectedSport.image}
+                alt={selectedSport.name}
+                className="w-full h-140 object-cover rounded-lg mb-6"
+              />
+
+              <h2 className="text-4xl font-extrabold text-center text-yellow-800 mb-6">{selectedSport.name}</h2>
+
+              {/* Input fields */}
+              <div className="text-center text-lg space-y-6">
+                {selectedSport.type === "RUNNING" && (
+                  <>
+                    <div>
+                      <label className="block mb-2 font-bold">Distance (km):</label>
+                      <input
+                        type="number"
+                        name="distance"
+                        value={inputData.distance}
+                        onChange={handleInputChange}
+                        className="w-full p-3 border rounded-lg"
+                        placeholder="Enter distance in km"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 font-bold">Weight (kg):</label>
+                      <input
+                        type="number"
+                        name="weight"
+                        value={inputData.weight}
+                        onChange={handleInputChange}
+                        className="w-full p-3 border rounded-lg"
+                        placeholder="Enter weight in kg"
+                      />
+                    </div>
+                  </>
+                )}
+
+                <div>
+                  <label className="block mb-2 font-bold">Time (hours):</label>
+                  <input
+                    type="number"
+                    name="time"
+                    value={inputData.time}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border rounded-lg"
+                    placeholder="Enter time in hours"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <button
+                  className="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-2xl text-lg font-bold shadow-md"
+                  onClick={calculateCalories}
+                >
+                  ➕ Add to Tracker
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Calorie Tracker */}
+      <div className="bg-blue-400 p-5 text-center text-xl font-extrabold shadow-inner">
+        Total Calories Burned: {Math.round(trackedCalories)} kcal
       </div>
-
-
-
-      <ModalBox
-        isOpen={isOpen}
-        onClose={() => {
-          setIsOpen(false);
-          setAns(0);
-          setTime(0);
-          setDistance(0);
-          setWeight(0);
-        }}
-        distance={distance}
-        setDistance={setDistance}
-        weight={weight}
-        setWeight={setWeight}
-        Save={handleSave}
-        ans={ans}
-        OK={calculateCalories}
-        time={time}
-        setTime={setTime}
-        sportType={sportType}
-      />
     </div>
-
-    
   );
-};
-
-export default SportPage;
+}
