@@ -89,7 +89,7 @@ const HealthDashboard = () => {
       </div>
 
       {/* BMI Section */}
-      <Link to="/health-calculator" className="block bg-white p-6 rounded-xl shadow space-y-4 hover:shadow-md transition-all">
+      <Link to="/bmi" className="block bg-white p-6 rounded-xl shadow space-y-4 hover:shadow-md transition-all">
         <h2 className="text-xl font-bold text-gray-800">BMI</h2>
         <p className="text-2xl font-bold text-green-600">22.5</p>
         <div className="w-full bg-gray-200 rounded-full h-3">
