@@ -1,97 +1,115 @@
 import { useState } from "react";
 
 export default function FriendsPage() {
-  const [rating, setRating] = useState(0); 
-  const [diaryNotes, setDiaryNotes] = useState(""); 
+  const [cheeredFriends, setCheeredFriends] = useState([]);
 
   const friends = [
-    {
-      name: "Bee",
-      calories: { burned: 450, target: 700 },
-      water: { consumed: 7, target: 8 }
-    },
-    {
-      name: "Copter",
-      calories: { burned: 250, target: 600 },
-      water: { consumed: 5, target: 8 }
-    },
-    {
-      name: "Kay",
-      calories: { burned: 120, target: 300 },
-      water: { consumed: 6, target: 8 }
-    },
-    {
-      name: "Mild",
-      calories: { burned: 50, target: 250 },
-      water: { consumed: 8, target: 8 }
-    }
+    { name: "Bee", calories: { burned: 450, target: 700 }, water: { consumed: 7, target: 8 } },
+    { name: "Copter", calories: { burned: 250, target: 600 }, water: { consumed: 5, target: 8 } },
+    { name: "Kay", calories: { burned: 120, target: 300 }, water: { consumed: 6, target: 8 } },
+    { name: "Mild", calories: { burned: 50, target: 250 }, water: { consumed: 8, target: 8 } }
   ];
 
+  const sendCheer = (name) => {
+    if (!cheeredFriends.includes(name)) {
+      setCheeredFriends([...cheeredFriends, name]);
+      alert(`🎉 You sent a cheer to ${name}!`);
+    }
+  };
+
+  const getStatus = (friend) => {
+    const calorieProgress = friend.calories.burned / friend.calories.target;
+    const waterProgress = friend.water.consumed / friend.water.target;
+    if (calorieProgress > 0.7 && waterProgress > 0.8) {
+      return "On Track 🚀";
+    } else {
+      return "Needs Motivation 💬";
+    }
+  };
+
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-800 p-4">
-      {/* iPhone Frame */}
-      <div className="w-[450px] h-[900px] bg-black rounded-[70px] shadow-xl border-[10px] border-gray-700 overflow-hidden flex flex-col relative">
-        {/* Top Edge */}
-        <div className="w-full h-5 bg-black absolute top-0"></div>
-        
-        {/* App Content */}
-        <div className="flex-1 bg-white flex flex-col rounded-[40px] overflow-hidden">
-          {/* Header */}
-          <div className="w-full bg-black text-white py-4 text-center">
-            <h1 className="text-4xl font-bold">💁🏻‍♂️ Friends</h1>
-          </div>
+    <div className="flex flex-col min-h-screen bg-gray-100 p-6 text-gray-800">
+      {/* Header */}
+      <header className="text-center mb-8">
+        <h1 className="text-5xl font-bold mb-2">Friends</h1>
+      </header>
 
-          {/* Scrollable Content */}
-          <div className="overflow-y-auto flex-1 w-full px-5 pb-20">
-            <div className="flex flex-col items-center py-6">
-              {/* Invite Friend Button */}
-              <button 
-                className="w-full max-w-md bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg mb-8 text-xl font-medium transition-colors"
-                onClick={() => alert("Invite sent!")}
-              >
-                ➕ Invite New Friend
-              </button>
+      {/* Main */}
+      <main className="flex-1 p-6 flex flex-col items-center">
+        {/* Invite Button */}
+        <button 
+          className="bg-green-500 hover:bg-green-600 text-white py-2 px-6 rounded-full text-lg font-semibold mb-8 shadow-md transition transform hover:scale-105"
+          onClick={() => alert("Invite sent!")}
+        >
+          ➕ Invite New Friend
+        </button>
 
-              {/* Friends List */}
-              <div className="w-full max-w-md space-y-6">
-                {friends.map((friend, index) => (
-                  <div key={index} className="bg-gray-50 p-6 rounded-xl shadow-sm border border-gray-200">
-                    <h3 className="text-2xl font-semibold mb-4">👤 {friend.name}</h3>
-                    
-                    {/* Calories Progress */}
-                    <div className="mb-4">
-                      <div className="flex justify-between text-lg mb-1">
-                        <span>🔥 Calories Burned:</span>
-                        <span>{friend.calories.burned} / {friend.calories.target}</span>
-                      </div>
-                      <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-red-400" 
-                          style={{ width: `${(friend.calories.burned / friend.calories.target) * 100}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                    
-                    {/* Water Progress */}
-                    <div>
-                      <div className="flex justify-between text-lg mb-1">
-                        <span>💧 Water Intake:</span>
-                        <span>{friend.water.consumed} / {friend.water.target} glasses</span>
-                      </div>
-                      <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-blue-400" 
-                          style={{ width: `${(friend.water.consumed / friend.water.target) * 100}%` }}
-                        ></div>
-                      </div>
-                    </div>
+        {/* Friend List */}
+        <div className="space-y-6 w-full max-w-3xl">
+          {friends.map((friend, index) => (
+            <div key={index} className="bg-white p-6 rounded-2xl shadow hover:shadow-xl transition transform hover:scale-105">
+              {/* Top Row: Avatar and Name */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-xl font-bold text-gray-700">
+                    {friend.name.charAt(0)}
                   </div>
-                ))}
+                  <div>
+                    <div className="text-2xl font-semibold">{friend.name}</div>
+                    <div className="text-sm text-gray-500">{getStatus(friend)}</div>
+                  </div>
+                </div>
+
+                {/* Cheer Button */}
+                <button
+                  className={`py-1 px-4 rounded-full text-sm font-semibold transition ${
+                    cheeredFriends.includes(friend.name)
+                      ? "bg-yellow-400 text-white cursor-not-allowed"
+                      : "bg-blue-500 hover:bg-blue-600 text-white"
+                  }`}
+                  onClick={() => sendCheer(friend.name)}
+                  disabled={cheeredFriends.includes(friend.name)}
+                >
+                  {cheeredFriends.includes(friend.name) ? "🎉 Cheered!" : "Send Cheer"}
+                </button>
+              </div>
+
+              {/* Calories Progress */}
+              <div className="mb-4">
+                <div className="flex justify-between text-gray-600 font-medium mb-1">
+                  <span>🔥 Calories Burned</span>
+                  <span>{friend.calories.burned} / {friend.calories.target}</span>
+                </div>
+                <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-red-400 transition-all"
+                    style={{ width: `${(friend.calories.burned / friend.calories.target) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              {/* Water Progress */}
+              <div>
+                <div className="flex justify-between text-gray-600 font-medium mb-1">
+                  <span>💧 Water Intake</span>
+                  <span>{friend.water.consumed} / {friend.water.target} glasses</span>
+                </div>
+                <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-blue-400 transition-all"
+                    style={{ width: `${(friend.water.consumed / friend.water.target) * 100}%` }}
+                  ></div>
+                </div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
-      </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-200 text-gray-600 p-4 text-center text-sm font-semibold mt-8">
+        © 2025 Friends Tracker App
+      </footer>
     </div>
   );
 }
