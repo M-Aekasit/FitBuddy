@@ -16,7 +16,7 @@ const HealthMetric = ({
     to={link}
     className={`flex flex-col justify-between rounded-xl shadow-sm hover:shadow-md transition-all bg-white ${className}`}
   >
-    <div className="flex items-center space-x-6 mb-6"> {/* เล่ม space-x */}
+    <div className="flex items-center space-x-4 mb-6"> {/* เล่ม space-x */}
       <div className="text-4xl">{icon}</div> {/* เล่มขนาดไอคอน */}
       <div className="space-y-2"> {/* เล่มระยะห่างระหว่างข้อความ */}
         <h3 className="text-2xl font-semibold text-gray-800 tracking-wide">{title}</h3>
@@ -56,9 +56,9 @@ const HealthDashboard = () => {
   const exerciseGoal = 60;
 
   return (
-    <div className="p-6  mx-auto space-y-8 bg-gray-100 min-h-screen">
+    <div className="p-4  mx-auto space-y-6 bg-gray-100 min-h-screen">
       {/* Header */}
-      <header className="mb-6 text-center space-y-2">
+      <header className="mb-4 text-center space-y-2">
         <h1 className="text-4xl font-bold text-gray-800">Good Afternoon</h1>
         <p className="text-green-500 mt-1 text-lg">
           You've gained 2kg yesterday, keep it up!
