@@ -145,13 +145,8 @@ export default function FoodPage() {
       
       {/* Header */}
       <header className="text-center">
-        <h1 className="text-5xl font-bold mb-8">Food Tracker</h1>
+        <h1 className="text-5xl font-bold">Food Tracker</h1>
       </header>
-
-      {/* Calorie Tracker */}
-      <div className="text-center text-3xl font-medium text-gray-500">
-      Total Calories : {trackedCalories} kcal
-      </div>
 
       {/* Content */}
       <main className="flex-1 p-8">
@@ -240,7 +235,10 @@ export default function FoodPage() {
         )}
       </main>
 
-
+      {/* Calorie Tracker */}
+      <div className="bg-blue-400 p-5 text-center text-xl font-extrabold shadow-inner">
+        Total Calories: {trackedCalories} kcal
+      </div>
     </div>
   );
 }
