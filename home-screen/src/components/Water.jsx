@@ -126,6 +126,223 @@ export default function App() {
 
   const weekDays = getCurrentWeekDays()
 
+  // Settings page
+  if (currentPage === "settings") {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-100 p-6 text-gray-800">
+        <div className="water-tracker-container">
+          <div className="container">
+            <header className="header">
+              <button
+                onClick={() => setCurrentPage("main")}
+                className="px-4 py-2 text-2xl font-bold rounded hover:bg-gray-200"
+              >
+                ← Back
+              </button>
+              <h1 className="page-title">Settings</h1>
+            </header>
+
+            <div className="settings-card">
+              <h2 className="settings-title">Water Tracker Settings</h2>
+
+              <div className="settings-form">
+                <div className="form-group">
+                  <label className="form-label">Daily Water Goal</label>
+                  <div className="form-control">
+                    <select className="form-select">
+                      <option>8 glasses (recommended)</option>
+                      <option>6 glasses</option>
+                      <option>10 glasses</option>
+                      <option>12 glasses</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Reminder Notifications</label>
+                  <div className="form-control">
+                    <label className="checkbox-label">
+                      <input type="checkbox" className="form-checkbox" defaultChecked />
+                      <span className="checkbox-text">Enable reminders</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Reminder Frequency</label>
+                  <div className="form-control">
+                    <select className="form-select">
+                      <option>Every 2 hours</option>
+                      <option>Every hour</option>
+                      <option>Every 3 hours</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button className="save-button">Save Settings</button>
+              </div>
+            </div>
+          </div>
+          <style jsx>{`
+            /* CSS styles */
+            
+            
+            /* Container */
+            .water-tracker-container {
+              
+              min-height: 100vh;
+              width: 100%;
+              
+              position: absolute;
+              left: 0;
+              top: 50px;
+              right: 0;
+              overflow: hidden; /* Change from overflow-x: hidden to overflow: hidden */
+            }
+            
+            .container {
+            
+              width: 100%;
+              max-width: none;
+              margin: 0;
+              padding: 2rem 2rem; /* Change from 2rem 1rem to 2rem 2rem for equal left/right padding */
+            }
+            
+            /* Header */
+            .header {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 2rem;
+              width: 100%;
+            }
+            
+            .logo {
+              display: flex;
+              align-items: center;
+            }
+            
+            .water-icon {
+              font-size: 2rem;
+              margin-right: 0.5rem;
+            }
+            
+            .page-title {
+              font-size: 1.75rem;
+              font-weight: bold;
+              color: black;
+            }
+            
+            .settings-button {
+              background: transparent;
+              border: none;
+              color: black;
+              cursor: pointer;
+              padding: 0.5rem;
+              border-radius: 50%;
+              transition: background-color 0.2s;
+            }
+            
+            .settings-button:hover {
+              background-color: rgba(255, 255, 255, 0.2);
+            }
+            
+            .back-button {
+              background: transparent;
+              border: none;
+              color: black;
+              cursor: pointer;
+              padding: 0.5rem 1rem;
+              border-radius: 0.5rem;
+              font-weight: bold;
+              transition: background-color 0.2s;
+            }
+            
+            .back-button:hover {
+              background-color: rgba(255, 255, 255, 0.2);
+            }
+            
+            /* Settings Page */
+            .settings-card {
+              max-width: none;
+              width: 100%;
+              margin: 0 auto;
+              background-color: white;
+              border-radius: 1rem;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+              padding: 2rem; /* Change from 1.5rem to 2rem for more consistent padding */
+              overflow: hidden;
+            }
+            
+            .settings-title {
+              font-size: 1.5rem;
+              font-weight: 600;
+              color: #333;
+              margin-bottom: 1.5rem;
+            }
+            
+            .settings-form {
+              display: flex;
+              flex-direction: column;
+              gap: 1.5rem;
+            }
+            
+            .form-group {
+              display: flex;
+              flex-direction: column;
+              gap: 0.5rem;
+            }
+            
+            .form-label {
+              font-weight: 500;
+              color: #4a5568;
+            }
+            
+            .form-select {
+              width: 100%;
+              padding: 0.5rem;
+              border: 1px solid #e2e8f0;
+              border-radius: 0.375rem;
+              background-color: rgba(255, 255, 255, 0.205);
+              font-size: 1rem;
+              color: #1e1e1f
+            }
+            
+            .checkbox-label {
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+            }
+            
+            .form-checkbox {
+              width: 1rem;
+              height: 1rem;
+            }
+            
+            .save-button {
+              background-color: #39b4ff;
+              color: white;
+              border: none;
+              border-radius: 0.5rem;
+              padding: 0.75rem;
+              font-weight: bold;
+              cursor: pointer;
+              transition: background-color 0.2s;
+            }
+            
+            .save-button:hover {
+              background-color: #2b9fe0;
+            }
+
+            body {
+              overflow-x: hidden;
+            }
+          `}</style>
+        </div>
+      </div>
+    )
+  }
+
   // Main dashboard
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 p-6 text-gray-800">
@@ -139,7 +356,22 @@ export default function App() {
             >
               ← Back
             </button>
-            
+            <button onClick={() => setCurrentPage("settings")} className="settings-button">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+            </button>
           </div>
 
           {/* Header */}
@@ -305,20 +537,20 @@ export default function App() {
           /* Container */
           .water-tracker-container {
             min-height: 100vh;
-            width: 100vw;
+            width: 100%;
             
-            overflow-x: hidden;
             position: absolute;
             left: 0;
             top: 50px;
             right: 0;
+            overflow: hidden;
           }
           
           .container {
-            width: 100vw;
+            width: 100%;
             max-width: none;
             margin: 0;
-            padding: 2rem 1rem;
+            padding: 2rem 2rem;
           }
           
           /* Header */
@@ -400,7 +632,7 @@ export default function App() {
             background-color: white;
             border-radius: 1rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
+            padding: 2rem;
             overflow: hidden;
           }
           
