@@ -1,11 +1,46 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 
 export default function App() {
   const [waterCount, setWaterCount] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
   const [currentPage, setCurrentPage] = useState("main")
-  const navigate = useNavigate();
+  const [waterHistory, setWaterHistory] = useState({})
+  const navigate = useNavigate()
+
+  // Initialize water history with some sample data on first load
+  useEffect(() => {
+    // Get today's date
+    const today = new Date()
+
+    // Create sample history data for the past week
+    const initialHistory = {}
+
+    for (let i = 1; i <= 7; i++) {
+      const date = new Date(today)
+      date.setDate(today.getDate() - i)
+      const dateKey = date.toISOString().split("T")[0]
+
+      // Random water count between 5-8 for past days
+      initialHistory[dateKey] = i === 1 ? 8 : Math.floor(Math.random() * 4) + 5
+    }
+
+    // Only set initial history if it doesn't exist yet
+    if (Object.keys(waterHistory).length === 0) {
+      setWaterHistory(initialHistory)
+    }
+  }, [])
+
+  // Update water count for today
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0]
+
+    // Update today's water count in history
+    setWaterHistory((prev) => ({
+      ...prev,
+      [today]: waterCount,
+    }))
+  }, [waterCount])
 
   const addWater = () => {
     if (waterCount < 8) {
@@ -38,6 +73,59 @@ export default function App() {
   const minutesLeft = Math.floor((timeDiffMs / (1000 * 60)) % 60)
   const timeLeftText = hoursLeft > 0 ? `${hoursLeft}h left` : `${minutesLeft}m left`
 
+  // Get formatted date for display
+  const getFormattedDate = (daysAgo) => {
+    const date = new Date()
+    date.setDate(date.getDate() - daysAgo)
+
+    if (daysAgo === 1) return "Yesterday"
+    if (daysAgo === 0) return "Today"
+
+    // For days within the current week, show day name
+    if (daysAgo < 7) {
+      const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+      return dayNames[date.getDay()]
+    }
+
+    // For older dates, show date format
+    return `${date.getDate()} ${date.toLocaleString("default", { month: "short" })}, ${date.getFullYear()}`
+  }
+
+  // Get water count for a specific day
+  const getWaterCountForDay = (daysAgo) => {
+    const date = new Date()
+    date.setDate(date.getDate() - daysAgo)
+    const dateKey = date.toISOString().split("T")[0]
+
+    return waterHistory[dateKey] || 0
+  }
+
+  // Get current week days for weekly progress
+  const getCurrentWeekDays = () => {
+    const days = []
+    const today = new Date()
+    const currentDay = today.getDay() // 0 = Sunday, 1 = Monday, etc.
+
+    // Calculate the Monday of this week
+    const monday = new Date(today)
+    monday.setDate(today.getDate() - currentDay + (currentDay === 0 ? -6 : 1))
+
+    // Generate array of weekdays
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(monday)
+      day.setDate(monday.getDate() + i)
+      days.push({
+        name: day.toLocaleString("default", { weekday: "short" }),
+        date: day.toISOString().split("T")[0],
+        isToday: day.toDateString() === today.toDateString(),
+      })
+    }
+
+    return days
+  }
+
+  const weekDays = getCurrentWeekDays()
+
   // Settings page
   if (currentPage === "settings") {
     return (
@@ -45,10 +133,12 @@ export default function App() {
         <div className="water-tracker-container">
           <div className="container">
             <header className="header">
-              <button onClick={() => setCurrentPage("main")} className="px-4 py-2 text-2xl font-bold rounded hover:bg-gray-200"
-            >
-              ← Back
-            </button>
+              <button
+                onClick={() => setCurrentPage("main")}
+                className="px-4 py-2 text-2xl font-bold rounded hover:bg-gray-200"
+              >
+                ← Back
+              </button>
               <h1 className="page-title">Settings</h1>
             </header>
 
@@ -101,21 +191,21 @@ export default function App() {
             .water-tracker-container {
               
               min-height: 100vh;
-              width: 100vw;
+              width: 100%;
               
-              overflow-x: hidden;
               position: absolute;
               left: 0;
               top: 50px;
               right: 0;
+              overflow: hidden; /* Change from overflow-x: hidden to overflow: hidden */
             }
             
             .container {
             
-              width: 100vw;
+              width: 100%;
               max-width: none;
               margin: 0;
-              padding: 2rem 1rem;
+              padding: 2rem 2rem; /* Change from 2rem 1rem to 2rem 2rem for equal left/right padding */
             }
             
             /* Header */
@@ -180,7 +270,7 @@ export default function App() {
               background-color: white;
               border-radius: 1rem;
               box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-              padding: 1.5rem;
+              padding: 2rem; /* Change from 1.5rem to 2rem for more consistent padding */
               overflow: hidden;
             }
             
@@ -243,24 +333,25 @@ export default function App() {
             .save-button:hover {
               background-color: #2b9fe0;
             }
+
+            body {
+              overflow-x: hidden;
+            }
           `}</style>
         </div>
-      </div>  
+      </div>
     )
   }
 
   // Main dashboard
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 p-6 text-gray-800">
-       
       <div className="water-tracker-container">
-        
         <div className="container">
-
           {/* Back Button */}
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => navigate('/HealthDashboard')}
+              onClick={() => navigate("/HealthDashboard")}
               className="px-4 py-2 text-2xl font-bold rounded hover:bg-gray-200"
             >
               ← Back
@@ -286,7 +377,6 @@ export default function App() {
           {/* Header */}
           <header className="text-center">
             <h1 className="text-5xl font-bold mb-8">Water Tracker</h1>
-
           </header>
 
           <div className="dashboard-grid">
@@ -348,14 +438,13 @@ export default function App() {
                       strokeLinejoin="round"
                     >
                       <line x1="5" y1="17" x2="19" y2="17"></line>
-                  </svg>
-                  
+                    </svg>
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* History Card */}
+            {/* History Card - Now Dynamic */}
             <div className="history-card">
               <h2 className="card-title">
                 <svg
@@ -378,43 +467,30 @@ export default function App() {
               </h2>
 
               <div className="history-list">
-                <div className="history-item">
-                  <div className="history-icon">
-                    <div className="droplet-icon"></div>
-                  </div>
-                  <div className="history-details">
-                    <p className="history-date">Yesterday</p>
-                    <p className="history-amount">8 glasses</p>
-                    <p className="history-status completed">Goal completed</p>
-                  </div>
-                </div>
+                {/* Dynamic history items */}
+                {[1, 2, 3].map((daysAgo) => {
+                  const waterAmount = getWaterCountForDay(daysAgo)
+                  const isCompleted = waterAmount >= 8
+                  const statusText = isCompleted ? "Goal completed" : `${8 - waterAmount} glasses left`
 
-                <div className="history-item">
-                  <div className="history-icon">
-                    <div className="droplet-icon"></div>
-                  </div>
-                  <div className="history-details">
-                    <p className="history-date">Saturday</p>
-                    <p className="history-amount">6 glasses</p>
-                    <p className="history-status">2 glasses left</p>
-                  </div>
-                </div>
-
-                <div className="history-item">
-                  <div className="history-icon">
-                    <div className="droplet-icon"></div>
-                  </div>
-                  <div className="history-details">
-                    <p className="history-date">1 Feb, 2019</p>
-                    <p className="history-amount">8 glasses</p>
-                    <p className="history-status completed">Goal completed</p>
-                  </div>
-                </div>
+                  return (
+                    <div className="history-item" key={daysAgo}>
+                      <div className="history-icon">
+                        <div className="droplet-icon"></div>
+                      </div>
+                      <div className="history-details">
+                        <p className="history-date">{getFormattedDate(daysAgo)}</p>
+                        <p className="history-amount">{waterAmount} glasses</p>
+                        <p className={`history-status ${isCompleted ? "completed" : ""}`}>{statusText}</p>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </div>
 
-          {/* Weekly Progress */}
+          {/* Weekly Progress - Now Dynamic */}
           <div className="weekly-card">
             <h2 className="card-title">
               <svg
@@ -435,20 +511,22 @@ export default function App() {
             </h2>
 
             <div className="weekly-grid">
-              {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day, index) => (
-                <div key={day} className="day-column">
-                  <div className="day-label">{day}</div>
-                  <div className="day-bar-container">
-                    <div
-                      className="day-bar-fill"
-                      style={{ height: `${index < 4 ? 100 : index === 4 ? 75 : index === 5 ? 75 : 0}%` }}
-                    ></div>
-                    <div className="day-bar-text">
-                      {index < 4 ? "8/8" : index === 4 ? "6/8" : index === 5 ? "6/8" : "0/8"}
+              {weekDays.map((day) => {
+                const date = new Date(day.date)
+                const dateKey = day.date
+                const waterAmount = waterHistory[dateKey] || 0
+                const fillPercentage = (waterAmount / 8) * 100
+
+                return (
+                  <div key={day.name} className={`day-column ${day.isToday ? "today" : ""}`}>
+                    <div className="day-label">{day.name}</div>
+                    <div className="day-bar-container">
+                      <div className="day-bar-fill" style={{ height: `${fillPercentage}%` }}></div>
+                      <div className="day-bar-text">{waterAmount}/8</div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         </div>
@@ -459,20 +537,20 @@ export default function App() {
           /* Container */
           .water-tracker-container {
             min-height: 100vh;
-            width: 100vw;
+            width: 100%;
             
-            overflow-x: hidden;
             position: absolute;
             left: 0;
             top: 50px;
             right: 0;
+            overflow: hidden;
           }
           
           .container {
-            width: 100vw;
+            width: 100%;
             max-width: none;
             margin: 0;
-            padding: 2rem 1rem;
+            padding: 2rem 2rem;
           }
           
           /* Header */
@@ -550,10 +628,11 @@ export default function App() {
           .weekly-card,
           .settings-card {
             width: 100%;
+            height: 100%;
             background-color: white;
             border-radius: 1rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
+            padding: 2rem;
             overflow: hidden;
           }
           
@@ -574,6 +653,7 @@ export default function App() {
           /* Tracker Content */
           .tracker-content {
             display: flex;
+            
             flex-direction: column;
             align-items: center;
             gap: 2rem;
@@ -593,13 +673,13 @@ export default function App() {
             justify-content: center;
             align-items: center;
             margin: 40px 0;
-            width: 240px;
-            height: 240px;
+            width: 360px;
+            height: 360px;
           }
           
           .water-droplet {
-            width: 240px;
-            height: 280px;
+            width: 360px;
+            height: 380px;
             background: transparent;
             border-radius: 0%;
             rotate: 45deg;
@@ -612,8 +692,8 @@ export default function App() {
           
           .water-dropshape {
             top: 30px;
-            width: 200px;
-            height: 200px;
+            width: 260px;
+            height: 260px;
             background: transparent;
             border-radius: 90% 0% 90% 80%;
             rotate: -45deg;
@@ -639,7 +719,7 @@ export default function App() {
           
           .droplet-number {
             color: #39b4ff;
-            font-size: 2.5rem;
+            font-size: 3.0rem;
             font-weight: bold;
             z-index: 1;
             
@@ -652,9 +732,12 @@ export default function App() {
             flex-direction: column;
             gap: 1.5rem;
             width: 100%;
+            
           }
           
           .stats-grid {
+            width: 100%;
+            height: 120%;
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
@@ -669,20 +752,20 @@ export default function App() {
           
           .stat-label {
             color: #4a5568;
-            font-size: 0.875rem;
+            font-size: 1.5rem;
             font-weight: 500;
           }
           
           .stat-value {
             color: #39b4ff;
-            font-size: 1.5rem;
+            font-size: 2.25rem;
             font-weight: bold;
             margin: 0.25rem 0;
           }
           
           .stat-unit {
             color: #718096;
-            font-size: 0.75rem;
+            font-size: 1.0rem;
           }
           
           /* Add Water Button */
@@ -692,6 +775,7 @@ export default function App() {
             justify-content: center;
             gap: 0.5rem;
             width: 100%;
+            font-size: 1.5rem;
             padding: 0.75rem;
             background: linear-gradient(to right, #ffa07a, #ff8c00);
             color: white;
@@ -731,7 +815,8 @@ export default function App() {
             justify-content: center;
             gap: 0.5rem;
             width: 100%;
-            padding: 0.75rem;
+            font-size: 1.5rem;
+            padding: 1.2rem;
             background: linear-gradient(to right, #fabaa0, #ffd29b);
             color: white;
             border: none;
@@ -762,13 +847,13 @@ export default function App() {
             display: flex;
             align-items: center;
             background-color: #f0f9ff;
-            padding: 0.75rem;
+            padding: 1.5rem;
             border-radius: 0.5rem;
           }
           
           .history-icon {
-            width: 2.5rem;
-            height: 2.5rem;
+            width: 3.25rem;
+            height: 3.25rem;
             background-color: #39b4ff;
             border-radius: 0.5rem;
             display: flex;
@@ -778,8 +863,8 @@ export default function App() {
           }
           
           .droplet-icon {
-            width: 1.25rem;
-            height: 1.25rem;
+            width: 1.5rem;
+            height: 1.5rem;
             background-color: white;
             border-radius: 90% 0% 90% 80%;
             transform: rotate(-45deg);
@@ -791,18 +876,18 @@ export default function App() {
           
           .history-date {
             color: #718096;
-            font-size: 0.875rem;
+            font-size: 1.25rem;
           }
           
           .history-amount {
             color: #39b4ff;
             font-weight: bold;
-            font-size: 1.125rem;
+            font-size: 1.5rem;
           }
           
           .history-status {
             color: #718096;
-            font-size: 0.875rem;
+            font-size: 1.25rem;
           }
           
           .history-status.completed {
@@ -824,6 +909,11 @@ export default function App() {
             text-align: center;
           }
           
+          .day-column.today .day-label {
+            font-weight: bold;
+            color: #39b4ff;
+          }
+          
           .day-label {
             font-size: 0.875rem;
             color: #718096;
@@ -831,7 +921,7 @@ export default function App() {
           }
           
           .day-bar-container {
-            height: 8rem;
+            height: 15rem;
             background-color: #f0f9ff;
             border-radius: 0.5rem;
             position: relative;
@@ -862,7 +952,6 @@ export default function App() {
           }
         `}</style>
       </div>
-
     </div>
   )
 }
