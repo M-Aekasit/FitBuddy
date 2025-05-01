@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { calculateCaloriesFromSport } from "../utils/SportCalculator";
 
 export default function SportPage() {
   const [page, setPage] = useState("menu");
@@ -34,26 +35,7 @@ export default function SportPage() {
   };
 
   const calculateCalories = () => {
-    const { distance, weight, time } = inputData;
-    let calories = 0;
-
-    if (selectedSport.type === "RUNNING") {
-      calories = weight * distance * 1.036;
-    } else {
-      const caloriesPerHour = {
-        CYCLING: 450,
-        BADMINTON: 350,
-        ZUMBA: 500,
-        "HULA-HOOP": 430,
-        WALKING: 282,
-        AEROBIC: 363,
-        TENNIS: 728,
-        KARATE: 750,
-        SWIMMING: 550,
-      };
-      calories = time * (caloriesPerHour[selectedSport.type] || 0);
-    }
-
+    const calories = calculateCaloriesFromSport(selectedSport.type, inputData);
     setTrackedCalories(trackedCalories + calories);
     setPage("menu");
   };
