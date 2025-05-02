@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
 
 export default function SettingsPage() {
   const [darkMode, setDarkMode] = useState(false)
@@ -18,6 +19,8 @@ export default function SettingsPage() {
     waterReminder: true,
     exerciseReminder: true,
   })
+
+
 
   // Function to handle toggling individual notification settings
   const toggleNotificationSetting = (setting) => {
@@ -80,10 +83,13 @@ export default function SettingsPage() {
               <span
                 className="text-xs text-red-500 cursor-pointer"
                 onClick={() => {
-                  if (window.confirm("Are you sure you want to logout?")) {
-                    alert("You have been logged out successfully")
+                  if (window.confirm("Are you sure you want to logout?")) 
+                    {
+                      setIsAuthenticated(false);
+                      navigate('/LoginPage'); 
+                    }
                   }
-                }}
+                }
               >
                 Logout
               </span>
