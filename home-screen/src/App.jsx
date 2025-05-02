@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from "./components/์Navigation";
+import LoginPage from "./components/LoginPage";
 import HealthDashboard from "./components/HealthDashboard";
 import HealthCalculatorUI from "./components/HealthCalculatorUI";
 import Water from "./components/Water";
@@ -15,6 +16,7 @@ function App() {
     <Router>
       <Navigation />
       <Routes>
+        <Route path="/LoginPage" element={<LoginPage />} />
         <Route path="/HealthDashboard" element={<HealthDashboard />} />
         <Route path="/bmi" element={<HealthCalculatorUI />} />
         <Route path="/water" element={<Water />} />
