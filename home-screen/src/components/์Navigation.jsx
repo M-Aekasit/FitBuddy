@@ -15,7 +15,7 @@ const Navigation = () => {
             {/* Logo */}
             <Link to="/HealthDashboard" className="flex items-center">
               <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-500 bg-clip-text text-transparent">
-                FidBuddy
+                FitBuddy
               </span>
             </Link>
             
