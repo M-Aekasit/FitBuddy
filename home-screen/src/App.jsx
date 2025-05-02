@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navigation from "./components/Navigation";
 import LoginPage from "./components/LoginPage";
 import HealthDashboard from "./components/HealthDashboard";
@@ -36,7 +36,7 @@ function App() {
             <Route path='/DiaryPage' element={<DiaryPage />} />
             <Route path='/Notification' element={<Notification />} />
             <Route path='/SettingPage' element={<SettingPage />} />
-            <Route path="*" element={<Navigate to="/HealthDashboard" />} />
+            <Route path="/HealthDashboard" element={<Navigate to="/HealthDashboard" />} />
           </>
         ) : (
           <Route path="*" element={<Navigate to="/LoginPage" />} />)}
