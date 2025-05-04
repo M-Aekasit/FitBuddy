@@ -7,13 +7,20 @@ const LoginPage = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
+    if (!username || !password || (!isLogin && (!email || !confirmPassword))) {
+      setError('Please fill in all fields');
+      return;
+    }
 
     if (!isLogin && password !== confirmPassword) {
-      alert("Passwords don't match");
+      setError("Passwords don't match");
       return;
     }
 
@@ -30,7 +37,7 @@ const LoginPage = ({ setIsAuthenticated }) => {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message || 'Something went wrong');
+        setError(data.message || 'Something went wrong');
         return;
       }
 
@@ -38,100 +45,114 @@ const LoginPage = ({ setIsAuthenticated }) => {
         setIsAuthenticated(true);
         navigate('/HealthDashboard');
       } else {
-        alert('Signup successful! You can log in now.');
+        alert('Signup successful! Please check your email to verify your account.');
         setIsLogin(true);
         setEmail('');
         setConfirmPassword('');
+        setPassword('');
       }
     } catch (err) {
       console.error('Error:', err);
-      alert('Server error');
+      setError('Server error. Please try again later.');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-3xl font-bold mb-2 text-center">
-          {isLogin ? 'Welcome Back!' : 'Create Your Account'}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-100 via-white to-blue-100 px-4">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md space-y-6"
+      >
+        <h2 className="text-3xl font-bold text-center text-blue-700">
+          {isLogin ? 'Welcome Back 👋' : 'Create an Account'}
         </h2>
-        <p className="text-sm text-gray-500 mb-6 text-center">
+
+        <p className="text-center text-gray-500 text-sm">
           {isLogin
-            ? 'Log in to access your personalized health dashboard.'
-            : 'Sign up to track your health, monitor goals, and receive wellness tips.'}
+            ? 'Log in to your health dashboard'
+            : 'Track your health and reach your wellness goals'}
         </p>
 
-        {/* Username Field */}
-        <label className="block text-sm font-medium mb-1">Username</label>
-        <input
-          type="text"
-          placeholder="Enter your username"
-          className="w-full px-3 py-2 border border-gray-300 rounded mb-4"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
+        {error && (
+          <div className="bg-red-100 text-red-700 text-sm p-3 rounded border border-red-300">
+            {error}
+          </div>
+        )}
 
-        {/* Email Field (Only for Signup) */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+          <input
+            type="text"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </div>
+
         {!isLogin && (
-          <>
-            <label className="block text-sm font-medium mb-1">Email</label>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
               type="email"
-              placeholder="Enter your email"
-              className="w-full px-3 py-2 border border-gray-300 rounded mb-4"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-          </>
+          </div>
         )}
 
-        {/* Password Field */}
-        <label className="block text-sm font-medium mb-1">Password</label>
-        <input
-          type="password"
-          placeholder={isLogin ? "Enter your password" : "Create a secure password"}
-          className="w-full px-3 py-2 border border-gray-300 rounded mb-4"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input
+            type="password"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder={isLogin ? 'Enter password' : 'Create a password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
 
-        {/* Confirm Password (Only for Signup) */}
         {!isLogin && (
-          <>
-            <label className="block text-sm font-medium mb-1">Confirm Password</label>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Confirm Password
+            </label>
             <input
               type="password"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Re-enter your password"
-              className="w-full px-3 py-2 border border-gray-300 rounded mb-6"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
-          </>
+          </div>
         )}
 
         <button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded transition duration-200"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition duration-200"
         >
           {isLogin ? 'Log In' : 'Sign Up'}
         </button>
 
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-600">
-            {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
-            <button
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-blue-600 hover:underline font-medium"
-            >
-              {isLogin ? 'Sign Up' : 'Log In'}
-            </button>
-          </p>
-        </div>
+        <p className="text-center text-sm text-gray-600">
+          {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
+          <button
+            type="button"
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setError('');
+            }}
+            className="text-blue-600 hover:underline font-medium"
+          >
+            {isLogin ? 'Sign Up' : 'Log In'}
+          </button>
+        </p>
       </form>
     </div>
   );
