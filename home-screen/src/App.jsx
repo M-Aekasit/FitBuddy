@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navigation from "./components/Navigation";
-import LoginPage from "./components/LoginPage";
+// import LoginPage from "./components/LoginPage";
 import HealthDashboard from "./components/HealthDashboard";
 import HealthCalculatorUI from "./components/HealthCalculatorUI";
 import Water from "./components/Water";
@@ -18,14 +18,15 @@ function App() {
   
   return (
     <Router>
-      {isAuthenticated && <Navigation />}
+      {/* {isAuthenticated && <Navigation />} */}
+      <Navigation />
       <Routes>
         {/* Public Login Route */}
-        <Route path="/" element={<Navigate to="/LoginPage" />} />
-        <Route path="/LoginPage" element={<LoginPage setIsAuthenticated={setIsAuthenticated} />} />
+        {/* <Route path="/" element={<Navigate to="/LoginPage" />} />
+        <Route path="/LoginPage" element={<LoginPage setIsAuthenticated={setIsAuthenticated} />} /> */}
         
         {/* Protected Routes */}
-        {isAuthenticated ? (
+        {/* {isAuthenticated ? ( */}
           <>
             <Route path="/HealthDashboard" element={<HealthDashboard />} />
             <Route path="/bmi" element={<HealthCalculatorUI />} />
@@ -38,8 +39,8 @@ function App() {
             <Route path='/SettingPage' element={<SettingPage />} />
             <Route path="/HealthDashboard" element={<Navigate to="/HealthDashboard" />} />
           </>
-        ) : (
-          <Route path="*" element={<Navigate to="/LoginPage" />} />)}
+        {/* ) : ( */}
+          {/* <Route path="/LoginPage" element={<Navigate to="/LoginPage" />} />)} */}
       </Routes>
     </Router>
   );

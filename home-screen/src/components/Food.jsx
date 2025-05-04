@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function FoodPage() {
   const [page, setPage] = useState("menu");
@@ -119,16 +120,42 @@ export default function FoodPage() {
     setPage("details");
   };
 
-  const addToTracker = (calories) => {
+  // const addToTracker = (calories) => {
+  //   setTrackedCalories(trackedCalories + calories);
+  //   setPage("menu");
+  // };
+
+  const addToTracker = async (calories) => {
     setTrackedCalories(trackedCalories + calories);
+  
+    try {
+      console.log("Sending data:", {
+        foodName: selectedItem.name,
+        foodType: selectedItem.type,
+        calories: selectedItem.calories
+      }); // Add this line to debug what's being sent
+      
+      await axios.post("http://localhost:3000/api/food", {
+        foodName: selectedItem.name,
+        foodType: selectedItem.type,
+        calories: selectedItem.calories
+      });
+      console.log("Saved to backend");
+    } catch (error) {
+      console.error("Error saving food data:", error);
+    }
+  
     setPage("menu");
   };
-
+  
+ 
   const filteredItems = menuItems.filter(
     (item) =>
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
       (dietaryFilter === "All" || item.type === dietaryFilter)
   );
+
+
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 p-6 text-gray-800">

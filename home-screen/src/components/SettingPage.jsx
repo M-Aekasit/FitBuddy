@@ -86,7 +86,7 @@ export default function SettingsPage() {
                   if (window.confirm("Are you sure you want to logout?")) 
                     {
                       setIsAuthenticated(false);
-                      navigate('/LoginPage'); 
+                      // navigate('/LoginPage'); 
                     }
                   }
                 }
