@@ -34,10 +34,33 @@ export default function SportPage() {
     setInputData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const calculateCalories = () => {
+  const calculateCalories = async () => {
     const calories = calculateCaloriesFromSport(selectedSport.type, inputData);
-    setTrackedCalories(trackedCalories + calories);
-    setPage("menu");
+  
+    const dataToSend = {
+      sportType: selectedSport.name,       
+      inputData,                    
+      calories: Math.round(calories), 
+      timestamp: new Date().toISOString(), 
+    };
+  
+    try {
+      const res = await fetch("http://localhost:3000/api/sports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataToSend),
+      });
+  
+      if (res.ok) {
+        console.log("✅ Data saved");
+        setTrackedCalories(trackedCalories + calories);
+        setPage("menu");
+      } else {
+        console.error("❌ Failed to save data");
+      }
+    } catch (err) {
+      console.error("❌ Error posting data:", err);
+    }
   };
 
   return (
