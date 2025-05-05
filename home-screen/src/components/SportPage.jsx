@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { calculateCaloriesFromSport } from "../utils/SportCalculator";
 
 export default function SportPage() {
-  const [page, setPage] = useState("sport");
+  const [page, setPage] = useState("menu");
   const [selectedSport, setSelectedSport] = useState(null);
   const [trackedCalories, setTrackedCalories] = useState(0);
   const [inputData, setInputData] = useState({ distance: "", weight: "", time: "" });
@@ -33,36 +34,40 @@ export default function SportPage() {
     setInputData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const calculateCalories = () => {
-    const { distance, weight, time } = inputData;
-    let calories = 0;
-
-    if (selectedSport.type === "RUNNING") {
-      calories = weight * distance * 1.036;
-    } else {
-      const caloriesPerHour = {
-        CYCLING: 450,
-        BADMINTON: 350,
-        ZUMBA: 500,
-        "HULA-HOOP": 430,
-        WALKING: 282,
-        AEROBIC: 363,
-        TENNIS: 728,
-        KARATE: 750,
-        SWIMMING: 550,
-      };
-      calories = time * (caloriesPerHour[selectedSport.type] || 0);
+  const calculateCalories = async () => {
+    const calories = calculateCaloriesFromSport(selectedSport.type, inputData);
+  
+    const dataToSend = {
+      sportType: selectedSport.name,       
+      inputData,                    
+      calories: Math.round(calories), 
+      timestamp: new Date().toISOString(), 
+    };
+  
+    try {
+      const res = await fetch("http://localhost:3000/api/sports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataToSend),
+      });
+  
+      if (res.ok) {
+        console.log("✅ Data saved");
+        setTrackedCalories(trackedCalories + calories);
+        setPage("menu");
+      } else {
+        console.error("❌ Failed to save data");
+      }
+    } catch (err) {
+      console.error("❌ Error posting data:", err);
     }
-
-    setTrackedCalories(trackedCalories + calories);
-    setPage("sport");
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 p-6 text-gray-800">
 
       {/* Back Home */}
-      {page === "sport" && (
+      {page === "menu" && (
         <div className="flex items-center space-x-4">
           <button
             onClick={() => navigate('/HealthDashboard')}
@@ -85,7 +90,7 @@ export default function SportPage() {
 
       {/* Content */}
       <main className="flex-1 p-8">
-        {page === "sport" && (
+        {page === "menu" && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
             {sports.map((sport) => (
               <div
@@ -110,9 +115,9 @@ export default function SportPage() {
           <div className="max-w-3xl mx-auto">
             <button
               className="text-blue-600 text-xl hover:underline mb-4"
-              onClick={() => setPage("sport")}
+              onClick={() => setPage("menu")}
             >
-              ← Back to Sport
+              ← Back to Menu
             </button>
 
             <div className="bg-white p-8 rounded-2xl shadow-lg">
