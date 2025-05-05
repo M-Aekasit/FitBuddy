@@ -92,7 +92,6 @@ app.get("/api/food", async (req, res) => {
 let sportsCollection;
 
 app.use(cors());
-app.use(bodyParser.json());
 
 client.connect().then(() => {
   const db = client.db("FitBuddy-DataBase");
