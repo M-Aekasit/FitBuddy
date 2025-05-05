@@ -1,0 +1,506 @@
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html,
+  body,
+  #root {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+  
+  body {
+    font-family: "Arial", sans-serif;
+    line-height: 1.5;
+    color: #333;
+  }
+  
+  /* Container */
+  .water-tracker-container {
+    min-height: 100vh;
+    width: 100vw;
+    background: linear-gradient(to bottom, #39b4ff, #1e90ff);
+    overflow-x: hidden;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+  }
+  
+  .container {
+    width: 100vw;
+    max-width: none;
+    margin: 0;
+    padding: 2rem 1rem;
+  }
+  
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    width: 100%;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+  }
+  
+  .water-icon {
+    font-size: 2rem;
+    margin-right: 0.5rem;
+  }
+  
+  .page-title {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .settings-button {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+  }
+  
+  .settings-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .back-button {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    transition: background-color 0.2s;
+  }
+  
+  .back-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Dashboard Grid */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    width: 100%;
+  }
+  
+  @media (min-width: 992px) {
+    .dashboard-grid {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+  
+  /* Cards */
+  .main-card,
+  .history-card,
+  .weekly-card,
+  .settings-card {
+    width: 100%;
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    overflow: hidden;
+  }
+  
+  .card-title {
+    display: flex;
+    align-items: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+  
+  .card-title svg {
+    margin-right: 0.5rem;
+    color: #39b4ff;
+  }
+  
+  /* Tracker Content */
+  .tracker-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+  
+  @media (min-width: 768px) {
+    .tracker-content {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+  
+  /* Water Droplet */
+  .droplet-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px 0;
+    width: 240px;
+    height: 240px;
+  }
+  
+  .water-droplet {
+    width: 240px;
+    height: 280px;
+    background: transparent;
+    border-radius: 0%;
+    rotate: 45deg;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .water-dropshape {
+    top: 30px;
+    width: 200px;
+    height: 200px;
+    background: transparent;
+    border-radius: 90% 0% 90% 80%;
+    rotate: -45deg;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border: 6px solid rgb(57, 180, 255);
+    overflow: hidden;
+  }
+  
+  .water-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    
+    width: 100%;
+    background-color: rgb(57, 180, 255);
+    opacity: 0.7;
+    
+    transition: height 0.5s ease-out;
+  }
+  
+  .droplet-number {
+    color: #39b4ff;
+    font-size: 2.5rem;
+    font-weight: bold;
+    z-index: 1;
+    
+  }
+  
+  /* Stats */
+  .stats-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  .stat-card {
+    background-color: #f0f9ff;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+  }
+  
+  .stat-label {
+    color: #4a5568;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .stat-value {
+    color: #39b4ff;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0.25rem 0;
+  }
+  
+  .stat-unit {
+    color: #718096;
+    font-size: 0.75rem;
+  }
+  
+  /* Add Water Button */
+  .add-water-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem;
+    background: linear-gradient(to right, #ffa07a, #ff8c00);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .add-water-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .add-water-button.animate {
+    animation: pulse 0.2s ease-in-out;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  /* Decrease Water Button */
+  .decrease-water-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem;
+    background: linear-gradient(to right, #fabaa0, #ffd29b);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .decrease-water-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .decrease-water-button.animate {
+    animation: pulse 0.2s ease-in-out;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  /* History */
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .history-item {
+    display: flex;
+    align-items: center;
+    background-color: #f0f9ff;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+  }
+  
+  .history-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: #39b4ff;
+    border-radius: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 1rem;
+  }
+  
+  .droplet-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    background-color: white;
+    border-radius: 90% 0% 90% 80%;
+    transform: rotate(-45deg);
+  }
+  
+  .history-details {
+    flex: 1;
+  }
+  
+  .history-date {
+    color: #718096;
+    font-size: 0.875rem;
+  }
+  
+  .history-amount {
+    color: #39b4ff;
+    font-weight: bold;
+    font-size: 1.125rem;
+  }
+  
+  .history-status {
+    color: #718096;
+    font-size: 0.875rem;
+  }
+  
+  .history-status.completed {
+    color: #48bb78;
+  }
+  
+  /* Weekly Progress */
+  .weekly-card {
+    margin-top: 1.5rem;
+  }
+  
+  .weekly-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .day-column {
+    text-align: center;
+  }
+  
+  .day-label {
+    font-size: 0.875rem;
+    color: #718096;
+    margin-bottom: 0.5rem;
+  }
+  
+  .day-bar-container {
+    height: 8rem;
+    background-color: #f0f9ff;
+    border-radius: 0.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .day-bar-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #39b4ff;
+    transition: height 0.5s ease-in-out;
+  }
+  
+  .day-bar-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #2c5282;
+    font-size: 0.875rem;
+  }
+  
+  /* Settings Page */
+  .settings-card {
+    max-width: none;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .settings-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1.5rem;
+  }
+  
+  .settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .form-label {
+    font-weight: 500;
+    color: #4a5568;
+  }
+  
+  .form-select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+    background-color: rgba(255, 255, 255, 0.205);
+    font-size: 1rem;
+    color: #1e1e1f
+  }
+  
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .form-checkbox {
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .save-button {
+    background-color: #39b4ff;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .save-button:hover {
+    background-color: #2b9fe0;
+  }
+  
