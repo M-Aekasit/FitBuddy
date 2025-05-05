@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { calculateCaloriesFromSport } from "../utils/SportCalculator";
+import axios from "axios";
+
 
 export default function SportPage() {
   const [page, setPage] = useState("sport");
@@ -33,30 +36,66 @@ export default function SportPage() {
     setInputData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const calculateCalories = () => {
-    const { distance, weight, time } = inputData;
-    let calories = 0;
+  const calculateCalories = async () => {
+    const calories = calculateCaloriesFromSport(selectedSport.type, inputData);
+    setTrackedCalories(trackedCalories + calories);
+
+    // Prepare data to send to the backend
+    let relevantInputData = { time: inputData.time };
 
     if (selectedSport.type === "RUNNING") {
-      calories = weight * distance * 1.036;
-    } else {
-      const caloriesPerHour = {
-        CYCLING: 450,
-        BADMINTON: 350,
-        ZUMBA: 500,
-        "HULA-HOOP": 430,
-        WALKING: 282,
-        AEROBIC: 363,
-        TENNIS: 728,
-        KARATE: 750,
-        SWIMMING: 550,
+      const validDistance = inputData.distance && inputData.distance > 0 ? inputData.distance : 0; // Default to 0 if invalid
+      const validWeight = inputData.weight && inputData.weight > 0 ? inputData.weight : 0; // Default to 0 if invalid
+      
+      relevantInputData = {
+        ...relevantInputData,
+        distance: validDistance,
+        weight: validWeight,
       };
-      calories = time * (caloriesPerHour[selectedSport.type] || 0);
     }
+    
+    const dataToSend = {
+      sportType: selectedSport.type,
+      inputData: relevantInputData,
+      calories: Math.round(calories),
+      timestamp: new Date().toISOString(),
+    };
+    
 
-    setTrackedCalories(trackedCalories + calories);
+    // Send the data to the backend
+    try {
+      console.log("Sending data:", dataToSend);
+      
+      await axios.post("http://localhost:3000/api/sports", dataToSend);
+      console.log("Saved to backend");
+    } catch (error) {
+      console.error("Error saving sport data:", error);
+    }
+  
     setPage("sport");
+
+  //   // Send the data to the backend
+  //   try {
+  //     const res = await fetch("http://localhost:3000/api/sports", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(dataToSend),
+  //     });
+  
+  //     if (res.ok) {
+  //       console.log("✅ Data saved");
+  //       setTrackedCalories(trackedCalories + calories); 
+  //       setPage("sport"); 
+  //     } else {
+  //       console.error("❌ Failed to save data");
+  //     }
+  //   } catch (err) {
+  //     console.error("❌ Error posting data:", err);
+  //   }
+  //   setPage("sport");
   };
+  
+
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 p-6 text-gray-800">
@@ -75,7 +114,7 @@ export default function SportPage() {
 
       {/* Header */}
       <header className="text-center">
-        <h1 className="text-5xl font-bold mb-8">Sport Tracker</h1>
+        <h1 className="text-5xl font-bold mb-8">Excercise Tracker</h1>
       </header>
 
       {/* Calorie Tracker */}

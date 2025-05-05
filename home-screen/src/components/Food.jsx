@@ -133,7 +133,7 @@ export default function FoodPage() {
         foodName: selectedItem.name,
         foodType: selectedItem.type,
         calories: selectedItem.calories
-      }); // Add this line to debug what's being sent
+      });
       
       await axios.post("http://localhost:3000/api/food", {
         foodName: selectedItem.name,
