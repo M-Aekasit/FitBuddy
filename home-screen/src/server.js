@@ -2,11 +2,10 @@ import express from "express";
 import cors from "cors";
 import { MongoClient } from "mongodb";
 
-// Setup
 const app = express();
 const port = 3000;
 const mongoUrl = "mongodb://localhost:27017";
-const dbName = "FitBuddy-DataBase"; // Unified database name
+const dbName = "FitBuddy-DataBase"; 
 
 // MongoDB client
 const client = new MongoClient(mongoUrl);
@@ -22,20 +21,18 @@ async function connectDB() {
 }
 connectDB();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Health check endpoint
+
 app.get("/", (req, res) => {
   res.send("FitBuddy API is running.");
 });
 
-/**
- * FOOD TRACKING ENDPOINTS
- */
+// ********** FOOD TRACKING ENDPOINTS **********
+// POST - Save tracking data
+// GET - Fetch tracking data
 
-// POST - Save food tracking data
 app.post("/api/food", async (req, res) => {
   const { foodName, foodType, calories } = req.body;
 
@@ -61,14 +58,11 @@ app.post("/api/food", async (req, res) => {
   }
 });
 
-// GET - Fetch food tracking data
 app.get("/api/food", async (req, res) => {
   try {
     const db = client.db(dbName);
     const foodCollection = db.collection("food");
-
     const foodItems = await foodCollection.find().toArray();
-
     const formattedFoodItems = foodItems.map(item => ({
       _id: item._id,
       foodName: item.foodName,
@@ -86,33 +80,99 @@ app.get("/api/food", async (req, res) => {
   }
 });
 
-/**
- * SPORTS TRACKING ENDPOINTS
- */
-let sportsCollection;
+// ********** SPORTS TRACKING ENDPOINTS **********
 
-app.use(cors());
-
-client.connect().then(() => {
-  const db = client.db("FitBuddy-DataBase");
-  sportsCollection = db.collection("sport");
-  console.log("Connected to MongoDB");
-});
-
-// POST - Save sports activity data
-app.post("/api/sports", async (req, res) => {
+app.post("/api/sport", async (req, res) => {
   const { sportType, inputData, calories } = req.body;
+
+  if (!sportType || !inputData || calories === undefined) {
+    return res.status(400).json({ message: "Missing data" });
+  }
+
   try {
-    const result = await sportsCollection.insertOne({
+    const db = client.db(dbName);
+    const sportCollection = db.collection("sport");
+
+    const result = await sportCollection.insertOne({
       sportType,
       inputData,
       calories,
-      createdAt: new Date(),
+      createdAt: new Date()
     });
-    res.status(201).send({ message: "Data saved", id: result.insertedId });
+
+    res.status(201).json({ message: "Saved successfully", id: result.insertedId });
   } catch (err) {
-    console.error("Insert error:", err);
-    res.status(500).send({ error: "Failed to save sport data" });
+    console.error("Database error (sport):", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.get("/api/sport", async (req, res) => {
+  try {
+    const db = client.db(dbName);
+    const sportCollection = db.collection("sport");
+    const sportItems = await sportCollection.find().toArray();
+    const formattedSportItems = sportItems.map(item => ({
+      _id: item._id,
+      sportType: item.sportType,
+      inputData: item.inputData,
+      calories: item.calories,
+      createdAt: new Date(item.createdAt).toLocaleString("th-TH", {
+        timeZone: "Asia/Bangkok"
+      })
+    }));
+
+    res.json(formattedSportItems);
+  } catch (err) {
+    console.error("Error fetching sport data:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+// ********** DIARY TRACKING ENDPOINTS **********
+
+app.post("/api/diary", async (req, res) => {
+  const { diaryDate, diaryRate, diaryNote } = req.body;
+
+  if (!diaryDate || diaryRate === undefined || diaryNote === undefined){
+    return res.status(400).json({ message: "Missing data" });
+  }
+
+  try {
+    const db = client.db(dbName);
+    const diaryCollection = db.collection("diary");
+
+    const result = await diaryCollection.insertOne({
+      diaryDate,
+      diaryRate,
+      diaryNote,
+    });
+
+    res.status(201).json({ message: "Saved successfully", id: result.insertedId });
+  } catch (err) {
+    console.error("Database error (diary):", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.get("/api/diary", async (req, res) => {
+  try {
+    const db = client.db(dbName);
+    const diaryCollection = db.collection("diary");
+    const diaryItems = await diaryCollection.find().toArray();
+    
+    const formattedDiaryItems = diaryItems.map(item => ({
+      _id: item._id,
+      diaryDate,
+      diaryRate,
+      diaryNote,
+    }));
+
+    res.json(formattedDiaryItems);
+  } catch (err) {
+    console.error("Error fetching diary data:", err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
