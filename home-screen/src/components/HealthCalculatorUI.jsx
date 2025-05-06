@@ -4,9 +4,13 @@ import {
   calculateBMI,
   calculateBMR,
   calculateTDEE,
+} from "../utils/healthLogic.js";
+
+import {
   activityLevels,
-  getBmiColor
-} from "../utils/HealthCalculatorLogic";
+  getBmiColor,
+} from "../utils/healthUILogic.js";
+
 import { useNavigate } from "react-router-dom";
 
 const HealthCalculatorUI = () => {
