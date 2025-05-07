@@ -1,10 +1,9 @@
-// คำนวณ BMI และจัดหมวดหมู่
 const calculateBMI = (weight, height) => {
   const w = parseFloat(weight);
   const h = parseFloat(height) / 100;
   if (!w || !h) return null;
 
-  const bmiValue = (w / (h * h)).toFixed(1);
+  const bmiValue = parseFloat((w / (h * h)).toFixed(1));
   let category = "";
 
   if (bmiValue < 18.5) category = "Underweight";
@@ -23,14 +22,25 @@ const calculateBMR = (weight, height, age, gender) => {
   if (!w || !h || !a) return null;
 
   return gender === "male"
-    ? (10 * w + 6.25 * h - 5 * a + 5).toFixed(0)
-    : (10 * w + 6.25 * h - 5 * a - 161).toFixed(0);
+    ? Math.round(10 * w + 6.25 * h - 5 * a + 5)
+    : Math.round(10 * w + 6.25 * h - 5 * a - 161);
+};
+
+const activityMultipliers = {
+  sedentary: 1.2,
+  light: 1.375,
+  moderate: 1.55,
+  active: 1.725,
+  very_active: 1.9,
 };
 
 // คำนวณ TDEE (พลังงานที่ใช้ต่อวัน)
 const calculateTDEE = (bmr, activityLevel) => {
-  return (bmr * parseFloat(activityLevel)).toFixed(0);
-};
-// Export สำหรับ ESM (frontend)
-export { calculateBMI, calculateBMR, calculateTDEE };
+  const b = parseFloat(bmr);
+  const multiplier = activityMultipliers[activityLevel?.toLowerCase()];
+  if (!b || !multiplier) return null;
 
+  return Math.round(b * multiplier);
+};
+
+export { calculateBMI, calculateBMR, calculateTDEE };
