@@ -1,27 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function App() {
-  const [messages, setMessages] = useState([
-    { text: "🍽️ Your meal log is waiting! 🍽️", isNew: true },
-    { text: "💧 Time for a water break! 💧", isNew: true },
-    { text: "💪 Time to get moving! 💪", isNew: true }
-  ]);
+  const [messages, setMessages] = useState([]);
 
-  const clearMessages = () => {
-    setMessages([]);
+  const addMessage = (text) => {
+    setMessages(prev => {
+      if (prev.some(msg => msg.text === text && msg.timestamp === getCurrentTimeString())) {
+        return prev;
+      }
+      return [{ text, isNew: true, timestamp: getCurrentTimeString() }, ...prev];
+    });
   };
 
+  const getCurrentTimeString = () => {
+    const now = new Date();
+    return now.getHours().toString().padStart(2, '0') + ':' +
+           now.getMinutes().toString().padStart(2, '0');
+  };
+
+  useEffect(() => {
+    // console.log("Interval started");
+    const interval = setInterval(() => {
+      const now = new Date();
+      const h = now.getHours();
+      const m = now.getMinutes();
+      
+
+
+      if (m === 0 && h >= 6 && h < 22) {
+        console.log("💧Checking time:", h, m);
+        addMessage("💧 Time for a water break! 💧");
+      }
+
+
+      if ((h === 9 || h === 13 || h === 19 ) && m === 0) {
+        console.log("🍽️Checking time:", h, m);
+        addMessage("🍽️ Your meal log is waiting! 🍽️");
+      }
+
+
+      if (h === 21 && m===49) {
+        console.log("💪Checking time:", h, m);
+        addMessage("💪 Time to get moving! 💪");
+      }
+    }, 10 * 1000); // check 10 sec
+
+    return () => clearInterval(interval);
+  }, []);
+
   const markAsRead = (index) => {
-    setMessages(prevMessages =>
-      prevMessages.map((msg, i) =>
-        i === index ? { ...msg, isNew: false } : msg
-      )
+    setMessages(prev =>
+      prev.map((msg, i) => i === index ? { ...msg, isNew: false } : msg)
     );
   };
 
+  const clearMessages = () => setMessages([]);
+
   const unreadCount = messages.filter(msg => msg.isNew).length;
 
- 
   return (
     <div className="flex flex-col items-start min-h-screen bg-white text-gray-900 py-10 pl-5">
       <div className="w-full text-left mb-6">
