@@ -1,7 +1,8 @@
 const calculateBMI = (weight, height) => {
   const w = parseFloat(weight);
   const h = parseFloat(height) / 100;
-  if (!w || !h) return null;
+
+  if (isNaN(w) || isNaN(h) || w <= 0 || h <= 0) return null;
 
   const bmiValue = parseFloat((w / (h * h)).toFixed(1));
   let category = "";
@@ -13,6 +14,7 @@ const calculateBMI = (weight, height) => {
 
   return { value: bmiValue, category };
 };
+
 
 // คำนวณ BMR (อัตราการเผาผลาญพื้นฐาน)
 const calculateBMR = (weight, height, age, gender) => {
