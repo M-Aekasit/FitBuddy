@@ -152,7 +152,7 @@ export default function DiaryPage() {
             }
 
             const date = new Date(year, month, day);
-            const dateStr = date.toISOString().split("T")[0];
+            const dateStr = date.toLocaleDateString("en-CA");
             const isToday = dateStr === todayStr;
             const bgColor = getColorByRating(ratingByDate[dateStr]);
 
