@@ -29,16 +29,9 @@ const HealthCalculatorUI = () => {
       return;
     }
 
-    // คำนวณ TDEE จาก BMR และ Activity Level
+    // คำนวณ TDEE
     const tdeeResult = calculateTDEE(bmrResult, activityLevel);
-
-    // อัปเดตผลลัพธ์บนหน้าจอ
-    setResults({
-      bmi: bmiResult.value,
-      bmiCategory: bmiResult.category,
-      bmr: bmrResult,
-      tdee: tdeeResult,
-    });
+    console.trace("TDEE CALLED");
 
     // เรียก API เพื่อบันทึกลง MongoDB
     try {
@@ -58,6 +51,13 @@ const HealthCalculatorUI = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bmr: bmrResult, activityLevel }),
+      });
+
+      setResults({
+        bmi: bmiResult.value,
+        bmiCategory: bmiResult.category,
+        bmr: bmrResult,
+        tdee: tdeeResult,
       });
     } catch (error) {
       console.error("Error saving to database:", error);
@@ -169,10 +169,18 @@ const HealthCalculatorUI = () => {
 
         {/* Calculate Button */}
         <button
-          className="w-full py-5 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-indigo-600 hover:to-blue-600 text-white font-bold text-xl shadow-md transition duration-300"
+          type="button"
+          disabled={isSubmitting} // ปิดปุ่มชั่วคราว
+          className={`w-full py-5 rounded-full text-white font-bold text-xl shadow-md transition duration-300
+    ${
+      isSubmitting
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-indigo-600 hover:to-blue-600"
+    }
+  `}
           onClick={handleCalculate}
         >
-          Calculate Health Metrics
+          {isSubmitting ? "กำลังคำนวณ..." : "Calculate Health Metrics"}
         </button>
       </div>
 
