@@ -6,6 +6,7 @@ const healthRecordSchema = new mongoose.Schema({
   age: Number,
   gender: String,
   bmi: Number,
+  bmiCategory: String, 
   bmr: Number,
   tdee: Number,
   activityLevel: String,
