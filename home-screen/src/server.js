@@ -25,14 +25,15 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
-
 app.get("/", (req, res) => {
   res.send("FitBuddy API is running.");
 });
 
-// ********** FOOD TRACKING ENDPOINTS **********
 // POST - Save tracking data
 // GET - Fetch tracking data
+
+
+// ********** FOOD TRACKING ENDPOINTS **********
 
 app.post("/api/food", async (req, res) => {
   const { foodName, foodType, calories } = req.body;

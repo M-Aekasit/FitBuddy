@@ -1,16 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { calculateCaloriesFromSport } from "../utils/SportCalculator";
 import axios from "axios";
 
-
 export default function SportPage() {
+  const navigate = useNavigate();
+
+  const getTodayKey = () => {
+    const today = new Date().toISOString().split("T")[0];
+    return `trackedCalories_${today}`;
+  };
+
+  const todayKey = getTodayKey();
+
   const [page, setPage] = useState("sport");
   const [selectedSport, setSelectedSport] = useState(null);
-  const [trackedCalories, setTrackedCalories] = useState(0);
-  const [inputData, setInputData] = useState({ distance: "", weight: "", time: "" });
 
-  const navigate = useNavigate();
+  const [trackedCalories, setTrackedCalories] = useState(() => {
+    const stored = localStorage.getItem(todayKey);
+    const parsed = parseInt(stored);
+    return !isNaN(parsed) ? parsed : 0;
+  });
+
+  const [inputData, setInputData] = useState({ distance: "", weight: "", time: "" });
+  const calorieGoal = 850;
+  const progressPercentage = Math.min((trackedCalories / calorieGoal) * 100, 100);
 
   const sports = [
     { id: 1, name: "Running", type: "RUNNING", image: "/images/sport/run.png" },
@@ -38,69 +52,56 @@ export default function SportPage() {
 
   const calculateCalories = async () => {
     const calories = calculateCaloriesFromSport(selectedSport.type, inputData);
-    setTrackedCalories(trackedCalories + calories);
+    const newCalories = trackedCalories + calories;
+    setTrackedCalories(newCalories);
+    localStorage.setItem(todayKey, newCalories.toString());
 
-    // Prepare data to send to the backend
-    let relevantInputData = { time: inputData.time };
+    let relevantInputData = { time: parseFloat(inputData.time) };
 
     if (selectedSport.type === "RUNNING") {
-      const validDistance = inputData.distance && inputData.distance > 0 ? inputData.distance : 0; // Default to 0 if invalid
-      const validWeight = inputData.weight && inputData.weight > 0 ? inputData.weight : 0; // Default to 0 if invalid
-      
+      const validDistance = parseFloat(inputData.distance) || 0;
+      const validWeight = parseFloat(inputData.weight) || 0;
+
       relevantInputData = {
         ...relevantInputData,
         distance: validDistance,
         weight: validWeight,
       };
     }
-    
+
     const dataToSend = {
       sportType: selectedSport.type,
       inputData: relevantInputData,
       calories: Math.round(calories),
       timestamp: new Date().toISOString(),
     };
-    
 
-    // Send the data to the backend
     try {
       console.log("Sending data:", dataToSend);
-      
-      await axios.post("http://localhost:3000/api/sports", dataToSend);
+      await axios.post("http://localhost:3000/api/sport", dataToSend);
       console.log("Saved to backend");
     } catch (error) {
       console.error("Error saving sport data:", error);
     }
-  
+
     setPage("sport");
-
-  //   // Send the data to the backend
-  //   try {
-  //     const res = await fetch("http://localhost:3000/api/sports", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify(dataToSend),
-  //     });
-  
-  //     if (res.ok) {
-  //       console.log("✅ Data saved");
-  //       setTrackedCalories(trackedCalories + calories); 
-  //       setPage("sport"); 
-  //     } else {
-  //       console.error("❌ Failed to save data");
-  //     }
-  //   } catch (err) {
-  //     console.error("❌ Error posting data:", err);
-  //   }
-  //   setPage("sport");
   };
-  
 
+  const resetOutdatedData = () => {
+    const keys = Object.keys(localStorage);
+    keys.forEach((key) => {
+      if (key.startsWith("trackedCalories_") && key !== todayKey) {
+        localStorage.removeItem(key);
+      }
+    });
+  };
+
+  useEffect(() => {
+    resetOutdatedData();
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 p-6 text-gray-800">
-
-      {/* Back Home */}
       {page === "sport" && (
         <div className="flex items-center space-x-4">
           <button
@@ -112,17 +113,23 @@ export default function SportPage() {
         </div>
       )}
 
-      {/* Header */}
       <header className="text-center">
-        <h1 className="text-5xl font-bold mb-8">Excercise Tracker</h1>
+        <h1 className="text-5xl font-bold mb-2">Exercise Tracker</h1>
       </header>
 
-      {/* Calorie Tracker */}
-      <div className="text-center text-3xl font-medium text-gray-500">
-        Total Calories Burned : {Math.round(trackedCalories)} kcal
+      <div className="mb-4">
+        <div className="flex justify-between text-gray-600 font-medium mb-1">
+          <span>🔥 Calories Burned</span>
+          <span>{Math.round(trackedCalories)} / {calorieGoal} kcal</span>
+        </div>
+        <div className="w-full h-5 bg-gray-200 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-orange-400 transition-all" 
+            style={{ width: `${progressPercentage}%` }}
+          />
+        </div>
       </div>
 
-      {/* Content */}
       <main className="flex-1 p-8">
         {page === "sport" && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
@@ -160,10 +167,10 @@ export default function SportPage() {
                 alt={selectedSport.name}
                 className="w-full h-140 object-cover rounded-lg mb-6"
               />
+              <h2 className="text-4xl font-extrabold text-center text-yellow-800 mb-6">
+                {selectedSport.name}
+              </h2>
 
-              <h2 className="text-4xl font-extrabold text-center text-yellow-800 mb-6">{selectedSport.name}</h2>
-
-              {/* Input fields */}
               <div className="text-center text-lg space-y-6">
                 {selectedSport.type === "RUNNING" && (
                   <>
