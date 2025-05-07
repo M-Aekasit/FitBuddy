@@ -104,7 +104,7 @@ const HealthDashboard = () => {
         />
         <HealthMetric
           title="Exercise"
-          value={`${exerciseCurrent} / ${exerciseGoal} mins`}
+          value={`${exerciseCurrent} / ${exerciseGoal} kcal`}
           goal={`${Math.round(
             (exerciseCurrent / exerciseGoal) * 100
           )}% of daily goal`}
