@@ -1,6 +1,5 @@
 // src/components/HealthCalculatorUI.jsx
-import React, { useState } from "react";
-import axios from "axios";
+import { useState } from "react";
 import {
   calculateBMI,
   calculateBMR,
@@ -8,7 +7,6 @@ import {
 } from "../utils/healthLogic.js";
 
 import { activityLevels, getBmiColor } from "../utils/healthUILogic.js";
-
 import { useNavigate } from "react-router-dom";
 
 const HealthCalculatorUI = () => {
@@ -16,51 +14,46 @@ const HealthCalculatorUI = () => {
   const [height, setHeight] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("male");
-  const [activityLevel, setActivityLevel] = useState("1.2");
+  const [activityLevel, setActivityLevel] = useState(activityLevels[0].value);
   const [results, setResults] = useState(null);
   const navigate = useNavigate();
 
   const handleCalculate = async () => {
     const bmiResult = calculateBMI(weight, height);
     const bmrResult = calculateBMR(weight, height, age, gender);
+    const tdeeResult = calculateTDEE(bmrResult, activityLevel);
 
-    if (!bmiResult || !bmrResult) {
-      alert("Please fill in all fields with valid numbers");
+    // ตรวจสอบว่า BMI คำนวณได้ก่อนแสดงผล
+    if (!bmiResult || !bmrResult || !tdeeResult) {
+      alert("กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง");
       return;
     }
 
-    // คำนวณ TDEE
-    const tdeeResult = calculateTDEE(bmrResult, activityLevel);
-    console.trace("TDEE CALLED");
+    setResults({
+      bmi: bmiResult.value,
+      bmiCategory: bmiResult.category,
+      bmr: bmrResult,
+      tdee: tdeeResult,
+    });
 
-    // เรียก API เพื่อบันทึกลง MongoDB
     try {
-      await fetch("http://localhost:5000/api/health/bmi", {
+      await fetch("http://localhost:5000/api/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ weight, height, age, gender }),
-      });
-
-      await fetch("http://localhost:5000/api/health/bmr", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ weight, height, age, gender }),
-      });
-
-      await fetch("http://localhost:5000/api/health/tdee", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bmr: bmrResult, activityLevel }),
-      });
-
-      setResults({
-        bmi: bmiResult.value,
-        bmiCategory: bmiResult.category,
-        bmr: bmrResult,
-        tdee: tdeeResult,
+        body: JSON.stringify({
+          weight,
+          height,
+          age,
+          gender,
+          bmi: bmiResult.value,
+          bmiCategory: bmiResult.category,
+          bmr: bmrResult,
+          tdee: tdeeResult,
+          activityLevel,
+        }),
       });
     } catch (error) {
-      console.error("Error saving to database:", error);
+      console.error("Error saving health data:", error);
     }
   };
 
