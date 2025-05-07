@@ -8,6 +8,7 @@ import {
   getCurrentWeekDays,
   generateInitialWaterHistory,
   updateTodayWaterCount,
+  saveWaterDataToServer,
 } from "../utils/WaterCalculations"
 
 export default function App() {
@@ -37,22 +38,48 @@ export default function App() {
     setWaterHistory((prevHistory) => updateTodayWaterCount(prevHistory, waterCount))
   }, [waterCount])
 
-  const addWater = () => {
+  const addWater = async () => {
     if (waterCount < 8) {
       setIsAnimating(true)
-      setTimeout(() => {
-        setWaterCount((prev) => prev + 1)
+      setTimeout(async () => {
+        const newCount = waterCount + 1
+        setWaterCount(newCount)
         setIsAnimating(false)
+
+        // Save to server
+        try {
+          await saveWaterDataToServer({
+            waterCount: newCount,
+            action: "add",
+            timestamp: new Date().toISOString(),
+          })
+          console.log("✅ Water data saved to server")
+        } catch (error) {
+          console.error("❌ Error saving water data to server:", error)
+        }
       }, 100)
     }
   }
 
-  const decreaseWater = () => {
+  const decreaseWater = async () => {
     if (waterCount > 0) {
       setIsAnimating(true)
-      setTimeout(() => {
-        setWaterCount((prev) => prev - 1)
+      setTimeout(async () => {
+        const newCount = waterCount - 1
+        setWaterCount(newCount)
         setIsAnimating(false)
+
+        // Save to server
+        try {
+          await saveWaterDataToServer({
+            waterCount: newCount,
+            action: "decrease",
+            timestamp: new Date().toISOString(),
+          })
+          console.log("✅ Water data saved to server")
+        } catch (error) {
+          console.error("❌ Error saving water data to server:", error)
+        }
       }, 100)
     }
   }
