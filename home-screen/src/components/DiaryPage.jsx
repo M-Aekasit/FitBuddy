@@ -218,7 +218,7 @@ export default function DiaryPage() {
             <h2 className="text-3xl font-semibold mb-6">Diary History</h2>
             {getEntriesForMonth().length > 0 ? (
               <div className="space-y-6">
-                {getEntriesForMonth().map((entry, idx) => (
+                  {getEntriesForMonth().sort((a, b) => new Date(b.diaryDate) - new Date(a.diaryDate)).map((entry, idx) => (
                   <div key={idx} className="p-4 bg-gray-100 rounded-lg">
                     <p className="font-semibold text-lg">{entry.diaryDate}</p>
                     <div className="flex gap-1 text-2xl mt-1">
