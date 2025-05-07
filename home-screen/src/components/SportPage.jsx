@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { calculateCaloriesFromSport } from "../utils/SportCalculator";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 export default function SportPage() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export default function SportPage() {
   });
 
   const [inputData, setInputData] = useState({ distance: "", weight: "", time: "" });
+  
   const calorieGoal = 850;
   const progressPercentage = Math.min((trackedCalories / calorieGoal) * 100, 100);
 
@@ -117,18 +119,20 @@ export default function SportPage() {
         <h1 className="text-5xl font-bold mb-2">Exercise Tracker</h1>
       </header>
 
-      <div className="mb-4">
-        <div className="flex justify-between text-gray-600 font-medium mb-1">
-          <span>🔥 Calories Burned</span>
-          <span>{Math.round(trackedCalories)} / {calorieGoal} kcal</span>
+      <Link to="/HealthDashboard" className="block mb-4">
+        <div className="mb-4">
+          <div className="flex justify-between text-gray-600 font-medium mb-1">
+            <span>🏃 Calories Burned</span>
+            <span>{Math.round(trackedCalories)} / {calorieGoal} kcal</span>
+          </div>
+          <div className="w-full h-5 bg-gray-200 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-orange-400 transition-all" 
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
         </div>
-        <div className="w-full h-5 bg-gray-200 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-orange-400 transition-all" 
-            style={{ width: `${progressPercentage}%` }}
-          />
-        </div>
-      </div>
+      </Link>
 
       <main className="flex-1 p-8">
         {page === "sport" && (
