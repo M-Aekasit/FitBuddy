@@ -1,26 +1,84 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from 'axios';
 
 export default function FriendsPage() {
+  const [friends, setFriends] = useState([]);
   const [cheeredFriends, setCheeredFriends] = useState([]);
 
-  const friends = [
-    { name: "Bee", calories: { burned: 450, target: 700 }, water: { consumed: 7, target: 8 } },
-    { name: "Copter", calories: { burned: 250, target: 600 }, water: { consumed: 5, target: 8 } },
-    { name: "Kay", calories: { burned: 120, target: 300 }, water: { consumed: 6, target: 8 } },
-    { name: "Mild", calories: { burned: 50, target: 250 }, water: { consumed: 8, target: 8 } }
-  ];
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    const localData = localStorage.getItem("friendsData");
+    const parsedData = localData ? JSON.parse(localData) : null;
+
+    if (parsedData && parsedData.date === today) {
+      setFriends(parsedData.friends);
+    } else {
+      const baseFriends = [
+        { name: "Bee", calories: { target: 650 }, water: { target: 8 } },
+        { name: "Copter", calories: { target: 300 }, water: { target: 8 } },
+        { name: "Kay", calories: { target: 450 }, water: { target: 8 } },
+        { name: "Mild", calories: { target: 250 }, water: { target: 8 } }
+      ];
+
+      const randomized = baseFriends.map(friend => {
+        const burned = Math.floor(Math.random() * (friend.calories.target + 1));
+        const consumed = Math.floor(Math.random() * (friend.water.target + 1));
+        return {
+          ...friend,
+          calories: { ...friend.calories, burned },
+          water: { ...friend.water, consumed }
+        };
+      });
+
+      setFriends(randomized);
+      localStorage.setItem("friendsData", JSON.stringify({ date: today, friends: randomized }));
+    }
+  }, []);
 
   const sendCheer = (name) => {
-    if (!cheeredFriends.includes(name)) {
-      setCheeredFriends([...cheeredFriends, name]);
-      alert(`🎉 You sent a cheer to ${name}!`);
-    }
+    if (cheeredFriends.includes(name)) return;
+  
+    const friend = friends.find(f => f.name === name);
+    if (!friend) return;
+  
+    fetch("http://localhost:3000/api/friend", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        sender: "Dr.Suriya",
+        calories: {
+          burned: friend.calories.burned,
+          target: friend.calories.target
+        },
+        water: {
+          consumed: friend.water.consumed,
+          target: friend.water.target
+        }
+      })
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to cheer");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setCheeredFriends((prev) => [...prev, name]);
+        alert(`🎉 You sent a cheer to ${name}!`);
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("❌ Failed to send cheer");
+      });
   };
-
+  
+  
+  
   const getStatus = (friend) => {
     const calorieProgress = friend.calories.burned / friend.calories.target;
     const waterProgress = friend.water.consumed / friend.water.target;
-    if (calorieProgress > 0.7 && waterProgress > 0.8) {
+    if (calorieProgress > 0.6 && waterProgress > 0.6) {
       return "On Track 🚀";
     } else {
       return "Needs Motivation 💬";

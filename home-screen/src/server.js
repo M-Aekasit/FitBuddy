@@ -14,9 +14,10 @@ const client = new MongoClient(mongoUrl);
 async function connectDB() {
   try {
     await client.connect();
-    console.log("Connected to MongoDB");
+    console.log("✅ Connected to MongoDB");
   } catch (err) {
-    console.error("MongoDB connection error:", err);
+    console.error("❌ MongoDB connection error:", err);
+    process.exit(1);
   }
 }
 connectDB();
@@ -37,7 +38,7 @@ app.post("/api/food", async (req, res) => {
   const { foodName, foodType, calories } = req.body;
 
   if (!foodName || !foodType || calories === undefined) {
-    return res.status(400).json({ message: "Missing data" });
+    return res.status(400).json({ message: "Missing food data" });
   }
 
   try {
@@ -51,7 +52,7 @@ app.post("/api/food", async (req, res) => {
       createdAt: new Date()
     });
 
-    res.status(201).json({ message: "Saved successfully", id: result.insertedId });
+    res.status(201).json({ message: "food saved successfully", id: result.insertedId });
   } catch (err) {
     console.error("Database error (food):", err);
     res.status(500).json({ message: "Server error" });
@@ -86,7 +87,7 @@ app.post("/api/sport", async (req, res) => {
   const { sportType, inputData, calories } = req.body;
 
   if (!sportType || !inputData || calories === undefined) {
-    return res.status(400).json({ message: "Missing data" });
+    return res.status(400).json({ message: "Missing sport data" });
   }
 
   try {
@@ -100,7 +101,7 @@ app.post("/api/sport", async (req, res) => {
       createdAt: new Date()
     });
 
-    res.status(201).json({ message: "Saved successfully", id: result.insertedId });
+    res.status(201).json({ message: "sport saved successfully", id: result.insertedId });
   } catch (err) {
     console.error("Database error (sport):", err);
     res.status(500).json({ message: "Server error" });
@@ -136,7 +137,7 @@ app.post("/api/diary", async (req, res) => {
   const { diaryDate, diaryRate, diaryNote } = req.body;
 
   if (!diaryDate || diaryRate === undefined || diaryNote === undefined){
-    return res.status(400).json({ message: "Missing data" });
+    return res.status(400).json({ message: "Missing diary data" });
   }
 
   try {
@@ -149,7 +150,7 @@ app.post("/api/diary", async (req, res) => {
       diaryNote,
     });
 
-    res.status(201).json({ message: "Saved successfully", id: result.insertedId });
+    res.status(201).json({ message: "diary saved successfully", id: result.insertedId });
   } catch (err) {
     console.error("Database error (diary):", err);
     res.status(500).json({ message: "Server error" });
@@ -161,13 +162,14 @@ app.get("/api/diary", async (req, res) => {
     const db = client.db(dbName);
     const diaryCollection = db.collection("diary");
     const diaryItems = await diaryCollection.find().toArray();
-    
+
     const formattedDiaryItems = diaryItems.map(item => ({
       _id: item._id,
-      diaryDate,
-      diaryRate,
-      diaryNote,
+      diaryDate: item.diaryDate,
+      diaryRate: item.diaryRate,
+      diaryNote: item.diaryNote,
     }));
+    
 
     res.json(formattedDiaryItems);
   } catch (err) {
@@ -175,6 +177,80 @@ app.get("/api/diary", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+// ********** FRIEND TRACKING ENDPOINTS **********
+
+app.post("/api/friend", async (req, res) => {
+  const { name, calories, water, sender } = req.body;
+
+  if (!name || !calories || !water || !sender) {
+    return res.status(400).json({ message: "Missing friend data" });
+  }
+
+  try {
+    const db = client.db(dbName);
+    const friendCollection = db.collection("friend");
+
+    const result = await friendCollection.insertOne({
+      name,
+      sender,
+      date: new Date(),
+      calories: { burned: calories.burned, target: calories.target },
+      water: { consumed: water.consumed, target: water.target },
+    });
+
+    res.status(201).json({ message: "Friend cheer saved successfully", id: result.insertedId });
+  } catch (err) {
+    console.error("❌ Database error (friend):", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.get("/api/friend", async (req, res) => {
+  try {
+    const db = client.db(dbName);
+    const statsCollection = db.collection("friendStats");
+    const friendCollection = db.collection("friend");
+
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const stats = await statsCollection.find({
+      date: { $gte: todayStart, $lte: todayEnd }
+    }).toArray();
+
+    const cheers = await friendCollection.find({
+      date: { $gte: todayStart, $lte: todayEnd }
+    }).toArray();
+    
+
+    const cheerMap = {};
+    cheers.forEach(cheer => {
+      const friendName = cheer.name;
+      if (!cheerMap[friendName]) {
+        cheerMap[friendName] = [cheer.sender];
+      } else {
+        cheerMap[friendName].push(cheer.sender);
+      }
+    });
+
+    const summary = stats.map(stat => ({
+      name: stat.name,
+      caloriesBurned: `${stat.calories.burned}/${stat.calories.target}`,
+      waterIntake: `${stat.water.consumed}/${stat.water.target}`,
+      cheerFrom: cheerMap[stat.name] ? cheerMap[stat.name].join(", ") : "-"
+    }));
+
+    res.status(200).json(summary);
+  } catch (err) {
+    console.error("❌ Error generating friend summary:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 // Start server
 app.listen(port, () => {
