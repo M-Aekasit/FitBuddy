@@ -3,8 +3,9 @@ import { getBMI, getBMR, getTDEE } from "../controllers/healthController.js";
 
 const router = express.Router();
 
-router.post("/bmi", getBMI);
-router.post("/bmr", getBMR);
-router.post("/tdee", getTDEE);
+router.post("/health/bmi", getBMI);
+router.post("/health/bmr", getBMR);
+router.post("/health/tdee", getTDEE);
+
 
 export default router;
