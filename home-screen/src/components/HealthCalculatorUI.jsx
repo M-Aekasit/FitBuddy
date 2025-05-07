@@ -170,17 +170,10 @@ const HealthCalculatorUI = () => {
         {/* Calculate Button */}
         <button
           type="button"
-          disabled={isSubmitting} // ปิดปุ่มชั่วคราว
-          className={`w-full py-5 rounded-full text-white font-bold text-xl shadow-md transition duration-300
-    ${
-      isSubmitting
-        ? "bg-gray-400 cursor-not-allowed"
-        : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-indigo-600 hover:to-blue-600"
-    }
-  `}
+          className="w-full py-5 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-indigo-600 hover:to-blue-600 text-white font-bold text-xl shadow-md transition duration-300"
           onClick={handleCalculate}
         >
-          {isSubmitting ? "กำลังคำนวณ..." : "Calculate Health Metrics"}
+          Calculate Health Metrics
         </button>
       </div>
 
