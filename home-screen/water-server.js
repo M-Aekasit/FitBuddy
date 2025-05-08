@@ -3,25 +3,38 @@ import cors from "cors"
 import { MongoClient } from "mongodb"
 
 const app = express()
-const port = 3001 // Using a different port from the sport server
+const port = 5000 
 const mongoUrl = "mongodb://localhost:27017"
-const dbName = "fitbuddyDB" // Using the same database as sport
+const dbName = "fitbuddyDB"
 
 // Middleware
 app.use(cors())
 app.use(express.json())
 
+app.use((req, res, next) => {
+  if (req.method === 'POST') {
+    console.log('📝 Request Body:', req.body);
+  }
+  next();
+});
+
 // POST API to receive and save water data
 app.post("/api/water", async (req, res) => {
   const { waterCount, action, timestamp } = req.body
 
+  console.log("📥 Received water data:", { waterCount, action, timestamp });
+
   if (waterCount === undefined || !action || !timestamp) {
+    console.log("❌ Missing required data");
     return res.status(400).json({ message: "Missing required data" })
   }
 
   try {
+    console.log("🔄 Connecting to MongoDB...");
     const client = new MongoClient(mongoUrl)
     await client.connect()
+    console.log("✅ Connected to MongoDB");
+    
     const db = client.db(dbName)
     const waterCollection = db.collection("water")
 
@@ -32,11 +45,12 @@ app.post("/api/water", async (req, res) => {
       createdAt: new Date(),
     })
 
+    console.log("✅ Data saved to MongoDB:", result.insertedId);
     await client.close()
     res.status(201).json({ message: "Water data saved successfully", id: result.insertedId })
   } catch (err) {
-    console.error("Database error:", err)
-    res.status(500).json({ message: "Server error" })
+    console.error("❌ Database error:", err)
+    res.status(500).json({ message: "Server error: " + err.message })
   }
 })
 
@@ -61,9 +75,10 @@ app.get("/api/water/history", async (req, res) => {
     res.status(200).json(waterHistory)
   } catch (err) {
     console.error("Database error:", err)
-    res.status(500).json({ message: "Server error" })
+    res.status(500).json({ message: "Server error: " + err.message })
   }
 })
+
 
 // Check connection
 app.get("/", (req, res) => {

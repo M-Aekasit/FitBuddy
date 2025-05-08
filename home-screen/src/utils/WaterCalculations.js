@@ -126,24 +126,24 @@ export const updateTodayWaterCount = (waterHistory, waterCount) => {
   return updatedHistory
 }
 
-// New function to save water data to server
+
 export const saveWaterDataToServer = async (waterData) => {
   try {
-    const response = await fetch("http://localhost:3001/api/water", {
+    const response = await fetch("http://localhost:5000/api/water", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(waterData),
-    })
+    });
 
     if (!response.ok) {
-      throw new Error(`Server responded with status: ${response.status}`)
+      throw new Error(`Server responded with status: ${response.status}`);
     }
 
-    return await response.json()
+    return await response.json();
   } catch (error) {
-    console.error("Error saving water data to server:", error)
-    throw error
+    console.error("Error saving water data to server:", error);
+    throw error;
   }
-}
+};
