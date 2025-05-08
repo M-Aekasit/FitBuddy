@@ -39,9 +39,13 @@ const activityMultipliers = {
 // คำนวณ TDEE (พลังงานที่ใช้ต่อวัน)
 const calculateTDEE = (bmr, activityLevel) => {
   const b = parseFloat(bmr);
-  const multiplier = activityMultipliers[activityLevel?.toLowerCase()];
-  if (!b || !multiplier) return null;
+  let multiplier = activityMultipliers[activityLevel?.toLowerCase()];
 
+  if (!multiplier && !isNaN(activityLevel)) {
+    multiplier = parseFloat(activityLevel);
+  }
+
+  if (!b || !multiplier) return null;
   return Math.round(b * multiplier);
 };
 

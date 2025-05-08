@@ -1,16 +1,12 @@
 // src/components/HealthCalculatorUI.jsx
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   calculateBMI,
   calculateBMR,
   calculateTDEE,
 } from "../utils/healthLogic.js";
 
-import {
-  activityLevels,
-  getBmiColor,
-} from "../utils/healthUILogic.js";
-
+import { activityLevels, getBmiColor } from "../utils/healthUILogic.js";
 import { useNavigate } from "react-router-dom";
 
 const HealthCalculatorUI = () => {
@@ -18,16 +14,18 @@ const HealthCalculatorUI = () => {
   const [height, setHeight] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("male");
-  const [activityLevel, setActivityLevel] = useState("1.2");
+  const [activityLevel, setActivityLevel] = useState(activityLevels[0].value);
   const [results, setResults] = useState(null);
   const navigate = useNavigate();
 
-  const handleCalculate = () => {
+  const handleCalculate = async () => {
     const bmiResult = calculateBMI(weight, height);
     const bmrResult = calculateBMR(weight, height, age, gender);
+    const tdeeResult = calculateTDEE(bmrResult, activityLevel);
 
-    if (!bmiResult || !bmrResult) {
-      alert("Please fill in all fields with valid numbers");
+    // ตรวจสอบว่า BMI คำนวณได้ก่อนแสดงผล
+    if (!bmiResult || !bmrResult || !tdeeResult) {
+      alert("กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง");
       return;
     }
 
@@ -35,8 +33,28 @@ const HealthCalculatorUI = () => {
       bmi: bmiResult.value,
       bmiCategory: bmiResult.category,
       bmr: bmrResult,
-      tdee: calculateTDEE(bmrResult, activityLevel)
+      tdee: tdeeResult,
     });
+
+    try {
+      await fetch("http://localhost:5000/api/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          weight,
+          height,
+          age,
+          gender,
+          bmi: bmiResult.value,
+          bmiCategory: bmiResult.category,
+          bmr: bmrResult,
+          tdee: tdeeResult,
+          activityLevel,
+        }),
+      });
+    } catch (error) {
+      console.error("Error saving health data:", error);
+    }
   };
 
   const bmiScale = [
@@ -58,7 +76,7 @@ const HealthCalculatorUI = () => {
       {/* Back Button */}
       <div className="flex items-center space-x-4">
         <button
-          onClick={() => navigate('/HealthDashboard')}
+          onClick={() => navigate("/HealthDashboard")}
           className="px-4 py-2 text-2xl font-bold rounded hover:bg-gray-200"
         >
           ← Back
@@ -75,12 +93,29 @@ const HealthCalculatorUI = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
           {/* Inputs */}
           {[
-            { label: "Weight (kg)", value: weight, setValue: setWeight, placeholder: "Enter your weight" },
-            { label: "Height (cm)", value: height, setValue: setHeight, placeholder: "Enter your height" },
-            { label: "Age (years)", value: age, setValue: setAge, placeholder: "Enter your age" }
+            {
+              label: "Weight (kg)",
+              value: weight,
+              setValue: setWeight,
+              placeholder: "Enter your weight",
+            },
+            {
+              label: "Height (cm)",
+              value: height,
+              setValue: setHeight,
+              placeholder: "Enter your height",
+            },
+            {
+              label: "Age (years)",
+              value: age,
+              setValue: setAge,
+              placeholder: "Enter your age",
+            },
           ].map(({ label, value, setValue, placeholder }) => (
             <div key={label}>
-              <label className="block text-gray-700 font-semibold mb-2">{label}</label>
+              <label className="block text-gray-700 font-semibold mb-2">
+                {label}
+              </label>
               <input
                 type="number"
                 className="w-full px-5 py-3 rounded-full border focus:ring-2 focus:ring-blue-400 focus:outline-none shadow-sm"
@@ -93,7 +128,9 @@ const HealthCalculatorUI = () => {
 
           {/* Gender */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-2">Gender</label>
+            <label className="block text-gray-700 font-semibold mb-2">
+              Gender
+            </label>
             <select
               className="w-full px-5 py-3 rounded-full border focus:ring-2 focus:ring-blue-400 focus:outline-none shadow-sm"
               value={gender}
@@ -107,13 +144,15 @@ const HealthCalculatorUI = () => {
 
         {/* Activity Level */}
         <div className="mb-10">
-          <label className="block text-gray-700 font-semibold mb-2">Activity Level</label>
+          <label className="block text-gray-700 font-semibold mb-2">
+            Activity Level
+          </label>
           <select
             className="w-full px-5 py-3 rounded-full border focus:ring-2 focus:ring-blue-400 focus:outline-none shadow-sm"
             value={activityLevel}
             onChange={(e) => setActivityLevel(e.target.value)}
           >
-            {activityLevels.map(level => (
+            {activityLevels.map((level) => (
               <option key={level.value} value={level.value}>
                 {level.label}
               </option>
@@ -123,6 +162,7 @@ const HealthCalculatorUI = () => {
 
         {/* Calculate Button */}
         <button
+          type="button"
           className="w-full py-5 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-indigo-600 hover:to-blue-600 text-white font-bold text-xl shadow-md transition duration-300"
           onClick={handleCalculate}
         >
@@ -135,9 +175,17 @@ const HealthCalculatorUI = () => {
         <div className="w-full max-w-6xl mx-auto mt-10 grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* BMI Result */}
           <div className="bg-white rounded-3xl p-10 shadow-xl text-center border">
-            <h2 className="text-3xl font-bold text-blue-700 mb-6">BMI Result</h2>
-            <p className="text-6xl font-extrabold text-blue-600">{results.bmi}</p>
-            <p className={`mt-3 text-2xl font-semibold ${getBmiColor(results.bmiCategory)}`}>
+            <h2 className="text-3xl font-bold text-blue-700 mb-6">
+              BMI Result
+            </h2>
+            <p className="text-6xl font-extrabold text-blue-600">
+              {results.bmi}
+            </p>
+            <p
+              className={`mt-3 text-2xl font-semibold ${getBmiColor(
+                results.bmiCategory
+              )}`}
+            >
               {results.bmiCategory}
             </p>
 
@@ -149,7 +197,11 @@ const HealthCalculatorUI = () => {
                     <div
                       key={section.label}
                       className={`${section.color} flex-1`}
-                      style={{ width: `${(section.range[1] - section.range[0]) * 2.5}%` }}
+                      style={{
+                        width: `${
+                          (section.range[1] - section.range[0]) * 2.5
+                        }%`,
+                      }}
                     />
                   ))}
                 </div>
@@ -173,18 +225,29 @@ const HealthCalculatorUI = () => {
             <h2 className="text-3xl font-bold text-red-700 mb-6">Metabolism</h2>
 
             <div className="mb-8">
-              <p className="text-gray-600 text-md mb-2">Basal Metabolic Rate (BMR)</p>
-              <p className="text-5xl font-extrabold text-red-700">{results.bmr} kcal/day</p>
+              <p className="text-gray-600 text-md mb-2">
+                Basal Metabolic Rate (BMR)
+              </p>
+              <p className="text-5xl font-extrabold text-red-700">
+                {results.bmr} kcal/day
+              </p>
               <p className="mt-2 text-sm text-gray-500">
-                BMR is the number of calories your body needs to maintain basic functions like breathing and keeping warm while at rest.
+                BMR is the number of calories your body needs to maintain basic
+                functions like breathing and keeping warm while at rest.
               </p>
             </div>
 
             <div>
-              <p className="text-gray-600 text-md mb-2">Daily Calorie Needs (TDEE)</p>
-              <p className="text-5xl font-extrabold text-red-700">{results.tdee} kcal/day</p>
+              <p className="text-gray-600 text-md mb-2">
+                Daily Calorie Needs (TDEE)
+              </p>
+              <p className="text-5xl font-extrabold text-red-700">
+                {results.tdee} kcal/day
+              </p>
               <p className="mt-2 text-sm text-gray-500">
-                TDEE is your estimated daily calorie burn including your exercise level ({activityLevels.find(l => l.value === activityLevel)?.label}).
+                TDEE is your estimated daily calorie burn including your
+                exercise level (
+                {activityLevels.find((l) => l.value === activityLevel)?.label}).
               </p>
             </div>
           </div>

@@ -1,109 +1,133 @@
-import User from "../models/usermodel.js";
-import {
-  calculateBMI,
-  calculateBMR,
-  calculateTDEE,
-} from "../../src/utils/healthLogic.js";
+import HealthRecord from "../models/healthRecord.js";
 
-// ฟังก์ชันคำนวณ BMI และอัปเดตลง MongoDB
-export const getBMI = async (req, res) => {
+export const saveAllMetrics = async (req, res) => {
   try {
-    const { weight, height, age, gender, userId } = req.body;
-    console.log("Received body:", req.body);
+    const { weight, height, age, gender, bmi, bmiCategory, bmr, tdee, activityLevel } = req.body;
 
-    if (!weight || !height || !userId) {
-      return res.status(400).json({
-        error: "Missing required fields: weight, height, or userId",
-      });
-    }
-
-    const bmiResult = calculateBMI(weight, height);
-    if (!bmiResult || isNaN(bmiResult.value)) {
-      return res.status(400).json({ error: "Invalid input" });
-    }
-
-    const updateFields = {
+    const record = new HealthRecord({
       weight,
       height,
-      bmi: bmiResult.value,
-    };
-    if (age) updateFields.age = age;
-    if (gender) updateFields.gender = gender;
-
-    const updatedUser = await User.findByIdAndUpdate(userId, updateFields, {
-      new: true,
+      age,
+      gender,
+      bmi,
+      bmiCategory,
+      bmr,
+      tdee,
+      activityLevel,
     });
 
-    res.json({
-      bmi: bmiResult.value,
-      category: bmiResult.category,
-      user: updatedUser,
-    });
+    await record.save();
+
+    res.status(201).json({ success: true, record });
   } catch (err) {
-    console.error("Error in getBMI:", err);
+    console.error("Error saving full health record:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-// ฟังก์ชันคำนวณ BMR และอัปเดตลง MongoDB
-export const getBMR = async (req, res) => {
-  try {
-    const { weight, height, age, gender, userId } = req.body;
 
-    console.log("Received body:", req.body);
 
-    if (!weight || !height || !age || !gender || !userId) {
-      return res.status(400).json({
-        error:
-          "Missing required fields: weight, height, age, gender, or userId",
-      });
-    }
 
-    const bmr = calculateBMR(weight, height, age, gender);
-    if (!bmr) return res.status(400).json({ error: "Invalid input" });
+// // ฟังก์ชันคำนวณ BMI และอัปเดตลง MongoDB
+// import HealthRecord from "../models/healthRecord.js";
+// import {
+//   calculateBMI,
+//   calculateBMR,
+//   calculateTDEE,
+// } from "../../src/utils/healthLogic.js";
 
-    // 👇 เพิ่มการ update BMR ลง MongoDB
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { bmr: bmr },
-      { new: true }
-    );
+// // 1. คำนวณ BMI และบันทึกลง Mongo
+// export const getBMI = async (req, res) => {
+//   try {
+//     const { weight, height, age, gender } = req.body;
 
-    if (!updatedUser) {
-      return res.status(404).json({ error: "User not found" });
-    }
+//     if (!weight || !height) {
+//       return res.status(400).json({ error: "Missing weight or height" });
+//     }
 
-    res.json({ bmr: bmr, user: updatedUser });
-  } catch (err) {
-    console.error("Error in getBMR:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
+//     const bmiResult = calculateBMI(weight, height);
+//     if (!bmiResult || isNaN(bmiResult.value)) {
+//       return res.status(400).json({ error: "Invalid BMI input" });
+//     }
 
-// ฟังก์ชันคำนวณ TDEE และอัปเดตลง MongoDB
-export const getTDEE = async (req, res) => {
-  try {
-    const { bmr, activityLevel, userId } = req.body;
+//     const record = new HealthRecord({
+//       weight,
+//       height,
+//       age,
+//       gender,
+//       bmi: bmiResult.value,
+//     });
 
-    if (!bmr || !activityLevel || !userId) {
-      return res.status(400).json({
-        error: "Missing required fields: bmr, activityLevel, or userId",
-      });
-    }
+//     await record.save();
 
-    const tdee = calculateTDEE(bmr, activityLevel);
-    if (!tdee || isNaN(tdee))
-      return res.status(400).json({ error: "Invalid input" });
+//     res.json({
+//       bmi: bmiResult.value,
+//       category: bmiResult.category,
+//       record,
+//     });
+//   } catch (err) {
+//     console.error("Error in getBMI:", err);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { tdee },
-      { new: true }
-    );
+// // 2. คำนวณ BMR และบันทึกลง Mongo
+// export const getBMR = async (req, res) => {
+//   try {
+//     const { weight, height, age, gender } = req.body;
 
-    res.json({ tdee, user: updatedUser });
-  } catch (err) {
-    console.error("Error in getTDEE:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
+//     if (!weight || !height || !age || !gender) {
+//       return res.status(400).json({
+//         error: "Missing required fields: weight, height, age, or gender",
+//       });
+//     }
+
+//     const bmr = calculateBMR(weight, height, age, gender);
+//     if (!bmr) return res.status(400).json({ error: "Invalid BMR input" });
+
+//     const record = new HealthRecord({
+//       weight,
+//       height,
+//       age,
+//       gender,
+//       bmr,
+//     });
+
+//     await record.save();
+
+//     res.json({ bmr, record });
+//   } catch (err) {
+//     console.error("Error in getBMR:", err);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+// //  3. คำนวณ TDEE และบันทึกลง Mongo
+// export const getTDEE = async (req, res) => {
+//   try {
+//     const { bmr, activityLevel } = req.body;
+
+//     if (!bmr || !activityLevel) {
+//       return res.status(400).json({
+//         error: "Missing required fields: bmr or activityLevel",
+//       });
+//     }
+
+//     const tdee = calculateTDEE(bmr, activityLevel);
+//     if (!tdee || isNaN(tdee))
+//       return res.status(400).json({ error: "Invalid TDEE input" });
+
+//     const record = new HealthRecord({
+//       bmr,
+//       activityLevel,
+//       tdee,
+//     });
+
+//     await record.save();
+
+//     res.json({ tdee, record });
+//   } catch (err) {
+//     console.error("Error in getTDEE:", err);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
