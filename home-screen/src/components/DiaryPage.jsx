@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from 'axios';
+import axios from "axios";
 
 export default function DiaryPage() {
   const [rating, setRating] = useState(0);
@@ -13,7 +13,7 @@ export default function DiaryPage() {
   useEffect(() => {
     const fetchDiary = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/diary");
+        const res = await fetch("http://localhost:5000/api/diary");
         if (res.ok) {
           const data = await res.json();
           setHistory(data);
@@ -36,7 +36,7 @@ export default function DiaryPage() {
       diaryRate: rating,
       diaryNote: note,
     };
-  
+
     const updatedHistory = [
       newEntry,
       ...history.filter((entry) => entry.diaryDate !== todayStr),
@@ -46,34 +46,34 @@ export default function DiaryPage() {
     localStorage.setItem("diaryHistory", JSON.stringify(updatedHistory));
 
     try {
-      await axios.post("http://localhost:3000/api/diary", newEntry, {
+      await axios.post("http://localhost:5000/api/diary", newEntry, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-
     } catch (err) {
       console.error("Network error saving diary:", err);
       return;
     }
-  
+
     setRating(0);
     setNote("");
   };
-  
 
   // Get number of days in a month
   const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
 
   // Color based on rating
   const getColorByRating = (rate) => {
-    return {
-      1: "bg-red-300",
-      2: "bg-orange-300",
-      3: "bg-yellow-300",
-      4: "bg-blue-300",
-      5: "bg-green-300",
-    }[rate] || "bg-white";
+    return (
+      {
+        1: "bg-red-300",
+        2: "bg-orange-300",
+        3: "bg-yellow-300",
+        4: "bg-blue-300",
+        5: "bg-green-300",
+      }[rate] || "bg-white"
+    );
   };
 
   // Filter entries for selected month
@@ -115,7 +115,11 @@ export default function DiaryPage() {
             className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
             onClick={() =>
               setCurrentDate(
-                new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
+                new Date(
+                  currentDate.getFullYear(),
+                  currentDate.getMonth() - 1,
+                  1
+                )
               )
             }
           >
@@ -131,7 +135,11 @@ export default function DiaryPage() {
             className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
             onClick={() =>
               setCurrentDate(
-                new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+                new Date(
+                  currentDate.getFullYear(),
+                  currentDate.getMonth() + 1,
+                  1
+                )
               )
             }
           >
@@ -160,7 +168,11 @@ export default function DiaryPage() {
               <div key={index} className="flex justify-center items-center">
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold
-                    ${isToday ? `border-2 border-black-500 text-black-500 ${bgColor}` : bgColor}
+                    ${
+                      isToday
+                        ? `border-2 border-black-500 text-black-500 ${bgColor}`
+                        : bgColor
+                    }
                     ${!isToday && bgColor === "bg-white" ? "text-gray-500" : ""}
                     hover:scale-110 transition-transform`}
                 >
@@ -190,7 +202,9 @@ export default function DiaryPage() {
               <button
                 key={star}
                 onClick={() => setRating(star)}
-                className={`transition-transform ${rating >= star ? "text-yellow-400 scale-110" : "text-gray-300"}`}
+                className={`transition-transform ${
+                  rating >= star ? "text-yellow-400 scale-110" : "text-gray-300"
+                }`}
               >
                 ★
               </button>
@@ -218,22 +232,28 @@ export default function DiaryPage() {
             <h2 className="text-3xl font-semibold mb-6">Diary History</h2>
             {getEntriesForMonth().length > 0 ? (
               <div className="space-y-6">
-                  {getEntriesForMonth().sort((a, b) => new Date(b.diaryDate) - new Date(a.diaryDate)).map((entry, idx) => (
-                  <div key={idx} className="p-4 bg-gray-100 rounded-lg">
-                    <p className="font-semibold text-lg">{entry.diaryDate}</p>
-                    <div className="flex gap-1 text-2xl mt-1">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span
-                          key={star}
-                          className={entry.diaryRate >= star ? "text-yellow-400" : "text-gray-300"}
-                        >
-                          ★
-                        </span>
-                      ))}
+                {getEntriesForMonth()
+                  .sort((a, b) => new Date(b.diaryDate) - new Date(a.diaryDate))
+                  .map((entry, idx) => (
+                    <div key={idx} className="p-4 bg-gray-100 rounded-lg">
+                      <p className="font-semibold text-lg">{entry.diaryDate}</p>
+                      <div className="flex gap-1 text-2xl mt-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span
+                            key={star}
+                            className={
+                              entry.diaryRate >= star
+                                ? "text-yellow-400"
+                                : "text-gray-300"
+                            }
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      <p className="mt-2 text-gray-700">{entry.diaryNote}</p>
                     </div>
-                    <p className="mt-2 text-gray-700">{entry.diaryNote}</p>
-                  </div>
-                ))}
+                  ))}
               </div>
             ) : (
               <p className="text-gray-400">No entries for this month.</p>
