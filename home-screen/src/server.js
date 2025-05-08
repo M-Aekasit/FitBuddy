@@ -255,6 +255,55 @@ app.get("/api/friend", async (req, res) => {
 
 // ********** NOTIFICATION TRACKING ENDPOINTS **********
 
+app.post("/api/notification", async (req, res) => {
+  const { user, type, message } = req.body;
+
+  if (!user || !type || !message) {
+    return res.status(400).json({ message: "Missing notification data" });
+  }
+
+  try {
+    const db = client.db(dbName);
+    const notificationCollection = db.collection("notification");
+
+    const result = await notificationCollection.insertOne({
+      user,
+      type,
+      message,
+      createdAt: new Date()
+    });
+
+    res.status(201).json({ message: "Notification saved", id: result.insertedId });
+  } catch (err) {
+    console.error("❌ Database error (notification):", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.get("/api/notification", async (req, res) => {
+  try {
+    const db = client.db(dbName);
+    const notificationCollection = db.collection("notification");
+
+    const notifications = await notificationCollection.find().sort({ createdAt: -1 }).toArray();
+
+    const formattedNotifications = notifications.map(item => ({
+      _id: item._id,
+      user: item.user,
+      type: item.type,
+      message: item.message,
+      createdAt: new Date(item.createdAt).toLocaleString("th-TH", {
+        timeZone: "Asia/Bangkok"
+      })
+    }));
+
+    res.json(formattedNotifications);
+  } catch (err) {
+    console.error("❌ Error fetching notifications:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 // app.post("/api/dailyGoal", async (req, res) => {
 //   const { goalCaloriesFood, goalCaloriesSport, water } = req.body;
