@@ -84,7 +84,7 @@ const HealthDashboard = () => {
           title="Food Tracker"
           value={`${foodCurrent} / ${foodGoal} kcal`}
           goal={`${Math.round((foodCurrent / foodGoal) * 100)}% of daily goal`}
-          progress={(foodCurrent / foodGoal) * 100}
+          progress={Math.min((foodCurrent / foodGoal) * 100, 100)}
           color="#f87171"
           icon="🍎"
           link="/food"
@@ -96,7 +96,7 @@ const HealthDashboard = () => {
           goal={`${Math.round(
             (waterCurrent / waterGoal) * 100
           )}% of daily goal`}
-          progress={(waterCurrent / waterGoal) * 100}
+          progress={Math.min((waterCurrent / waterGoal) * 100, 100)}
           color="#3b82f6"
           icon="💧"
           link="/water"
@@ -108,7 +108,7 @@ const HealthDashboard = () => {
           goal={`${Math.round(
             (exerciseCurrent / exerciseGoal) * 100
           )}% of daily goal`}
-          progress={(exerciseCurrent / exerciseGoal) * 100}
+          progress={Math.min((exerciseCurrent / exerciseGoal) * 100, 100)}
           color="#fb923c"
           icon="🏃‍♂️"
           link="/sport"
