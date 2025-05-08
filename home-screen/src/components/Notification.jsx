@@ -3,28 +3,74 @@ import React, { useState, useEffect } from 'react';
 function App() {
   const [messages, setMessages] = useState([]);
 
+  //add data and send data
   const addMessage = (text) => {
     setMessages(prev => {
       if (prev.some(msg => msg.text === text && msg.timestamp === getCurrentTimeString())) {
+        console.log("1");
         return prev;
+        
       }
+      sendNotificationToServer(text);
+      console.log("2");
       return [{ text, isNew: true, timestamp: getCurrentTimeString() }, ...prev];
     });
   };
 
+
+  //create time current
   const getCurrentTimeString = () => {
     const now = new Date();
     return now.getHours().toString().padStart(2, '0') + ':' +
            now.getMinutes().toString().padStart(2, '0');
   };
 
+  //send data
+  const sendNotificationToServer = async(text) =>{
+    const now = new Date(Date.now() + 7 * 60 * 60 * 1000); 
+    now.setSeconds(0, 0); 
+    const h = now.getHours(); 
+    const m = now.getMinutes();
+  
+    const dataToSend = {
+      text,
+      createdAt: now.toISOString(),
+      hour:h,
+      minute:m
+    };
+    try {
+      await fetch("http://localhost:3000/api/notification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataToSend)
+      });
+      console.log("Notification sent to server");
+    } catch (err) {
+      console.error("Failed to send notification:", err);
+    }
+  };
+
+
+
+  //load data from DB
   useEffect(() => {
-    // console.log("Interval started");
+    const fetchNotifications = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/notification");
+        const data = await response.json();
+        setMessages(data); 
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
+      }
+    };
+
+    fetchNotifications();
+
     const interval = setInterval(() => {
       const now = new Date();
       const h = now.getHours();
       const m = now.getMinutes();
-      
+
 
 
       if (m === 0 && h >= 6 && h < 22) {
@@ -32,18 +78,16 @@ function App() {
         addMessage("💧 Time for a water break! 💧");
       }
 
-
       if ((h === 9 || h === 13 || h === 19 ) && m === 0) {
         console.log("🍽️Checking time:", h, m);
         addMessage("🍽️ Your meal log is waiting! 🍽️");
       }
 
-
-      if (h === 21 && m===49) {
+      if (h === 3 && m==39) {
         console.log("💪Checking time:", h, m);
         addMessage("💪 Time to get moving! 💪");
       }
-    }, 10 * 1000); // check 10 sec
+    }, 5 * 1000); // check 10 sec
 
     return () => clearInterval(interval);
   }, []);
@@ -54,7 +98,24 @@ function App() {
     );
   };
 
-  const clearMessages = () => setMessages([]);
+  const clearMessages = async () => {
+    try {
+      // ลบข้อมูลในฐานข้อมูลโดยเรียก API จากเซิร์ฟเวอร์
+      const response = await fetch("http://localhost:3000/api/notification", {
+        method: "DELETE", // ใช้ method DELETE เพื่อบอกว่าจะลบข้อมูล
+      });
+  
+      if (response.ok) {
+        // ล้างข้อมูลใน state ของ React หลังจากลบในฐานข้อมูลเสร็จ
+        setMessages([]);
+        console.log("All messages cleared from DB.");
+      } else {
+        console.error("Failed to clear messages from DB:", response.statusText);
+      }
+    } catch (err) {
+      console.error("Failed to clear messages from DB:", err);
+    }
+  };
 
   const unreadCount = messages.filter(msg => msg.isNew).length;
 
