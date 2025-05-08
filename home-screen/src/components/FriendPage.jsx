@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from 'axios';
+import axios from "axios";
 
 export default function FriendsPage() {
   const [friends, setFriends] = useState([]);
@@ -17,31 +17,34 @@ export default function FriendsPage() {
         { name: "Bee", calories: { target: 650 }, water: { target: 8 } },
         { name: "Copter", calories: { target: 300 }, water: { target: 8 } },
         { name: "Kay", calories: { target: 450 }, water: { target: 8 } },
-        { name: "Mild", calories: { target: 250 }, water: { target: 8 } }
+        { name: "Mild", calories: { target: 250 }, water: { target: 8 } },
       ];
 
-      const randomized = baseFriends.map(friend => {
+      const randomized = baseFriends.map((friend) => {
         const burned = Math.floor(Math.random() * (friend.calories.target + 1));
         const consumed = Math.floor(Math.random() * (friend.water.target + 1));
         return {
           ...friend,
           calories: { ...friend.calories, burned },
-          water: { ...friend.water, consumed }
+          water: { ...friend.water, consumed },
         };
       });
 
       setFriends(randomized);
-      localStorage.setItem("friendsData", JSON.stringify({ date: today, friends: randomized }));
+      localStorage.setItem(
+        "friendsData",
+        JSON.stringify({ date: today, friends: randomized })
+      );
     }
   }, []);
 
   const sendCheer = (name) => {
     if (cheeredFriends.includes(name)) return;
-  
-    const friend = friends.find(f => f.name === name);
+
+    const friend = friends.find((f) => f.name === name);
     if (!friend) return;
-  
-    fetch("http://localhost:3000/api/friend", {
+
+    fetch("http://localhost:5000/api/friend", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -49,13 +52,13 @@ export default function FriendsPage() {
         sender: "Dr.Suriya",
         calories: {
           burned: friend.calories.burned,
-          target: friend.calories.target
+          target: friend.calories.target,
         },
         water: {
           consumed: friend.water.consumed,
-          target: friend.water.target
-        }
-      })
+          target: friend.water.target,
+        },
+      }),
     })
       .then((res) => {
         if (!res.ok) {
@@ -72,9 +75,7 @@ export default function FriendsPage() {
         alert("❌ Failed to send cheer");
       });
   };
-  
-  
-  
+
   const getStatus = (friend) => {
     const calorieProgress = friend.calories.burned / friend.calories.target;
     const waterProgress = friend.water.consumed / friend.water.target;
@@ -95,7 +96,7 @@ export default function FriendsPage() {
       {/* Main */}
       <main className="flex-1 p-6 flex flex-col items-center">
         {/* Invite Button */}
-        <button 
+        <button
           className="bg-green-500 hover:bg-green-600 text-white py-2 px-6 rounded-full text-lg font-semibold mb-8 shadow-md transition transform hover:scale-105"
           onClick={() => alert("Invite sent!")}
         >
@@ -105,7 +106,10 @@ export default function FriendsPage() {
         {/* Friend List */}
         <div className="space-y-6 w-full max-w-3xl">
           {friends.map((friend, index) => (
-            <div key={index} className="bg-white p-6 rounded-2xl shadow hover:shadow-xl transition transform hover:scale-105">
+            <div
+              key={index}
+              className="bg-white p-6 rounded-2xl shadow hover:shadow-xl transition transform hover:scale-105"
+            >
               {/* Top Row: Avatar and Name */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-4">
@@ -114,7 +118,9 @@ export default function FriendsPage() {
                   </div>
                   <div>
                     <div className="text-2xl font-semibold">{friend.name}</div>
-                    <div className="text-sm text-gray-500">{getStatus(friend)}</div>
+                    <div className="text-sm text-gray-500">
+                      {getStatus(friend)}
+                    </div>
                   </div>
                 </div>
 
@@ -128,7 +134,9 @@ export default function FriendsPage() {
                   onClick={() => sendCheer(friend.name)}
                   disabled={cheeredFriends.includes(friend.name)}
                 >
-                  {cheeredFriends.includes(friend.name) ? "🎉 Cheered!" : "Send Cheer"}
+                  {cheeredFriends.includes(friend.name)
+                    ? "🎉 Cheered!"
+                    : "Send Cheer"}
                 </button>
               </div>
 
@@ -136,12 +144,18 @@ export default function FriendsPage() {
               <div className="mb-4">
                 <div className="flex justify-between text-gray-600 font-medium mb-1">
                   <span>🔥 Calories Burned</span>
-                  <span>{friend.calories.burned} / {friend.calories.target}</span>
+                  <span>
+                    {friend.calories.burned} / {friend.calories.target}
+                  </span>
                 </div>
                 <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-                  <div 
+                  <div
                     className="h-full bg-red-400 transition-all"
-                    style={{ width: `${(friend.calories.burned / friend.calories.target) * 100}%` }}
+                    style={{
+                      width: `${
+                        (friend.calories.burned / friend.calories.target) * 100
+                      }%`,
+                    }}
                   ></div>
                 </div>
               </div>
@@ -150,12 +164,18 @@ export default function FriendsPage() {
               <div>
                 <div className="flex justify-between text-gray-600 font-medium mb-1">
                   <span>💧 Water Intake</span>
-                  <span>{friend.water.consumed} / {friend.water.target} glasses</span>
+                  <span>
+                    {friend.water.consumed} / {friend.water.target} glasses
+                  </span>
                 </div>
                 <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-                  <div 
+                  <div
                     className="h-full bg-blue-400 transition-all"
-                    style={{ width: `${(friend.water.consumed / friend.water.target) * 100}%` }}
+                    style={{
+                      width: `${
+                        (friend.water.consumed / friend.water.target) * 100
+                      }%`,
+                    }}
                   ></div>
                 </div>
               </div>
