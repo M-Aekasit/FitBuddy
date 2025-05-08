@@ -32,13 +32,11 @@ export const calculateTimeRemaining = () => {
   return hoursLeft > 0 ? `${hoursLeft}h left` : `${minutesLeft}m left`
 }
 
-// Get water count for a specific day
-export const getWaterCountForDay = (waterHistory, daysAgo) => {
+// Get date key in YYYY-MM-DD format for a specific day
+export const getDateKey = (daysAgo = 0) => {
   const date = new Date()
   date.setDate(date.getDate() - daysAgo)
-  const dateKey = date.toISOString().split("T")[0]
-
-  return waterHistory[dateKey] || 0
+  return date.toISOString().split("T")[0]
 }
 
 // Get current week days for weekly progress
@@ -65,85 +63,86 @@ export const getCurrentWeekDays = () => {
   return days
 }
 
-// Add these new functions for localStorage
-
-// Save water history to localStorage
-export const saveWaterHistory = (waterHistory) => {
-  try {
-    localStorage.setItem("waterHistory", JSON.stringify(waterHistory))
-  } catch (error) {
-    console.error("Error saving water history to localStorage:", error)
-  }
-}
-
-// Load water history from localStorage
-export const loadWaterHistory = () => {
-  try {
-    const savedHistory = localStorage.getItem("waterHistory")
-    return savedHistory ? JSON.parse(savedHistory) : null
-  } catch (error) {
-    console.error("Error loading water history from localStorage:", error)
-    return null
-  }
-}
-
-// Modify the generateInitialWaterHistory function to check localStorage first
-export const generateInitialWaterHistory = () => {
-  // Try to load from localStorage first
-  const savedHistory = loadWaterHistory()
-  if (savedHistory) {
-    return savedHistory
-  }
-
-  // If no saved history, generate sample data
-  const today = new Date()
-  const initialHistory = {}
-
-  for (let i = 1; i <= 7; i++) {
-    const date = new Date(today)
-    date.setDate(today.getDate() - i)
-    const dateKey = date.toISOString().split("T")[0]
-
-    // Random water count between 5-8 for past days
-    initialHistory[dateKey] = i === 1 ? 8 : Math.floor(Math.random() * 4) + 5
-  }
-
-  return initialHistory
-}
-
-// Update today's water count in history and save to localStorage
-export const updateTodayWaterCount = (waterHistory, waterCount) => {
-  const today = new Date().toISOString().split("T")[0]
-
-  const updatedHistory = {
-    ...waterHistory,
-    [today]: waterCount,
-  }
-
-  // Save to localStorage
-  saveWaterHistory(updatedHistory)
-
-  return updatedHistory
-}
-
-
+// Save water data to server
 export const saveWaterDataToServer = async (waterData) => {
   try {
+    console.log("📤 Sending water data to server:", waterData)
     const response = await fetch("http://localhost:5000/api/water", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(waterData),
-    });
+    })
 
     if (!response.ok) {
-      throw new Error(`Server responded with status: ${response.status}`);
+      throw new Error(`Server responded with status: ${response.status}`)
     }
 
-    return await response.json();
+    const result = await response.json()
+    console.log("✅ Server response:", result)
+    return result
   } catch (error) {
-    console.error("Error saving water data to server:", error);
-    throw error;
+    console.error("❌ Error saving water data to server:", error)
+    throw error
   }
-};
+}
+
+// Fetch water history from server
+export const fetchWaterHistoryFromServer = async () => {
+  try {
+    console.log("🔄 Fetching water history from server...")
+    const response = await fetch("http://localhost:5000/api/water/history")
+
+    if (!response.ok) {
+      throw new Error(`Server responded with status: ${response.status}`)
+    }
+
+    const data = await response.json()
+    console.log("✅ Received water history:", data)
+    return data
+  } catch (error) {
+    console.error("❌ Error fetching water history:", error)
+    throw error
+  }
+}
+
+// Process water history data from server into the format needed for the UI
+export const processWaterHistoryData = (serverData) => {
+  // Initialize empty history object
+  const processedHistory = {}
+
+  // Group data by date and find the latest water count for each date
+  serverData.forEach((item) => {
+    const date = new Date(item.timestamp)
+    const dateKey = date.toISOString().split("T")[0]
+
+    // If this is the first entry for this date or it's newer than what we have
+    if (!processedHistory[dateKey] || new Date(item.timestamp) > new Date(processedHistory[dateKey].timestamp)) {
+      processedHistory[dateKey] = {
+        waterCount: item.waterCount,
+        timestamp: item.timestamp,
+      }
+    }
+  })
+
+  // Convert to the format expected by the UI (just water counts by date)
+  const waterHistory = {}
+  Object.keys(processedHistory).forEach((dateKey) => {
+    waterHistory[dateKey] = processedHistory[dateKey].waterCount
+  })
+
+  return waterHistory
+}
+
+// Get today's water count from history
+export const getTodayWaterCount = (waterHistory) => {
+  const today = getDateKey()
+  return waterHistory[today] || 0
+}
+
+// Get water count for a specific day
+export const getWaterCountForDay = (waterHistory, daysAgo) => {
+  const dateKey = getDateKey(daysAgo)
+  return waterHistory[dateKey] || 0
+}

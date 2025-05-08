@@ -6,9 +6,10 @@ import {
   calculateTimeRemaining,
   getWaterCountForDay,
   getCurrentWeekDays,
-  generateInitialWaterHistory,
-  updateTodayWaterCount,
   saveWaterDataToServer,
+  fetchWaterHistoryFromServer,
+  processWaterHistoryData,
+  getTodayWaterCount,
 } from "../utils/WaterCalculations"
 
 export default function App() {
@@ -16,30 +17,40 @@ export default function App() {
   const [isAnimating, setIsAnimating] = useState(false)
   const [currentPage, setCurrentPage] = useState("main")
   const [waterHistory, setWaterHistory] = useState({})
+  const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
-  // Initialize water history with some sample data on first load
+  // Fetch water history from server on component mount
   useEffect(() => {
-    // Only set initial history if it doesn't exist yet
-    if (Object.keys(waterHistory).length === 0) {
-      const initialHistory = generateInitialWaterHistory()
-      setWaterHistory(initialHistory)
+    async function loadWaterHistory() {
+      try {
+        setIsLoading(true)
+        // Fetch water history from server
+        const serverData = await fetchWaterHistoryFromServer()
 
-      // Set initial water count for today from history
-      const today = new Date().toISOString().split("T")[0]
-      if (initialHistory[today]) {
-        setWaterCount(initialHistory[today])
+        // Process the data into the format needed for the UI
+        const processedHistory = processWaterHistoryData(serverData)
+
+        // Set the water history state
+        setWaterHistory(processedHistory)
+
+        // Set today's water count
+        const todayCount = getTodayWaterCount(processedHistory)
+        setWaterCount(todayCount)
+
+        setIsLoading(false)
+      } catch (error) {
+        console.error("Failed to load water history:", error)
+        setIsLoading(false)
       }
     }
+
+    loadWaterHistory()
   }, [])
 
-  // Update water count for today
-  useEffect(() => {
-    setWaterHistory((prevHistory) => updateTodayWaterCount(prevHistory, waterCount))
-  }, [waterCount])
-
+  
   const addWater = async () => {
-    if (waterCount < 8) {
+    if (waterCount < 99) {
       setIsAnimating(true)
       setTimeout(async () => {
         const newCount = waterCount + 1
@@ -48,12 +59,18 @@ export default function App() {
 
         // Save to server
         try {
-          await saveWaterDataToServer({
+          const response = await saveWaterDataToServer({
             waterCount: newCount,
             action: "add",
             timestamp: new Date().toISOString(),
           })
           console.log("✅ Water data saved to server")
+
+          // Update water history with the new count
+          setWaterHistory((prev) => ({
+            ...prev,
+            [new Date().toISOString().split("T")[0]]: newCount,
+          }))
         } catch (error) {
           console.error("❌ Error saving water data to server:", error)
         }
@@ -71,12 +88,18 @@ export default function App() {
 
         // Save to server
         try {
-          await saveWaterDataToServer({
+          const response = await saveWaterDataToServer({
             waterCount: newCount,
             action: "decrease",
             timestamp: new Date().toISOString(),
           })
           console.log("✅ Water data saved to server")
+
+          // Update water history with the new count
+          setWaterHistory((prev) => ({
+            ...prev,
+            [new Date().toISOString().split("T")[0]]: newCount,
+          }))
         } catch (error) {
           console.error("❌ Error saving water data to server:", error)
         }
@@ -88,6 +111,15 @@ export default function App() {
   const fillPercentage = calculateFillPercentage(waterCount)
   const timeLeftText = calculateTimeRemaining()
   const weekDays = getCurrentWeekDays()
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-100 p-6 text-gray-800 items-center justify-center">
+        <div className="text-2xl font-bold">Loading water data...</div>
+      </div>
+    )
+  }
 
   // Settings page
   if (currentPage === "settings") {
