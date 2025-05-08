@@ -30,39 +30,69 @@ export default function DiaryPage() {
   // Save diary entry
   const saveDiary = async () => {
     if (rating === 0 && note.trim() === "") return;
-
+  
     const newEntry = {
       diaryDate: todayStr,
       diaryRate: rating,
       diaryNote: note,
     };
   
-    const updatedHistory = [
-      newEntry,
-      ...history.filter((entry) => entry.diaryDate !== todayStr),
-    ];
-
-    setHistory(updatedHistory);
-    localStorage.setItem("diaryHistory", JSON.stringify(updatedHistory));
-
     try {
       await axios.post("http://localhost:3000/api/diary", newEntry, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-
-    } catch (err) {
-      console.error("Network error saving diary:", err);
-      return;
-    }
   
-    setRating(0);
-    setNote("");
+      // Re-fetch updated history after saving
+      const res = await axios.get("http://localhost:3000/api/diary");
+      if (res.status === 200) {
+        setHistory(res.data);
+      }
+  
+      setRating(0);
+      setNote("");
+    } catch (err) {
+      console.error("Error saving diary:", err);
+    }
   };
+  
+  // const saveDiary = async () => {
+  //   if (rating === 0 && note.trim() === "") return;
+
+  //   const newEntry = {
+  //     diaryDate: todayStr,
+  //     diaryRate: rating,
+  //     diaryNote: note,
+  //   };
+  
+  //   const updatedHistory = [
+  //     newEntry,
+  //     ...history.filter((entry) => entry.diaryDate !== todayStr),
+  //   ];
+
+  //   setHistory(updatedHistory);
+  //   localStorage.setItem("diaryHistory", JSON.stringify(updatedHistory));
+
+  //   try {
+  //     await axios.post("http://localhost:3000/api/diary", newEntry, {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+
+  //   } catch (err) {
+  //     console.error("Network error saving diary:", err);
+  //     return;
+  //   }
+  
+  //   setRating(0);
+  //   setNote("");
+  // };
   
 
   // Get number of days in a month
+  
   const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
 
   // Color based on rating
@@ -214,7 +244,8 @@ export default function DiaryPage() {
         </section>
 
         <section className="flex-1 flex flex-col gap-8">
-          <div className="bg-white p-8 rounded-2xl shadow-md flex-1 overflow-auto">
+          {/* <div className="bg-white p-8 rounded-2xl shadow-md flex-1 overflow-auto"> */}
+          <div className="bg-white p-8 rounded-2xl shadow-md flex-1 h-[500px] overflow-y-auto scroll-smooth">
             <h2 className="text-3xl font-semibold mb-6">Diary History</h2>
             {getEntriesForMonth().length > 0 ? (
               <div className="space-y-6">
