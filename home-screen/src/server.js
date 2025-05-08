@@ -54,6 +54,7 @@ app.post("/api/food", async (req, res) => {
     });
 
     res.status(201).json({ message: "food saved successfully", id: result.insertedId });
+
   } catch (err) {
     console.error("Database error (food):", err);
     res.status(500).json({ message: "Server error" });
@@ -251,6 +252,102 @@ app.get("/api/friend", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+// ********** NOTIFICATION TRACKING ENDPOINTS **********
+
+
+// app.post("/api/dailyGoal", async (req, res) => {
+//   const { goalCaloriesFood, goalCaloriesSport, water } = req.body;
+//   if (goalCaloriesFood === undefined || goalCaloriesSport === undefined) {
+//     return res.status(400).json({ message: "Missing daily goal data" });
+//   }
+
+//   try {
+//     const db = client.db(dbName);
+//     const goalCollection = db.collection("dailyGoals");
+
+//     const todayStart = new Date();
+//     todayStart.setHours(0, 0, 0, 0);
+
+//     await goalCollection.deleteMany({ date: { $gte: todayStart } });
+
+//     const todayDate = new Date();
+//     todayDate.setHours(0, 0, 0, 0);
+
+//     const result = await goalCollection.insertOne({
+//       date: todayDate,
+//       goalCaloriesFood,
+//       goalCaloriesSport,
+//     });
+
+//     res.status(201).json({ message: "Daily goal saved", id: result.insertedId });
+//   } catch (err) {
+//     console.error("Error saving daily goal:", err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
+
+// app.post("/api/noti", async (req, res) => {
+//   try {
+//     const db = client.db(dbName);
+//     const foodCollection = db.collection("food");
+//     const sportCollection = db.collection("sport");
+//     const goalCollection = db.collection("dailyGoals");
+//     const notificationCollection = db.collection("notifications");
+
+//     const todayStart = new Date();
+//     todayStart.setHours(0, 0, 0, 0);
+//     const todayEnd = new Date();
+//     todayEnd.setHours(23, 59, 59, 999);
+
+//     const foodToday = await foodCollection.find({
+//       createdAt: { $gte: todayStart, $lte: todayEnd }
+//     }).toArray();
+
+//     const sportToday = await sportCollection.find({
+//       createdAt: { $gte: todayStart, $lte: todayEnd }
+//     }).toArray();
+
+//     const totalFoodCalories = foodToday.reduce((sum, item) => sum + (item.totalCals || 0), 0);
+//     const totalSportCalories = sportToday.reduce((sum, item) => sum + (item.calories || 0), 0);
+
+//     const goalToday = await goalCollection.findOne({
+//       date: { $gte: todayStart, $lte: todayEnd }
+//     });
+
+//     let notifications = [];
+
+//     if (goalToday) {
+//       const foodProgress = (totalFoodCalories / goalToday.goalCaloriesFood) * 100;
+//       const sportProgress = (totalSportCalories / goalToday.goalCaloriesSport) * 100;
+//       const waterProgress = (goalToday.water?.consumed / goalToday.water?.target) * 100;
+
+//       if (foodProgress > 100) notifications.push("⚠️ Food calorie intake exceeded");
+//       if (sportProgress >= 100) notifications.push("✅ Exercise calories goal achieved");
+//       if (waterProgress >= 100) notifications.push("✅ Water intake goal achieved");
+//     } else {
+//       notifications.push("ℹ️ No goal set for today");
+//     }
+
+//     if (notifications.length > 0) {
+//       await notificationCollection.insertOne({
+//         date: new Date(),
+//         messages: notifications,
+//         foodCalories: totalFoodCalories,
+//         sportCalories: totalSportCalories
+//       });
+//     }
+
+//     res.status(200).json({
+//       foodCalories: totalFoodCalories,
+//       sportCalories: totalSportCalories,
+//       messages: notifications
+//     });
+//   } catch (err) {
+//     console.error("❌ Error in /api/noti:", err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
 
 // Start server
