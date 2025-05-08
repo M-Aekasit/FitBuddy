@@ -1,13 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { calculateCaloriesFromSport } from "../utils/SportCalculator";
+import axios from "axios";
+import { Link } from "react-router-dom";
 
 export default function SportPage() {
-  const [page, setPage] = useState("menu");
-  const [selectedSport, setSelectedSport] = useState(null);
-  const [trackedCalories, setTrackedCalories] = useState(0);
-  const [inputData, setInputData] = useState({ distance: "", weight: "", time: "" });
-
   const navigate = useNavigate();
+
+  const getTodayKey = () => {
+    const today = new Date().toISOString().split("T")[0];
+    return `trackedCalories_${today}`;
+  };
+
+  const todayKey = getTodayKey();
+
+  const [page, setPage] = useState("sport");
+  const [selectedSport, setSelectedSport] = useState(null);
+
+  const [trackedCalories, setTrackedCalories] = useState(() => {
+    const stored = localStorage.getItem(todayKey);
+    const parsed = parseInt(stored);
+    return !isNaN(parsed) ? parsed : 0;
+  });
+
+  const [inputData, setInputData] = useState({ distance: "", weight: "", time: "" });
+  
+  const calorieGoal = 850;
+  const progressPercentage = Math.min((trackedCalories / calorieGoal) * 100, 100);
 
   const sports = [
     { id: 1, name: "Running", type: "RUNNING", image: "/images/sport/run.png" },
@@ -33,36 +52,59 @@ export default function SportPage() {
     setInputData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const calculateCalories = () => {
-    const { distance, weight, time } = inputData;
-    let calories = 0;
+  const calculateCalories = async () => {
+    const calories = calculateCaloriesFromSport(selectedSport.type, inputData);
+    const newCalories = trackedCalories + calories;
+    setTrackedCalories(newCalories);
+    localStorage.setItem(todayKey, newCalories.toString());
+
+    let relevantInputData = { time: parseFloat(inputData.time) };
 
     if (selectedSport.type === "RUNNING") {
-      calories = weight * distance * 1.036;
-    } else {
-      const caloriesPerHour = {
-        CYCLING: 450,
-        BADMINTON: 350,
-        ZUMBA: 500,
-        "HULA-HOOP": 430,
-        WALKING: 282,
-        AEROBIC: 363,
-        TENNIS: 728,
-        KARATE: 750,
-        SWIMMING: 550,
+      const validDistance = parseFloat(inputData.distance) || 0;
+      const validWeight = parseFloat(inputData.weight) || 0;
+
+      relevantInputData = {
+        ...relevantInputData,
+        distance: validDistance,
+        weight: validWeight,
       };
-      calories = time * (caloriesPerHour[selectedSport.type] || 0);
     }
 
-    setTrackedCalories(trackedCalories + calories);
-    setPage("menu");
+    const dataToSend = {
+      sportType: selectedSport.type,
+      inputData: relevantInputData,
+      calories: Math.round(calories),
+      timestamp: new Date().toISOString(),
+    };
+
+    try {
+      console.log("Sending data:", dataToSend);
+      await axios.post("http://localhost:3000/api/sport", dataToSend);
+      console.log("Saved to backend");
+    } catch (error) {
+      console.error("Error saving sport data:", error);
+    }
+
+    setPage("sport");
   };
+
+  const resetOutdatedData = () => {
+    const keys = Object.keys(localStorage);
+    keys.forEach((key) => {
+      if (key.startsWith("trackedCalories_") && key !== todayKey) {
+        localStorage.removeItem(key);
+      }
+    });
+  };
+
+  useEffect(() => {
+    resetOutdatedData();
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 p-6 text-gray-800">
-
-      {/* Back Home */}
-      {page === "menu" && (
+      {page === "sport" && (
         <div className="flex items-center space-x-4">
           <button
             onClick={() => navigate('/HealthDashboard')}
@@ -73,19 +115,27 @@ export default function SportPage() {
         </div>
       )}
 
-      {/* Header */}
       <header className="text-center">
-        <h1 className="text-5xl font-bold mb-8">Sport Tracker</h1>
+        <h1 className="text-5xl font-bold mb-2">Exercise Tracker</h1>
       </header>
 
-      {/* Calorie Tracker */}
-      <div className="text-center text-3xl font-medium text-gray-500">
-        Total Calories Burned : {Math.round(trackedCalories)} kcal
-      </div>
+      <Link to="/HealthDashboard" className="block mb-4">
+        <div className="mb-4">
+          <div className="flex justify-between text-gray-600 font-medium mb-1">
+            <span>🏃 Calories Burned</span>
+            <span>{Math.round(trackedCalories)} / {calorieGoal} kcal</span>
+          </div>
+          <div className="w-full h-5 bg-gray-200 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-orange-400 transition-all" 
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
+        </div>
+      </Link>
 
-      {/* Content */}
       <main className="flex-1 p-8">
-        {page === "menu" && (
+        {page === "sport" && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
             {sports.map((sport) => (
               <div
@@ -110,9 +160,9 @@ export default function SportPage() {
           <div className="max-w-3xl mx-auto">
             <button
               className="text-blue-600 text-xl hover:underline mb-4"
-              onClick={() => setPage("menu")}
+              onClick={() => setPage("sport")}
             >
-              ← Back to Menu
+              ← Back to Sport
             </button>
 
             <div className="bg-white p-8 rounded-2xl shadow-lg">
@@ -121,10 +171,10 @@ export default function SportPage() {
                 alt={selectedSport.name}
                 className="w-full h-140 object-cover rounded-lg mb-6"
               />
+              <h2 className="text-4xl font-extrabold text-center text-yellow-800 mb-6">
+                {selectedSport.name}
+              </h2>
 
-              <h2 className="text-4xl font-extrabold text-center text-yellow-800 mb-6">{selectedSport.name}</h2>
-
-              {/* Input fields */}
               <div className="text-center text-lg space-y-6">
                 {selectedSport.type === "RUNNING" && (
                   <>

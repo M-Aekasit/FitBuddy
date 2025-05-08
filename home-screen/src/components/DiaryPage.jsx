@@ -1,59 +1,100 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from 'axios';
 
 export default function DiaryPage() {
   const [rating, setRating] = useState(0);
   const [note, setNote] = useState("");
-  const [history, setHistory] = useState(() => {
-    const saved = localStorage.getItem("diaryHistory");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [history, setHistory] = useState([]);
+  const [currentDate, setCurrentDate] = useState(new Date());
 
-  const getToday = () => {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  };
+  const todayStr = new Date().toISOString().split("T")[0];
 
-  const todayStr = getToday();
+  // Fetch diary entries on mount
+  useEffect(() => {
+    const fetchDiary = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/api/diary");
+        if (res.ok) {
+          const data = await res.json();
+          setHistory(data);
+        } else {
+          console.error("Failed to fetch diary entries");
+        }
+      } catch (err) {
+        console.error("Error fetching diary:", err);
+      }
+    };
+    fetchDiary();
+  }, []);
 
-  const saveDiary = () => {
+  // Save diary entry
+  const saveDiary = async () => {
     if (rating === 0 && note.trim() === "") return;
-    const newEntry = { date: todayStr, rating, note };
-    const updatedHistory = [newEntry, ...history.filter((entry) => entry.date !== todayStr)];
+
+    const newEntry = {
+      diaryDate: todayStr,
+      diaryRate: rating,
+      diaryNote: note,
+    };
+  
+    const updatedHistory = [
+      newEntry,
+      ...history.filter((entry) => entry.diaryDate !== todayStr),
+    ];
 
     setHistory(updatedHistory);
     localStorage.setItem("diaryHistory", JSON.stringify(updatedHistory));
 
+    try {
+      await axios.post("http://localhost:3000/api/diary", newEntry, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+    } catch (err) {
+      console.error("Network error saving diary:", err);
+      return;
+    }
+  
     setRating(0);
     setNote("");
   };
+  
 
+  // Get number of days in a month
   const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
 
+  // Color based on rating
   const getColorByRating = (rate) => {
-    switch (rate) {
-      case 1: return "bg-red-300";
-      case 2: return "bg-orange-300";
-      case 3: return "bg-yellow-300";
-      case 4: return "bg-blue-300";
-      case 5: return "bg-green-300";
-      default: return "bg-white";
-    }
+    return {
+      1: "bg-red-300",
+      2: "bg-orange-300",
+      3: "bg-yellow-300",
+      4: "bg-blue-300",
+      5: "bg-green-300",
+    }[rate] || "bg-white";
+  };
+
+  // Filter entries for selected month
+  const getEntriesForMonth = () => {
+    const month = currentDate.getMonth() + 1;
+    const year = currentDate.getFullYear();
+    return history.filter((entry) => {
+      const [entryYear, entryMonth] = entry.diaryDate.split("-").map(Number);
+      return entryYear === year && entryMonth === month;
+    });
   };
 
   const renderCalendar = () => {
-    const now = new Date();
-    const month = now.getMonth();
-    const year = now.getFullYear();
+    const month = currentDate.getMonth();
+    const year = currentDate.getFullYear();
     const days = daysInMonth(month, year);
-
     const firstDayOfMonth = new Date(year, month, 1).getDay(); // Sunday = 0
 
     const ratingByDate = {};
-    history.forEach((entry) => {
-      ratingByDate[entry.date] = entry.rating;
+    getEntriesForMonth().forEach((entry) => {
+      ratingByDate[entry.diaryDate] = entry.diaryRate;
     });
 
     const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -69,14 +110,41 @@ export default function DiaryPage() {
 
     return (
       <div className="flex flex-col gap-2">
-        {/* Weekdays Header */}
+        <div className="flex justify-between items-center mb-4">
+          <button
+            className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+            onClick={() =>
+              setCurrentDate(
+                new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
+              )
+            }
+          >
+            ←
+          </button>
+          <h3 className="text-lg font-semibold">
+            {currentDate.toLocaleString("default", {
+              month: "long",
+              year: "numeric",
+            })}
+          </h3>
+          <button
+            className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+            onClick={() =>
+              setCurrentDate(
+                new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+              )
+            }
+          >
+            →
+          </button>
+        </div>
+
         <div className="grid grid-cols-7 text-center text-gray-400 text-sm mb-2">
           {weekdays.map((day) => (
             <div key={day}>{day}</div>
           ))}
         </div>
 
-        {/* Calendar Days */}
         <div className="grid grid-cols-7 gap-2">
           {cells.map((day, index) => {
             if (day === null) {
@@ -84,10 +152,7 @@ export default function DiaryPage() {
             }
 
             const date = new Date(year, month, day);
-            const yyyy = date.getFullYear();
-            const mm = String(date.getMonth() + 1).padStart(2, '0');
-            const dd = String(date.getDate()).padStart(2, '0');
-            const dateStr = `${yyyy}-${mm}-${dd}`;
+            const dateStr = date.toLocaleDateString("en-CA");
             const isToday = dateStr === todayStr;
             const bgColor = getColorByRating(ratingByDate[dateStr]);
 
@@ -95,7 +160,7 @@ export default function DiaryPage() {
               <div key={index} className="flex justify-center items-center">
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold
-                    ${isToday ? "bg-blue-500 text-white" : bgColor}
+                    ${isToday ? `border-2 border-black-500 text-black-500 ${bgColor}` : bgColor}
                     ${!isToday && bgColor === "bg-white" ? "text-gray-500" : ""}
                     hover:scale-110 transition-transform`}
                 >
@@ -111,20 +176,16 @@ export default function DiaryPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 p-6 text-gray-800">
-      {/* Header */}
       <header className="text-center mb-8">
         <h1 className="text-5xl font-bold mb-2">Diary</h1>
         <p className="text-xl text-gray-500">{new Date().toDateString()}</p>
       </header>
 
-      {/* Main */}
       <main className="flex flex-col lg:flex-row gap-8 flex-grow">
-        {/* Left: Input */}
         <section className="flex-1 bg-white p-8 rounded-2xl shadow-md">
           <h2 className="text-3xl font-semibold mb-6">Rate Your Day</h2>
 
-          {/* Rating Stars */}
-          <div className="flex justify-center gap-4 mb-6 text-5xl">
+          <div className="flex justify-center gap-8 mb-6 text-6xl">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
                 key={star}
@@ -136,16 +197,14 @@ export default function DiaryPage() {
             ))}
           </div>
 
-          {/* Diary Note */}
-          <h2 className="text-3xl font-semibold mb-2">Diary Note</h2>
+          <h2 className="text-3xl font-semibold mb-6">Diary Note</h2>
           <textarea
-            className="w-full h-32 p-4 border rounded-xl resize-none text-lg mb-6"
+            className="w-full h-80 p-4 border rounded-xl resize-none text-lg mb-6"
             placeholder="Write about your day..."
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />
 
-          {/* Save Button */}
           <button
             onClick={saveDiary}
             className="w-full py-4 bg-green-500 text-white rounded-xl text-2xl hover:bg-green-600 transition"
@@ -154,36 +213,33 @@ export default function DiaryPage() {
           </button>
         </section>
 
-        {/* Right: History and Calendar */}
         <section className="flex-1 flex flex-col gap-8">
-          {/* Diary History */}
           <div className="bg-white p-8 rounded-2xl shadow-md flex-1 overflow-auto">
             <h2 className="text-3xl font-semibold mb-6">Diary History</h2>
-            {history.length > 0 ? (
+            {getEntriesForMonth().length > 0 ? (
               <div className="space-y-6">
-                {history.map((entry, idx) => (
+                  {getEntriesForMonth().sort((a, b) => new Date(b.diaryDate) - new Date(a.diaryDate)).map((entry, idx) => (
                   <div key={idx} className="p-4 bg-gray-100 rounded-lg">
-                    <p className="font-semibold text-lg">{entry.date}</p>
+                    <p className="font-semibold text-lg">{entry.diaryDate}</p>
                     <div className="flex gap-1 text-2xl mt-1">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <span
                           key={star}
-                          className={entry.rating >= star ? "text-yellow-400" : "text-gray-300"}
+                          className={entry.diaryRate >= star ? "text-yellow-400" : "text-gray-300"}
                         >
                           ★
                         </span>
                       ))}
                     </div>
-                    <p className="mt-2 text-gray-700">{entry.note}</p>
+                    <p className="mt-2 text-gray-700">{entry.diaryNote}</p>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-400">No diary entries yet.</p>
+              <p className="text-gray-400">No entries for this month.</p>
             )}
           </div>
 
-          {/* Mood Calendar */}
           <div className="bg-white p-8 rounded-2xl shadow-md">
             <h2 className="text-3xl font-semibold mb-6">Mood Calendar</h2>
             {renderCalendar()}
