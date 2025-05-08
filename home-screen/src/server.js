@@ -1,259 +1,269 @@
-import express from "express";
-import cors from "cors";
-import { MongoClient } from "mongodb";
+// import express from "express";
+// import cors from "cors";
+// import { MongoClient } from "mongodb";
 
-const app = express();
-const port = 3000;
-const mongoUrl = "mongodb://localhost:27017";
-const dbName = "FitBuddy-DataBase"; 
+// const app = express();
+// const port = 3000;
+// const mongoUrl = "mongodb://localhost:27017";
+// const dbName = "FitBuddy-DataBase";
 
-// MongoDB client
-const client = new MongoClient(mongoUrl);
+// // MongoDB client
+// const client = new MongoClient(mongoUrl);
 
-// Connect to MongoDB
-async function connectDB() {
-  try {
-    await client.connect();
-    console.log("✅ Connected to MongoDB");
-  } catch (err) {
-    console.error("❌ MongoDB connection error:", err);
-    process.exit(1);
-  }
-}
-connectDB();
+// // Connect to MongoDB
+// async function connectDB() {
+//   try {
+//     await client.connect();
+//     console.log("✅ Connected to MongoDB");
+//   } catch (err) {
+//     console.error("❌ MongoDB connection error:", err);
+//     process.exit(1);
+//   }
+// }
+// connectDB();
 
-app.use(cors());
-app.use(express.json());
+// app.use(cors());
+// app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("FitBuddy API is running.");
-});
+// app.get("/", (req, res) => {
+//   res.send("FitBuddy API is running.");
+// });
 
-// POST - Save tracking data
-// GET - Fetch tracking data
+// // POST - Save tracking data
+// // GET - Fetch tracking data
 
+// // ********** FOOD TRACKING ENDPOINTS **********
 
-// ********** FOOD TRACKING ENDPOINTS **********
+// app.post("/api/food", async (req, res) => {
+//   const { foodName, foodType, calories } = req.body;
 
-app.post("/api/food", async (req, res) => {
-  const { foodName, foodType, calories } = req.body;
+//   if (!foodName || !foodType || calories === undefined) {
+//     return res.status(400).json({ message: "Missing food data" });
+//   }
 
-  if (!foodName || !foodType || calories === undefined) {
-    return res.status(400).json({ message: "Missing food data" });
-  }
+//   try {
+//     const db = client.db(dbName);
+//     const foodCollection = db.collection("food");
 
-  try {
-    const db = client.db(dbName);
-    const foodCollection = db.collection("food");
+//     const result = await foodCollection.insertOne({
+//       foodName,
+//       foodType,
+//       calories,
+//       createdAt: new Date(),
+//     });
 
-    const result = await foodCollection.insertOne({
-      foodName,
-      foodType,
-      calories,
-      createdAt: new Date()
-    });
+//     res
+//       .status(201)
+//       .json({ message: "food saved successfully", id: result.insertedId });
+//   } catch (err) {
+//     console.error("Database error (food):", err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
-    res.status(201).json({ message: "food saved successfully", id: result.insertedId });
-  } catch (err) {
-    console.error("Database error (food):", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+// app.get("/api/food", async (req, res) => {
+//   try {
+//     const db = client.db(dbName);
+//     const foodCollection = db.collection("food");
+//     const foodItems = await foodCollection.find().toArray();
+//     const formattedFoodItems = foodItems.map((item) => ({
+//       _id: item._id,
+//       foodName: item.foodName,
+//       foodType: item.foodType,
+//       calories: item.calories,
+//       createdAt: new Date(item.createdAt).toLocaleString("th-TH", {
+//         timeZone: "Asia/Bangkok",
+//       }),
+//     }));
 
-app.get("/api/food", async (req, res) => {
-  try {
-    const db = client.db(dbName);
-    const foodCollection = db.collection("food");
-    const foodItems = await foodCollection.find().toArray();
-    const formattedFoodItems = foodItems.map(item => ({
-      _id: item._id,
-      foodName: item.foodName,
-      foodType: item.foodType,
-      calories: item.calories,
-      createdAt: new Date(item.createdAt).toLocaleString("th-TH", {
-        timeZone: "Asia/Bangkok"
-      })
-    }));
+//     res.json(formattedFoodItems);
+//   } catch (err) {
+//     console.error("Error fetching food data:", err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
-    res.json(formattedFoodItems);
-  } catch (err) {
-    console.error("Error fetching food data:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+// // ********** SPORTS TRACKING ENDPOINTS **********
 
-// ********** SPORTS TRACKING ENDPOINTS **********
+// app.post("/api/sport", async (req, res) => {
+//   const { sportType, inputData, calories } = req.body;
 
-app.post("/api/sport", async (req, res) => {
-  const { sportType, inputData, calories } = req.body;
+//   if (!sportType || !inputData || calories === undefined) {
+//     return res.status(400).json({ message: "Missing sport data" });
+//   }
 
-  if (!sportType || !inputData || calories === undefined) {
-    return res.status(400).json({ message: "Missing sport data" });
-  }
+//   try {
+//     const db = client.db(dbName);
+//     const sportCollection = db.collection("sport");
 
-  try {
-    const db = client.db(dbName);
-    const sportCollection = db.collection("sport");
+//     const result = await sportCollection.insertOne({
+//       sportType,
+//       inputData,
+//       calories,
+//       createdAt: new Date(),
+//     });
 
-    const result = await sportCollection.insertOne({
-      sportType,
-      inputData,
-      calories,
-      createdAt: new Date()
-    });
+//     res
+//       .status(201)
+//       .json({ message: "sport saved successfully", id: result.insertedId });
+//   } catch (err) {
+//     console.error("Database error (sport):", err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
-    res.status(201).json({ message: "sport saved successfully", id: result.insertedId });
-  } catch (err) {
-    console.error("Database error (sport):", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+// app.get("/api/sport", async (req, res) => {
+//   try {
+//     const db = client.db(dbName);
+//     const sportCollection = db.collection("sport");
+//     const sportItems = await sportCollection.find().toArray();
+//     const formattedSportItems = sportItems.map((item) => ({
+//       _id: item._id,
+//       sportType: item.sportType,
+//       inputData: item.inputData,
+//       calories: item.calories,
+//       createdAt: new Date(item.createdAt).toLocaleString("th-TH", {
+//         timeZone: "Asia/Bangkok",
+//       }),
+//     }));
 
-app.get("/api/sport", async (req, res) => {
-  try {
-    const db = client.db(dbName);
-    const sportCollection = db.collection("sport");
-    const sportItems = await sportCollection.find().toArray();
-    const formattedSportItems = sportItems.map(item => ({
-      _id: item._id,
-      sportType: item.sportType,
-      inputData: item.inputData,
-      calories: item.calories,
-      createdAt: new Date(item.createdAt).toLocaleString("th-TH", {
-        timeZone: "Asia/Bangkok"
-      })
-    }));
+//     res.json(formattedSportItems);
+//   } catch (err) {
+//     console.error("Error fetching sport data:", err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
-    res.json(formattedSportItems);
-  } catch (err) {
-    console.error("Error fetching sport data:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+// // ********** DIARY TRACKING ENDPOINTS **********
 
+// app.post("/api/diary", async (req, res) => {
+//   const { diaryDate, diaryRate, diaryNote } = req.body;
 
-// ********** DIARY TRACKING ENDPOINTS **********
+//   if (!diaryDate || diaryRate === undefined || diaryNote === undefined) {
+//     return res.status(400).json({ message: "Missing diary data" });
+//   }
 
-app.post("/api/diary", async (req, res) => {
-  const { diaryDate, diaryRate, diaryNote } = req.body;
+//   try {
+//     const db = client.db(dbName);
+//     const diaryCollection = db.collection("diary");
 
-  if (!diaryDate || diaryRate === undefined || diaryNote === undefined){
-    return res.status(400).json({ message: "Missing diary data" });
-  }
+//     const result = await diaryCollection.insertOne({
+//       diaryDate,
+//       diaryRate,
+//       diaryNote,
+//     });
 
-  try {
-    const db = client.db(dbName);
-    const diaryCollection = db.collection("diary");
+//     res
+//       .status(201)
+//       .json({ message: "diary saved successfully", id: result.insertedId });
+//   } catch (err) {
+//     console.error("Database error (diary):", err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
-    const result = await diaryCollection.insertOne({
-      diaryDate,
-      diaryRate,
-      diaryNote,
-    });
+// app.get("/api/diary", async (req, res) => {
+//   try {
+//     const db = client.db(dbName);
+//     const diaryCollection = db.collection("diary");
+//     const diaryItems = await diaryCollection.find().toArray();
 
-    res.status(201).json({ message: "diary saved successfully", id: result.insertedId });
-  } catch (err) {
-    console.error("Database error (diary):", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+//     const formattedDiaryItems = diaryItems.map((item) => ({
+//       _id: item._id,
+//       diaryDate: item.diaryDate,
+//       diaryRate: item.diaryRate,
+//       diaryNote: item.diaryNote,
+//     }));
 
-app.get("/api/diary", async (req, res) => {
-  try {
-    const db = client.db(dbName);
-    const diaryCollection = db.collection("diary");
-    const diaryItems = await diaryCollection.find().toArray();
+//     res.json(formattedDiaryItems);
+//   } catch (err) {
+//     console.error("Error fetching diary data:", err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
-    const formattedDiaryItems = diaryItems.map(item => ({
-      _id: item._id,
-      diaryDate: item.diaryDate,
-      diaryRate: item.diaryRate,
-      diaryNote: item.diaryNote,
-    }));
-    
+// // ********** FRIEND TRACKING ENDPOINTS **********
 
-    res.json(formattedDiaryItems);
-  } catch (err) {
-    console.error("Error fetching diary data:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+// app.post("/api/friend", async (req, res) => {
+//   const { name, calories, water, sender } = req.body;
 
-// ********** FRIEND TRACKING ENDPOINTS **********
+//   if (!name || !calories || !water || !sender) {
+//     return res.status(400).json({ message: "Missing friend data" });
+//   }
 
-app.post("/api/friend", async (req, res) => {
-  const { name, calories, water, sender } = req.body;
+//   try {
+//     const db = client.db(dbName);
+//     const friendCollection = db.collection("friend");
 
-  if (!name || !calories || !water || !sender) {
-    return res.status(400).json({ message: "Missing friend data" });
-  }
+//     const result = await friendCollection.insertOne({
+//       name,
+//       sender,
+//       date: new Date(),
+//       calories: { burned: calories.burned, target: calories.target },
+//       water: { consumed: water.consumed, target: water.target },
+//     });
 
-  try {
-    const db = client.db(dbName);
-    const friendCollection = db.collection("friend");
+//     res
+//       .status(201)
+//       .json({
+//         message: "Friend cheer saved successfully",
+//         id: result.insertedId,
+//       });
+//   } catch (err) {
+//     console.error("❌ Database error (friend):", err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
-    const result = await friendCollection.insertOne({
-      name,
-      sender,
-      date: new Date(),
-      calories: { burned: calories.burned, target: calories.target },
-      water: { consumed: water.consumed, target: water.target },
-    });
+// app.get("/api/friend", async (req, res) => {
+//   try {
+//     const db = client.db(dbName);
+//     const statsCollection = db.collection("friendStats");
+//     const friendCollection = db.collection("friend");
 
-    res.status(201).json({ message: "Friend cheer saved successfully", id: result.insertedId });
-  } catch (err) {
-    console.error("❌ Database error (friend):", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+//     const todayStart = new Date();
+//     todayStart.setHours(0, 0, 0, 0);
 
-app.get("/api/friend", async (req, res) => {
-  try {
-    const db = client.db(dbName);
-    const statsCollection = db.collection("friendStats");
-    const friendCollection = db.collection("friend");
+//     const todayEnd = new Date();
+//     todayEnd.setHours(23, 59, 59, 999);
 
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
+//     const stats = await statsCollection
+//       .find({
+//         date: { $gte: todayStart, $lte: todayEnd },
+//       })
+//       .toArray();
 
-    const todayEnd = new Date();
-    todayEnd.setHours(23, 59, 59, 999);
+//     const cheers = await friendCollection
+//       .find({
+//         date: { $gte: todayStart, $lte: todayEnd },
+//       })
+//       .toArray();
 
-    const stats = await statsCollection.find({
-      date: { $gte: todayStart, $lte: todayEnd }
-    }).toArray();
+//     const cheerMap = {};
+//     cheers.forEach((cheer) => {
+//       const friendName = cheer.name;
+//       if (!cheerMap[friendName]) {
+//         cheerMap[friendName] = [cheer.sender];
+//       } else {
+//         cheerMap[friendName].push(cheer.sender);
+//       }
+//     });
 
-    const cheers = await friendCollection.find({
-      date: { $gte: todayStart, $lte: todayEnd }
-    }).toArray();
-    
+//     const summary = stats.map((stat) => ({
+//       name: stat.name,
+//       caloriesBurned: `${stat.calories.burned}/${stat.calories.target}`,
+//       waterIntake: `${stat.water.consumed}/${stat.water.target}`,
+//       cheerFrom: cheerMap[stat.name] ? cheerMap[stat.name].join(", ") : "-",
+//     }));
 
-    const cheerMap = {};
-    cheers.forEach(cheer => {
-      const friendName = cheer.name;
-      if (!cheerMap[friendName]) {
-        cheerMap[friendName] = [cheer.sender];
-      } else {
-        cheerMap[friendName].push(cheer.sender);
-      }
-    });
+//     res.status(200).json(summary);
+//   } catch (err) {
+//     console.error("❌ Error generating friend summary:", err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
-    const summary = stats.map(stat => ({
-      name: stat.name,
-      caloriesBurned: `${stat.calories.burned}/${stat.calories.target}`,
-      waterIntake: `${stat.water.consumed}/${stat.water.target}`,
-      cheerFrom: cheerMap[stat.name] ? cheerMap[stat.name].join(", ") : "-"
-    }));
-
-    res.status(200).json(summary);
-  } catch (err) {
-    console.error("❌ Error generating friend summary:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-
-// Start server
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+// // Start server
+// app.listen(port, () => {
+//   console.log(`Server running at http://localhost:${port}`);
+// });
