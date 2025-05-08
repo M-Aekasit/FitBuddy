@@ -23,22 +23,69 @@ export default function SportPage() {
     return !isNaN(parsed) ? parsed : 0;
   });
 
-  const [inputData, setInputData] = useState({ distance: "", weight: "", time: "" });
-  
+  const [inputData, setInputData] = useState({
+    distance: "",
+    weight: "",
+    time: "",
+  });
+
   const calorieGoal = 850;
-  const progressPercentage = Math.min((trackedCalories / calorieGoal) * 100, 100);
+  const progressPercentage = Math.min(
+    (trackedCalories / calorieGoal) * 100,
+    100
+  );
 
   const sports = [
     { id: 1, name: "Running", type: "RUNNING", image: "/images/sport/run.png" },
-    { id: 2, name: "Cycling", type: "CYCLING", image: "/images/sport/cycling.png" },
-    { id: 3, name: "Badminton", type: "BADMINTON", image: "/images/sport/badminton.png" },
+    {
+      id: 2,
+      name: "Cycling",
+      type: "CYCLING",
+      image: "/images/sport/cycling.png",
+    },
+    {
+      id: 3,
+      name: "Badminton",
+      type: "BADMINTON",
+      image: "/images/sport/badminton.png",
+    },
     { id: 4, name: "Zumba", type: "ZUMBA", image: "/images/sport/zumba.png" },
-    { id: 5, name: "Hula Hoop", type: "HULA-HOOP", image: "/images/sport/hulahoop.png" },
-    { id: 6, name: "Walking", type: "WALKING", image: "/images/sport/walk.png" },
-    { id: 7, name: "Aerobic", type: "AEROBIC", image: "/images/sport/aerobic.png" },
-    { id: 8, name: "Tennis", type: "TENNIS", image: "/images/sport/tennis.png" },
-    { id: 9, name: "Karate", type: "KARATE", image: "/images/sport/karate.png" },
-    { id: 10, name: "Swimming", type: "SWIMMING", image: "/images/sport/swimming.png" },
+    {
+      id: 5,
+      name: "Hula Hoop",
+      type: "HULA-HOOP",
+      image: "/images/sport/hulahoop.png",
+    },
+    {
+      id: 6,
+      name: "Walking",
+      type: "WALKING",
+      image: "/images/sport/walk.png",
+    },
+    {
+      id: 7,
+      name: "Aerobic",
+      type: "AEROBIC",
+      image: "/images/sport/aerobic.png",
+    },
+    {
+      id: 8,
+      name: "Tennis",
+      type: "TENNIS",
+      image: "/images/sport/tennis.png",
+    },
+    {
+      id: 9,
+      name: "Karate",
+      type: "KARATE",
+      image: "/images/sport/karate.png",
+    },
+    {
+      id: 10,
+      name: "Swimming",
+      type: "SWIMMING",
+      image: "/images/sport/swimming.png",
+    },
   ];
 
   const selectSport = (sport) => {
@@ -80,7 +127,7 @@ export default function SportPage() {
 
     try {
       console.log("Sending data:", dataToSend);
-      await axios.post("http://localhost:3000/api/sport", dataToSend);
+      await axios.post("http://localhost:5000/api/sport", dataToSend);
       console.log("Saved to backend");
     } catch (error) {
       console.error("Error saving sport data:", error);
@@ -107,7 +154,7 @@ export default function SportPage() {
       {page === "sport" && (
         <div className="flex items-center space-x-4">
           <button
-            onClick={() => navigate('/HealthDashboard')}
+            onClick={() => navigate("/HealthDashboard")}
             className="px-4 py-2 text-2xl font-bold rounded hover:bg-gray-200"
           >
             ← Back
@@ -123,11 +170,13 @@ export default function SportPage() {
         <div className="mb-4">
           <div className="flex justify-between text-gray-600 font-medium mb-1">
             <span>🏃 Calories Burned</span>
-            <span>{Math.round(trackedCalories)} / {calorieGoal} kcal</span>
+            <span>
+              {Math.round(trackedCalories)} / {calorieGoal} kcal
+            </span>
           </div>
           <div className="w-full h-5 bg-gray-200 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-orange-400 transition-all" 
+            <div
+              className="h-full bg-orange-400 transition-all"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
@@ -179,7 +228,9 @@ export default function SportPage() {
                 {selectedSport.type === "RUNNING" && (
                   <>
                     <div>
-                      <label className="block mb-2 font-bold">Distance (km):</label>
+                      <label className="block mb-2 font-bold">
+                        Distance (km):
+                      </label>
                       <input
                         type="number"
                         name="distance"
@@ -190,7 +241,9 @@ export default function SportPage() {
                       />
                     </div>
                     <div>
-                      <label className="block mb-2 font-bold">Weight (kg):</label>
+                      <label className="block mb-2 font-bold">
+                        Weight (kg):
+                      </label>
                       <input
                         type="number"
                         name="weight"
