@@ -67,7 +67,7 @@ function App() {
   useEffect(() => {
     const verifyToken = async () => {
       const token = localStorage.getItem("token");
-      console.log("Retrieved token:", token); 
+      // console.log("Retrieved token:", token);
 
       if (!token) {
         setIsAuthenticated(false);
