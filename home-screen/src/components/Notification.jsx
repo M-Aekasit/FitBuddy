@@ -125,17 +125,17 @@ function App() {
       const h = now.getHours();
       const m = now.getMinutes();
 
-      if (m === 0 && h >= 6 && h < 22) {
+      if (m === 0 && h >= 7 && h < 21) {
         console.log("💧Checking time:", h, m);
         addMessage("💧 Time for a water break! 💧");
       }
 
-      if ((h === 9 || h === 13 || h === 19) && m === 10) {
+      if ((h === 8 || h === 12 || h === 18) && m === 10) {
         console.log("🍽️Checking time:", h, m);
         addMessage("🍽️ Your meal log is waiting! 🍽️");
       }
 
-      if (h === 20 && m == 0) {
+      if (h === 16 && m == 45) {
         console.log("💪Checking time:", h, m);
         addMessage("💪 Time to get moving!3 💪");
       }
