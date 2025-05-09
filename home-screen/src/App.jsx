@@ -21,10 +21,12 @@ import SettingPage from "./components/SettingPage";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 
-const AppWrapper = ({ isAuthenticated, setIsAuthenticated }) => {
+const AppWrapper = ({ isAuthenticated, setIsAuthenticated, loading }) => {
   const location = useLocation();
   const hideNavbar =
-    location.pathname === "/" || location.pathname === "/register";
+    location.pathname === "/login" || location.pathname === "/register";
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <>
@@ -32,15 +34,10 @@ const AppWrapper = ({ isAuthenticated, setIsAuthenticated }) => {
 
       <Routes>
         <Route
-          path="/"
-          element={
-            isAuthenticated ? (
-              <Navigate to="/HealthDashboard" />
-            ) : (
-              <LoginPage setIsAuthenticated={setIsAuthenticated} />
-            )
-          }
+          path="/login"
+          element={<LoginPage setIsAuthenticated={setIsAuthenticated} />}
         />
+
         <Route path="/register" element={<RegisterPage />} />
 
         {isAuthenticated && (
@@ -56,6 +53,7 @@ const AppWrapper = ({ isAuthenticated, setIsAuthenticated }) => {
             <Route path="/SettingPage" element={<SettingPage />} />
           </>
         )}
+
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>
@@ -76,14 +74,11 @@ function App() {
       }
 
       try {
-        const res = await axios.get(
-          "http://localhost:5000/api/auth/verify-token",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res = await axios.get("http://localhost:5000/api/verify-token", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (res.data.valid) {
           setIsAuthenticated(true);
@@ -103,13 +98,12 @@ function App() {
     verifyToken();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-
   return (
     <Router>
       <AppWrapper
         isAuthenticated={isAuthenticated}
         setIsAuthenticated={setIsAuthenticated}
+        loading={loading}
       />
     </Router>
   );
