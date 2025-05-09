@@ -46,23 +46,14 @@ const HealthDashboard = () => {
   });
 
   // Data
-  // const foodCurrent = 1200;
-  // const foodGoal = 2000;
-  const todayFoodKey = `trackedCalories_${new Date().toISOString().split("T")[0]}`;
-  const storedFoodCalories = parseInt(localStorage.getItem(todayFoodKey));
-  const foodCurrent = !isNaN(storedFoodCalories) ? storedFoodCalories : 0;
+  const foodCurrent = 1200;
   const foodGoal = 2000;
 
   const waterCurrent = 2.1;
   const waterGoal = 3.5;
 
-  // const exerciseCurrent = 30;
-  // const exerciseGoal = 60;
-
-  const todaySportKey = `trackedCalories_${new Date().toISOString().split("T")[0]}`;
-  const storedSportCalories = parseInt(localStorage.getItem(todaySportKey));
-  const exerciseCurrent = !isNaN(storedSportCalories) ? storedSportCalories : 0;
-  const exerciseGoal = 850;
+  const exerciseCurrent = 30;
+  const exerciseGoal = 60;
 
 
   return (
@@ -84,7 +75,7 @@ const HealthDashboard = () => {
           title="Food Tracker"
           value={`${foodCurrent} / ${foodGoal} kcal`}
           goal={`${Math.round((foodCurrent / foodGoal) * 100)}% of daily goal`}
-          progress={(foodCurrent / foodGoal) * 100}
+          progress={Math.min((foodCurrent / foodGoal) * 100, 100)}
           color="#f87171"
           icon="🍎"
           link="/food"
@@ -96,7 +87,7 @@ const HealthDashboard = () => {
           goal={`${Math.round(
             (waterCurrent / waterGoal) * 100
           )}% of daily goal`}
-          progress={(waterCurrent / waterGoal) * 100}
+          progress={Math.min((waterCurrent / waterGoal) * 100, 100)}
           color="#3b82f6"
           icon="💧"
           link="/water"
@@ -108,7 +99,7 @@ const HealthDashboard = () => {
           goal={`${Math.round(
             (exerciseCurrent / exerciseGoal) * 100
           )}% of daily goal`}
-          progress={(exerciseCurrent / exerciseGoal) * 100}
+          progress={Math.min((exerciseCurrent / exerciseGoal) * 100, 100)}
           color="#fb923c"
           icon="🏃‍♂️"
           link="/sport"

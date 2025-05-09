@@ -1,33 +1,15 @@
-import { useState, useEffect  } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Link } from "react-router-dom";
 
 export default function FoodPage() {
-  const navigate = useNavigate();
-
-  const getTodayKey = () => {
-    const today = new Date().toISOString().split("T")[0];
-    return `trackedCalories_${today}`;
-  };
-
-  const todayKey = getTodayKey();
-
   const [page, setPage] = useState("menu");
   const [selectedItem, setSelectedItem] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-
-  const [trackedCalories, setTrackedCalories] = useState(() => {
-    const stored = localStorage.getItem(todayKey);
-    const parsed = parseInt(stored);
-    return !isNaN(parsed) ? parsed : 0;
-  });
-
+  const [trackedCalories, setTrackedCalories] = useState(0);
   const [dietaryFilter, setDietaryFilter] = useState("All");
+  const navigate = useNavigate();
 
-  const calorieGoal = 2000;
-  const progressPercentage = Math.min((trackedCalories / calorieGoal) * 100, 100);
-  
   const menuItems = [
     // meals --------------------------------------------------------
     { id: 1, name: "Fried Chicken Rice", calories: 695, 
@@ -138,19 +120,22 @@ export default function FoodPage() {
     setPage("details");
   };
 
+  // const addToTracker = (calories) => {
+  //   setTrackedCalories(trackedCalories + calories);
+  //   setPage("menu");
+  // };
+
   const addToTracker = async (calories) => {
-    const newCalories = trackedCalories + calories;
-    setTrackedCalories(newCalories);
-    localStorage.setItem(todayKey, newCalories.toString());
+    setTrackedCalories(trackedCalories + calories);
   
     try {
       console.log("Sending data:", {
         foodName: selectedItem.name,
         foodType: selectedItem.type,
         calories: selectedItem.calories
-      }); // Add this line to debug what's being sent
+      });
       
-      await axios.post("http://localhost:5000/api/food", {
+      await axios.post("http://localhost:3000/api/food", {
         foodName: selectedItem.name,
         foodType: selectedItem.type,
         calories: selectedItem.calories
@@ -163,27 +148,12 @@ export default function FoodPage() {
     setPage("menu");
   };
   
-  const resetOutdatedData = () => {
-    const keys = Object.keys(localStorage);
-    keys.forEach((key) => {
-      if (key.startsWith("trackedCalories_") && key !== todayKey) {
-        localStorage.removeItem(key);
-      }
-    });
-  };
-
-  useEffect(() => {
-    resetOutdatedData();
-  }, []);
-
-  
+ 
   const filteredItems = menuItems.filter(
     (item) =>
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
       (dietaryFilter === "All" || item.type === dietaryFilter)
   );
-
-
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 p-6 text-gray-800">
@@ -204,21 +174,11 @@ export default function FoodPage() {
       </header>
 
       {/* Calorie Tracker */}
-      <Link to="/HealthDashboard" className="block mb-4">
-        <div className="mb-4">
-          <div className="flex justify-between text-gray-600 font-medium mb-1">
-            <span>🍎 Calories Consumed</span>
-            <span>{Math.round(trackedCalories)} / {calorieGoal} kcal</span>
-          </div>
-          <div className="w-full h-5 bg-gray-200 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-red-400 transition-all"
-              style={{ width: `${progressPercentage}%` }}
-            />
-          </div>
-        </div>
-      </Link>
+      <div className="text-center text-3xl font-medium text-gray-500">
+      Total Calories : {trackedCalories} kcal
+      </div>
 
+      
 
       {/* Content */}
       <main className="flex-1 p-8">
