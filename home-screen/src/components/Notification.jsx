@@ -135,7 +135,7 @@ function App() {
         addMessage("🍽️ Your meal log is waiting! 🍽️");
       }
 
-      if (h === 16 && m == 1) {
+      if (h === 20 && m == 0) {
         console.log("💪Checking time:", h, m);
         addMessage("💪 Time to get moving!3 💪");
       }
