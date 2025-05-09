@@ -18,9 +18,8 @@ FitBuddy is a health tracking web application designed to help users monitor and
 - Help users monitor daily health activities in one platform  
 - Encourage healthy habits with consistent tracking and feedback  
 - Provide tools for understanding and managing body weight (BMI)  
-- ....
 
-## 🧠 Tech Stack
+## 🧠 Tech Stack  
 
 - **Frontend** : React, JavaScript, CSS  
 - **Backend** : Node.js, Express.js, JWT
