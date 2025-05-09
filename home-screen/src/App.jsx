@@ -54,7 +54,7 @@ const AppWrapper = ({ isAuthenticated, setIsAuthenticated, loading }) => {
           </>
         )}
 
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </>
   );
@@ -67,6 +67,8 @@ function App() {
   useEffect(() => {
     const verifyToken = async () => {
       const token = localStorage.getItem("token");
+      console.log("Retrieved token:", token); 
+
       if (!token) {
         setIsAuthenticated(false);
         setLoading(false);
