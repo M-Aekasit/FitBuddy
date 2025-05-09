@@ -1,13 +1,10 @@
-// const express = require("express");
 import cors from "cors";
-// const { MongoClient, ObjectId } = require("mongodb");
 import express from "express";
 import { MongoClient, ObjectId } from "mongodb";
 const app = express();
 const port = 3000;
 const mongoUrl = "mongodb://localhost:27017"; 
 const dbName = "fitbuddyDB"; 
-// const { ObjectId } = require("mongodb");
 
 // Middleware
 app.use(cors());
@@ -55,29 +52,26 @@ app.post("/api/notification", async (req, res) => {
     const db = client.db(dbName);
     const notificationCollection = db.collection("notification");
 
-    // ตรวจสอบว่าในฐานข้อมูลมีข้อความที่มีค่า `text`, `hour`, และ `minute` ซ้ำกันหรือไม่
     const exists = await notificationCollection.findOne({
-      text,   // ตรวจสอบข้อความ
-      hour,   // ตรวจสอบชั่วโมง
-      minute  // ตรวจสอบนาที
+      text,   
+      hour,   
+      minute  
     });
 
-    // ถ้ามีข้อมูลซ้ำ
     if (exists) {
       await client.close();
       return res.status(409).json({ message: "Notification already exists" });
     }
 
-    // ถ้าไม่มีข้อมูลซ้ำ ให้บันทึกข้อมูลใหม่
     const createdAtDate = new Date(createdAt);
-    createdAtDate.setSeconds(0, 0); // กำจัดวินาทีและมิลลิวินาที
+    createdAtDate.setSeconds(0, 0); 
 
     await notificationCollection.insertOne({
       text,
-      createdAt: createdAtDate, // บันทึกเวลาที่ปรับแล้ว
+      createdAt: createdAtDate, 
       date,
-      hour, // บันทึกค่า ชั่วโมง
-      minute, // บันทึกค่า นาที
+      hour, 
+      minute, 
       isNew
     });
 
@@ -97,20 +91,20 @@ app.get("/api/notification", async (req, res) => {
     const db = client.db(dbName);
     const notificationCollection = db.collection("notification");
 
-    // ใช้ aggregate เพื่อลบข้อมูลที่ซ้ำกัน
+    // delete same data
     const notifications = await notificationCollection.aggregate([
       {
         $group: {
-          _id: { text: "$text", hour: "$hour", minute: "$minute", date: "$date" }, // รวม date ในการกรุ๊ป
-          createdAt: { $first: "$createdAt" }, // เอาค่าจากอันแรกที่พบ
+          _id: { text: "$text", hour: "$hour", minute: "$minute", date: "$date" }, 
+          createdAt: { $first: "$createdAt" }, 
           isNew: { $first: "$isNew" }
         }
       },
       {
-        $project: { // คัดเลือกเฉพาะข้อมูลที่ต้องการ
+        $project: { 
           _id: 0,
           text: "$_id.text",
-          date: "$_id.date", // ส่งค่า date ที่กรุ๊ปไว้
+          date: "$_id.date", 
           createdAt: 1,
           hour: "$_id.hour",
           minute: "$_id.minute",
@@ -120,7 +114,7 @@ app.get("/api/notification", async (req, res) => {
     ]).toArray();
 
     await client.close();
-    res.status(200).json(notifications); // ส่งข้อมูลที่ไม่ซ้ำกลับไปยัง client
+    res.status(200).json(notifications); 
   } catch (err) {
     console.error("DB error:", err);
     res.status(500).json({ message: "Server error" });
@@ -134,7 +128,7 @@ app.delete("/api/notification", async (req, res) => {
     const db = client.db(dbName);
     const notificationCollection = db.collection("notification");
 
-    // ลบข้อมูลทั้งหมดใน collection "notification"
+    // delete collection "notification"
     await notificationCollection.deleteMany({});
 
     await client.close();
@@ -176,6 +170,10 @@ app.put("/api/notification", async (req, res) => {
     console.error("Error updating notification:", err);
     res.status(500).json({ message: "Internal server error" });
   }
+  fetch("http://localhost:3000/api/notification")
+  .then(res => res.json())
+  .then(data => setMessages(data))
+  .catch(err => console.error("Failed to reload messages:", err));
 });
 
 // check connect

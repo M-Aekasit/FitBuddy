@@ -3,18 +3,6 @@ import React, { useState, useEffect } from 'react';
 function App() {
   const [messages, setMessages] = useState([]);
 
-  //add data and send data
-  // const addMessage = (text) => {
-  //   setMessages(prev => {
-  //     if (prev.some(msg => msg.text === text && msg.timestamp === getCurrentTimeString())) {
-  //       console.log("1");
-  //       return prev;
-        
-  //     }
-  //     sendNotificationToServer(text);
-  //     return [{ text, isNew: true, timestamp: getCurrentTimeString() }, ...prev];
-  //   });
-  // };
   const addMessage = (text) => {
   const now = new Date();
   const timestamp = getCurrentTimeString();
@@ -58,11 +46,10 @@ function App() {
       _id: "681d94dbacc5b5f52d60fa38"
     };
 try {
-    // ตรวจสอบข้อความในฐานข้อมูลก่อน
     const response = await fetch("http://localhost:3000/api/notification");
     const data = await response.json();
 
-    // ถ้ามีข้อความที่เหมือนกันอยู่แล้ว ให้ไม่ส่งคำขอ
+    // check sam data
     const isDuplicate = data.some(
       (msg) => msg.text === text && msg.createdAt === now.toISOString()
     );
@@ -72,7 +59,7 @@ try {
       return;
     }
 
-    // ถ้าไม่มีข้อความซ้ำ ส่งข้อมูลไปยังเซิร์ฟเวอร์
+    // data not same can send
     const postResponse = await fetch("http://localhost:3000/api/notification", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -119,9 +106,9 @@ try {
         addMessage("🍽️ Your meal log is waiting! 🍽️");
       }
 
-      if (h === 15 && m==21) {
+      if (h === 15 && m==53) {
         console.log("💪Checking time:", h, m);
-        addMessage("💪 Time to get moving! 💪");
+        addMessage("💪 Time to get moving!3 💪");
       }
     }, 5 * 1000); // check 10 sec
 
@@ -158,9 +145,19 @@ const markAsRead = (msg) => {
     .then((response) => {
       if (response.ok) {
         console.log('Notification updated successfully');
+        return fetch("http://localhost:3000/api/notification");
       } else {
         console.log('Failed to update notification');
       }
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      const sorted = data.sort((a, b) => {
+        const dateA = new Date(`${a.date}T${String(a.hour).padStart(2, '0')}:${String(a.minute).padStart(2, '0')}`);
+        const dateB = new Date(`${b.date}T${String(b.hour).padStart(2, '0')}:${String(b.minute).padStart(2, '0')}`);
+        return dateB - dateA;
+      });
+      setMessages(sorted);
     })
     .catch((error) => {
       console.error('Error updating notification:', error);
@@ -207,10 +204,15 @@ const markAsRead = (msg) => {
       onClick={() => markAsRead(msg)}
       className="w-full h-[60px] text-lg bg-white text-black flex items-center px-4 rounded border border-gray-400 cursor-pointer hover:bg-gray-100 transition"
     >
+      <div className="flex items-center">
       {msg.isNew && (
         <div className="w-2 h-2 bg-green-500 rounded-full mr-4"></div>
       )}
       {msg.text}
+      </div>
+      <span className="text-sm text-gray-500 ml-4">
+        {String(msg.hour).padStart(2, '0')}:{String(msg.minute).padStart(2, '0')}
+      </span>
     </div>
   );
 })}
