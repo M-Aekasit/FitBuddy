@@ -1,5 +1,5 @@
 // src/components/HealthCalculatorUI.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   calculateBMI,
   calculateBMR,
@@ -39,7 +39,10 @@ const HealthCalculatorUI = () => {
     try {
       await fetch("http://localhost:5000/api/save", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
         body: JSON.stringify({
           weight,
           height,
@@ -52,6 +55,7 @@ const HealthCalculatorUI = () => {
           activityLevel,
         }),
       });
+      
     } catch (error) {
       console.error("Error saving health data:", error);
     }
@@ -70,6 +74,45 @@ const HealthCalculatorUI = () => {
     const position = (bmi / maxBMI) * 100;
     return `${Math.min(position, 100)}%`;
   };
+
+  useEffect(() => {
+    const fetchLatestMetrics = async () => {
+      try {
+        const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token ไว้
+        const res = await fetch("http://localhost:5000/api/latest", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) {
+          console.warn("No previous health data available.");
+          return;
+        }
+
+        const data = await res.json();
+        setResults({
+          bmi: data.bmi,
+          bmiCategory: data.bmiCategory,
+          bmr: data.bmr,
+          tdee: data.tdee,
+        });
+
+        // preload form fields
+        setWeight(data.weight);
+        setHeight(data.height);
+        setAge(data.age);
+        setGender(data.gender);
+        setActivityLevel(data.activityLevel);
+      } catch (error) {
+        console.error("Error fetching latest health metrics:", error);
+      }
+    };
+
+    fetchLatestMetrics();
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 p-6 text-gray-800">
