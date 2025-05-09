@@ -1,45 +1,46 @@
-import { useState } from "react"
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function SettingsPage() {
-  const [darkMode, setDarkMode] = useState(false)
-  const [notifications, setNotifications] = useState(true)
-  const [calorieGoal, setCalorieGoal] = useState(2000)
-  const [waterGoal, setWaterGoal] = useState(8)
-  const [username, setUsername] = useState("Username")
-  const [showUsernameModal, setShowUsernameModal] = useState(false)
-  const [showPasswordModal, setShowPasswordModal] = useState(false)
-  const [showNotificationsPage, setShowNotificationsPage] = useState(false)
-  const [newUsername, setNewUsername] = useState("")
-  const [currentPassword, setCurrentPassword] = useState("")
-  const [newPassword, setNewPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const navigate = useNavigate();
+  const [darkMode, setDarkMode] = useState(false);
+  const [notifications, setNotifications] = useState(true);
+  const [calorieGoal, setCalorieGoal] = useState(2000);
+  const [waterGoal, setWaterGoal] = useState(8);
+  const [username, setUsername] = useState("Username");
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showNotificationsPage, setShowNotificationsPage] = useState(false);
+  const [newUsername, setNewUsername] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [notificationSettings, setNotificationSettings] = useState({
     foodReminder: true,
     waterReminder: true,
     exerciseReminder: true,
-  })
-
-
+  });
 
   // Function to handle toggling individual notification settings
   const toggleNotificationSetting = (setting) => {
     setNotificationSettings((prev) => ({
       ...prev,
       [setting]: !prev[setting],
-    }))
-  }
+    }));
+  };
 
   // Function to go back to main settings page
   const goBackToSettings = () => {
-    setShowNotificationsPage(false)
-  }
+    setShowNotificationsPage(false);
+  };
 
   // If any notification is enabled, the main notifications toggle should be on
   const updateMainNotificationToggle = () => {
-    const anyEnabled = Object.values(notificationSettings).some((value) => value === true)
-    setNotifications(anyEnabled)
-  }
+    const anyEnabled = Object.values(notificationSettings).some(
+      (value) => value === true
+    );
+    setNotifications(anyEnabled);
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -64,32 +65,43 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center">
-                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">🏳️</div>
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">
+                    🏳️
+                  </div>
                   <span className="text-sm font-medium">Help Center</span>
                 </div>
-                <p className="text-xs text-gray-500 ml-6">Get help with using the app</p>
+                <p className="text-xs text-gray-500 ml-6">
+                  Get help with using the app
+                </p>
               </div>
-              <span className="text-xs text-blue-500 cursor-pointer">Visit</span>
+              <span className="text-xs text-blue-500 cursor-pointer">
+                Visit
+              </span>
             </div>
 
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center">
-                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">📲</div>
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">
+                    📲
+                  </div>
                   <span className="text-sm font-medium">Log Out</span>
                 </div>
-                <p className="text-xs text-gray-500 ml-6">Sign out of your account</p>
+                <p className="text-xs text-gray-500 ml-6">
+                  Sign out of your account
+                </p>
               </div>
               <span
                 className="text-xs text-red-500 cursor-pointer"
                 onClick={() => {
-                  if (window.confirm("Are you sure you want to logout?")) 
-                    {
-                      setIsAuthenticated(false);
-                      // navigate('/LoginPage'); 
-                    }
+                  if (window.confirm("Are you sure you want to logout?")) {
+                    // ล้าง token
+                    localStorage.removeItem("token");
+
+                    // เปลี่ยนเส้นทางกลับไปหน้า Login
+                    navigate("/login");
                   }
-                }
+                }}
               >
                 Logout
               </span>
@@ -113,16 +125,22 @@ export default function SettingsPage() {
               <div className="border-b border-gray-100 py-4 flex items-center justify-between">
                 <div>
                   <div className="flex items-center">
-                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">👤</div>
-                    <span className="text-sm font-medium">Profile Information</span>
+                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">
+                      👤
+                    </div>
+                    <span className="text-sm font-medium">
+                      Profile Information
+                    </span>
                   </div>
-                  <p className="text-xs text-gray-500 ml-6">Update your personal details</p>
+                  <p className="text-xs text-gray-500 ml-6">
+                    Update your personal details
+                  </p>
                 </div>
                 <button
                   className="text-sm text-gray-500 cursor-pointer"
                   onClick={() => {
-                    setNewUsername(username)
-                    setShowUsernameModal(true)
+                    setNewUsername(username);
+                    setShowUsernameModal(true);
                   }}
                 >
                   Edit
@@ -132,12 +150,19 @@ export default function SettingsPage() {
               <div className="py-4 flex items-center justify-between">
                 <div>
                   <div className="flex items-center">
-                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">🔒</div>
+                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">
+                      🔒
+                    </div>
                     <span className="text-sm font-medium">Password</span>
                   </div>
-                  <p className="text-xs text-gray-500 ml-6">Change your password</p>
+                  <p className="text-xs text-gray-500 ml-6">
+                    Change your password
+                  </p>
                 </div>
-                <button className="text-sm text-gray-500 cursor-pointer" onClick={() => setShowPasswordModal(true)}>
+                <button
+                  className="text-sm text-gray-500 cursor-pointer"
+                  onClick={() => setShowPasswordModal(true)}
+                >
                   Change
                 </button>
               </div>
@@ -148,15 +173,21 @@ export default function SettingsPage() {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">🌗</div>
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">
+                    🌗
+                  </div>
                   <span className="text-sm font-medium">Dark Mode</span>
                 </div>
                 <button
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full ${darkMode ? "bg-blue-500" : "bg-gray-200"}`}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full ${
+                    darkMode ? "bg-blue-500" : "bg-gray-200"
+                  }`}
                   onClick={() => setDarkMode(!darkMode)}
                 >
                   <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${darkMode ? "translate-x-6" : "translate-x-1"}`}
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                      darkMode ? "translate-x-6" : "translate-x-1"
+                    }`}
                   />
                 </button>
               </div>
@@ -167,29 +198,37 @@ export default function SettingsPage() {
               >
                 <div>
                   <div className="flex items-center">
-                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">🔔</div>
+                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">
+                      🔔
+                    </div>
                     <span className="text-sm font-medium">Notifications</span>
                   </div>
-                  <p className="text-xs text-gray-500 ml-6">Manage notification settings</p>
+                  <p className="text-xs text-gray-500 ml-6">
+                    Manage notification settings
+                  </p>
                 </div>
                 <div className="flex items-center">
                   <button
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full ${notifications ? "bg-green-500" : "bg-gray-200"}`}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full ${
+                      notifications ? "bg-green-500" : "bg-gray-200"
+                    }`}
                     onClick={(e) => {
-                      e.stopPropagation() // Prevent triggering the parent onClick
-                      setNotifications(!notifications)
+                      e.stopPropagation(); // Prevent triggering the parent onClick
+                      setNotifications(!notifications);
                       // If turning off all notifications, set all individual settings to false
                       if (notifications) {
                         setNotificationSettings({
                           foodReminder: false,
                           waterReminder: false,
                           exerciseReminder: false,
-                        })
+                        });
                       }
                     }}
                   >
                     <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${notifications ? "translate-x-6" : "translate-x-1"}`}
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                        notifications ? "translate-x-6" : "translate-x-1"
+                      }`}
                     />
                   </button>
                   <span className="ml-3 text-2xl text-gray-400">›</span>
@@ -197,7 +236,9 @@ export default function SettingsPage() {
               </div>
 
               <div className="border-b border-gray-100 py-4">
-                <label className="block text-sm font-medium mb-1">Daily Calorie Goal</label>
+                <label className="block text-sm font-medium mb-1">
+                  Daily Calorie Goal
+                </label>
                 <input
                   type="number"
                   value={calorieGoal}
@@ -207,7 +248,9 @@ export default function SettingsPage() {
               </div>
 
               <div className="py-4">
-                <label className="block text-sm font-medium mb-1">Daily Water Goal (glasses)</label>
+                <label className="block text-sm font-medium mb-1">
+                  Daily Water Goal (glasses)
+                </label>
                 <input
                   type="number"
                   value={waterGoal}
@@ -221,7 +264,10 @@ export default function SettingsPage() {
           // Notifications Detail Page
           <>
             <div className="mb-4 flex items-center">
-              <button className="mr-3 text-2xl text-gray-500 cursor-pointer" onClick={goBackToSettings}>
+              <button
+                className="mr-3 text-2xl text-gray-500 cursor-pointer"
+                onClick={goBackToSettings}
+              >
                 ‹
               </button>
               <h1 className="text-xl font-semibold">Notifications</h1>
@@ -230,54 +276,84 @@ export default function SettingsPage() {
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="py-4 flex items-center justify-between border-b border-gray-100">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">🍽️</div>
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">
+                    🍽️
+                  </div>
                   <span className="text-sm font-medium">Food reminder</span>
                 </div>
                 <button
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full ${notificationSettings.foodReminder ? "bg-green-500" : "bg-gray-200"}`}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full ${
+                    notificationSettings.foodReminder
+                      ? "bg-green-500"
+                      : "bg-gray-200"
+                  }`}
                   onClick={() => {
-                    toggleNotificationSetting("foodReminder")
-                    setTimeout(updateMainNotificationToggle, 0)
+                    toggleNotificationSetting("foodReminder");
+                    setTimeout(updateMainNotificationToggle, 0);
                   }}
                 >
                   <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${notificationSettings.foodReminder ? "translate-x-6" : "translate-x-1"}`}
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                      notificationSettings.foodReminder
+                        ? "translate-x-6"
+                        : "translate-x-1"
+                    }`}
                   />
                 </button>
               </div>
 
               <div className="py-4 flex items-center justify-between border-b border-gray-100">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">💧</div>
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">
+                    💧
+                  </div>
                   <span className="text-sm font-medium">Water reminder</span>
                 </div>
                 <button
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full ${notificationSettings.waterReminder ? "bg-green-500" : "bg-gray-200"}`}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full ${
+                    notificationSettings.waterReminder
+                      ? "bg-green-500"
+                      : "bg-gray-200"
+                  }`}
                   onClick={() => {
-                    toggleNotificationSetting("waterReminder")
-                    setTimeout(updateMainNotificationToggle, 0)
+                    toggleNotificationSetting("waterReminder");
+                    setTimeout(updateMainNotificationToggle, 0);
                   }}
                 >
                   <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${notificationSettings.waterReminder ? "translate-x-6" : "translate-x-1"}`}
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                      notificationSettings.waterReminder
+                        ? "translate-x-6"
+                        : "translate-x-1"
+                    }`}
                   />
                 </button>
               </div>
 
               <div className="py-4 flex items-center justify-between">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">🏃</div>
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">
+                    🏃
+                  </div>
                   <span className="text-sm font-medium">Exercise reminder</span>
                 </div>
                 <button
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full ${notificationSettings.exerciseReminder ? "bg-green-500" : "bg-gray-200"}`}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full ${
+                    notificationSettings.exerciseReminder
+                      ? "bg-green-500"
+                      : "bg-gray-200"
+                  }`}
                   onClick={() => {
-                    toggleNotificationSetting("exerciseReminder")
-                    setTimeout(updateMainNotificationToggle, 0)
+                    toggleNotificationSetting("exerciseReminder");
+                    setTimeout(updateMainNotificationToggle, 0);
                   }}
                 >
                   <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${notificationSettings.exerciseReminder ? "translate-x-6" : "translate-x-1"}`}
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                      notificationSettings.exerciseReminder
+                        ? "translate-x-6"
+                        : "translate-x-1"
+                    }`}
                   />
                 </button>
               </div>
@@ -291,7 +367,9 @@ export default function SettingsPage() {
             <div className="bg-white p-6 rounded-lg w-full max-w-md">
               <h3 className="text-lg font-medium mb-4">Change Username</h3>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">New Username</label>
+                <label className="block text-sm font-medium mb-1">
+                  New Username
+                </label>
                 <input
                   type="text"
                   value={newUsername}
@@ -300,18 +378,21 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="flex justify-end space-x-2">
-                <button className="px-4 py-2 bg-gray-200 rounded" onClick={() => setShowUsernameModal(false)}>
+                <button
+                  className="px-4 py-2 bg-gray-200 rounded"
+                  onClick={() => setShowUsernameModal(false)}
+                >
                   Cancel
                 </button>
                 <button
                   className="px-4 py-2 bg-blue-500 text-white rounded"
                   onClick={() => {
                     if (newUsername.trim()) {
-                      setUsername(newUsername)
-                      setShowUsernameModal(false)
-                      alert("Username updated successfully")
+                      setUsername(newUsername);
+                      setShowUsernameModal(false);
+                      alert("Username updated successfully");
                     } else {
-                      alert("Username cannot be empty")
+                      alert("Username cannot be empty");
                     }
                   }}
                 >
@@ -328,7 +409,9 @@ export default function SettingsPage() {
             <div className="bg-white p-6 rounded-lg w-full max-w-md">
               <h3 className="text-lg font-medium mb-4">Change Password</h3>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Current Password</label>
+                <label className="block text-sm font-medium mb-1">
+                  Current Password
+                </label>
                 <input
                   type="password"
                   value={currentPassword}
@@ -337,7 +420,9 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">New Password</label>
+                <label className="block text-sm font-medium mb-1">
+                  New Password
+                </label>
                 <input
                   type="password"
                   value={newPassword}
@@ -346,7 +431,9 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Confirm New Password</label>
+                <label className="block text-sm font-medium mb-1">
+                  Confirm New Password
+                </label>
                 <input
                   type="password"
                   value={confirmPassword}
@@ -358,10 +445,10 @@ export default function SettingsPage() {
                 <button
                   className="px-4 py-2 bg-gray-200 rounded"
                   onClick={() => {
-                    setShowPasswordModal(false)
-                    setCurrentPassword("")
-                    setNewPassword("")
-                    setConfirmPassword("")
+                    setShowPasswordModal(false);
+                    setCurrentPassword("");
+                    setNewPassword("");
+                    setConfirmPassword("");
                   }}
                 >
                   Cancel
@@ -370,15 +457,15 @@ export default function SettingsPage() {
                   className="px-4 py-2 bg-blue-500 text-white rounded"
                   onClick={() => {
                     if (!currentPassword || !newPassword || !confirmPassword) {
-                      alert("All fields are required")
+                      alert("All fields are required");
                     } else if (newPassword !== confirmPassword) {
-                      alert("New passwords do not match")
+                      alert("New passwords do not match");
                     } else {
-                      setShowPasswordModal(false)
-                      setCurrentPassword("")
-                      setNewPassword("")
-                      setConfirmPassword("")
-                      alert("Password changed successfully")
+                      setShowPasswordModal(false);
+                      setCurrentPassword("");
+                      setNewPassword("");
+                      setConfirmPassword("");
+                      alert("Password changed successfully");
                     }
                   }}
                 >
@@ -390,5 +477,5 @@ export default function SettingsPage() {
         )}
       </div>
     </div>
-  )
+  );
 }
