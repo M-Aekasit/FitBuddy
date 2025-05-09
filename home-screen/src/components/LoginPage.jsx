@@ -23,7 +23,7 @@ function LoginPage({ setIsAuthenticated }) {
       const data = await res.json();
 
       if (res.ok) {
-        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("token", data.token);
         setIsAuthenticated(true);
         navigate("/HealthDashboard");
       } else {
