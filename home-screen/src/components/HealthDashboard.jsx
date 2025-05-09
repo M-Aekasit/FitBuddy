@@ -48,7 +48,7 @@ const HealthDashboard = () => {
   // Data
   // const foodCurrent = 1200;
   // const foodGoal = 2000;
-  const todayFoodKey = `trackedCalories_${new Date().toISOString().split("T")[0]}`;
+  const todayFoodKey = `foodCalories_${new Date().toISOString().split("T")[0]}`;
   const storedFoodCalories = parseInt(localStorage.getItem(todayFoodKey));
   const foodCurrent = !isNaN(storedFoodCalories) ? storedFoodCalories : 0;
   const foodGoal = 2000;
@@ -59,7 +59,7 @@ const HealthDashboard = () => {
   // const exerciseCurrent = 30;
   // const exerciseGoal = 60;
 
-  const todaySportKey = `trackedCalories_${new Date().toISOString().split("T")[0]}`;
+  const todaySportKey = `sportCalories_${new Date().toISOString().split("T")[0]}`;
   const storedSportCalories = parseInt(localStorage.getItem(todaySportKey));
   const exerciseCurrent = !isNaN(storedSportCalories) ? storedSportCalories : 0;
   const exerciseGoal = 850;
