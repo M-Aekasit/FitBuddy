@@ -4,17 +4,33 @@ function App() {
   const [messages, setMessages] = useState([]);
 
   //add data and send data
-  const addMessage = (text) => {
-    setMessages(prev => {
-      if (prev.some(msg => msg.text === text && msg.timestamp === getCurrentTimeString())) {
-        console.log("1");
-        return prev;
+  // const addMessage = (text) => {
+  //   setMessages(prev => {
+  //     if (prev.some(msg => msg.text === text && msg.timestamp === getCurrentTimeString())) {
+  //       console.log("1");
+  //       return prev;
         
-      }
-      sendNotificationToServer(text);
-      return [{ text, isNew: true, timestamp: getCurrentTimeString() }, ...prev];
-    });
-  };
+  //     }
+  //     sendNotificationToServer(text);
+  //     return [{ text, isNew: true, timestamp: getCurrentTimeString() }, ...prev];
+  //   });
+  // };
+  const addMessage = (text) => {
+  const now = new Date();
+  const timestamp = getCurrentTimeString();
+  const date = now.toISOString().split("T")[0];
+  const hour = now.getHours();
+  const minute = now.getMinutes();
+
+  setMessages(prev => {
+    if (prev.some(msg => msg.text === text && msg.timestamp === timestamp)) {
+      return prev;
+    }
+
+    sendNotificationToServer(text);
+    return [{ text, isNew: true, timestamp, date, hour, minute }, ...prev]; // ✅ เพิ่มค่าที่จำเป็น
+  });
+};
 
 
   //create time current
@@ -30,28 +46,46 @@ function App() {
     now.setSeconds(0, 0); 
     const h = now.getHours(); 
     const m = now.getMinutes();
+    const date = now.toISOString().split("T")[0];
   
     const dataToSend = {
       text,
       createdAt: now.toISOString(),
+      date, 
       hour:h,
       minute:m,
-      isNew: true
+      isNew: true,
+      _id: "681d94dbacc5b5f52d60fa38"
     };
-    try {
-      const response = await fetch("http://localhost:3000/api/notification", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(dataToSend)
-      });
-    
-      if (!response.ok) {
-        throw new Error("Failed to send notification");
-      }
-    } catch (error) {
-      console.error("Failed to send notification:", error);
+try {
+    // ตรวจสอบข้อความในฐานข้อมูลก่อน
+    const response = await fetch("http://localhost:3000/api/notification");
+    const data = await response.json();
+
+    // ถ้ามีข้อความที่เหมือนกันอยู่แล้ว ให้ไม่ส่งคำขอ
+    const isDuplicate = data.some(
+      (msg) => msg.text === text && msg.createdAt === now.toISOString()
+    );
+
+    if (isDuplicate) {
+      console.log("Duplicate message found. Not sending to server.");
+      return;
     }
-  };
+
+    // ถ้าไม่มีข้อความซ้ำ ส่งข้อมูลไปยังเซิร์ฟเวอร์
+    const postResponse = await fetch("http://localhost:3000/api/notification", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dataToSend),
+    });
+
+    if (!postResponse.ok) {
+      throw new Error("Failed to send notification");
+    }
+  } catch (error) {
+    console.error("Failed to send notification:", error);
+  }
+};
 
   //load data from DB
   useEffect(() => {
@@ -80,12 +114,12 @@ function App() {
         addMessage("💧 Time for a water break! 💧");
       }
 
-      if ((h === 9 || h === 13 || h === 19 ) && m === 0) {
+      if ((h === 9 || h === 13 || h === 19 ) && m === 10) {
         console.log("🍽️Checking time:", h, m);
         addMessage("🍽️ Your meal log is waiting! 🍽️");
       }
 
-      if (h === 12 && m==38) {
+      if (h === 15 && m==21) {
         console.log("💪Checking time:", h, m);
         addMessage("💪 Time to get moving! 💪");
       }
@@ -94,40 +128,45 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // const markAsRead = (index) => {
-  //   setMessages(prev =>
-  //     prev.map((msg, i) => i === index ? { ...msg, isNew: false } : msg)
-  //   );
-  // };
+const markAsRead = (msg) => {
+  const { text, date, hour, minute } = msg;
+  console.log("msg+++", msg);
 
-  const markAsRead = async (index) => {
-    const msg = messages[index];
+  // ตรวจสอบว่า date, hour, minute ถูกต้อง
+  if (!text || hour === undefined || minute === undefined || !date) {
+    console.error('Hour, minute, or date is missing');
+    return;
+  }
 
-    if (!msg._id) {
-      console.error("Message ID is missing");
-      return;
-    }
-  
-    const updatedMessage = { ...msg, isNew: false };
-    try {
-      const response = await fetch(`http://localhost:3000/api/notification/${msg._id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isNew: false })
-      });
-  
-      if (response.ok) {
-        setMessages(prev =>
-          prev.map((message, i) => i === index ? updatedMessage : message)
-        );
-        console.log("Message marked as read");
-      } else {
-        console.error("Failed to mark message as read", response.statusText);
-      }
-    } catch (err) {
-      console.error("Error updating message:", err);
-    }
+  const data = {
+    text,
+    date,    // ต้องมีการส่ง date ที่ถูกต้อง
+    hour,    // hour และ minute ก็ต้องถูกต้อง
+    minute,
+    isNew: false, // ตั้งเป็น false เมื่อข้อความถูกอ่านแล้ว
   };
+
+  console.log("Sending to backend:", data);  // ตรวจสอบข้อมูลก่อนส่ง
+
+  fetch('http://localhost:3000/api/notification', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),  // ส่งข้อมูลที่ตรวจสอบแล้ว
+  })
+    .then((response) => {
+      if (response.ok) {
+        console.log('Notification updated successfully');
+      } else {
+        console.log('Failed to update notification');
+      }
+    })
+    .catch((error) => {
+      console.error('Error updating notification:', error);
+    });
+};
+
   
 
   const clearMessages = async () => {
@@ -159,18 +198,22 @@ function App() {
       </div>
 
       <div className="flex flex-col items-start gap-2 w-full">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            onClick={() => markAsRead(index)}
-            className="w-full h-[60px] text-lg bg-white text-black flex items-center px-4 rounded border border-gray-400 cursor-pointer hover:bg-gray-100 transition"
-          >
-            {msg.isNew && (
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-4"></div>
-            )}
-            {msg.text}
-          </div>
-        ))}
+        {messages.map((msg) => {
+          console.log("msg", msg); // 👉 ดูค่าที่แท้จริงใน console
+
+  return (
+    <div
+      key={msg.text + msg.date + msg.hour + msg.minute}
+      onClick={() => markAsRead(msg)}
+      className="w-full h-[60px] text-lg bg-white text-black flex items-center px-4 rounded border border-gray-400 cursor-pointer hover:bg-gray-100 transition"
+    >
+      {msg.isNew && (
+        <div className="w-2 h-2 bg-green-500 rounded-full mr-4"></div>
+      )}
+      {msg.text}
+    </div>
+  );
+})}
       </div>
 
       <div className="flex justify-center">

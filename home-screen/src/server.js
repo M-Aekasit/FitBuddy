@@ -43,9 +43,9 @@ app.post("/api/sports", async (req, res) => {
 });
 // POST API Recieve and save data() sport noti
 app.post("/api/notification", async (req, res) => {
-  const { text, createdAt, hour, minute, isNew} = req.body;
+  const { text, createdAt, date, hour, minute, isNew} = req.body;
 
-  if (!text || !createdAt || hour === undefined || minute === undefined|| isNew === undefined) {
+  if (!text || !createdAt || !date || hour === undefined || minute === undefined|| isNew === undefined) {
     return res.status(400).json({ message: "Missing data" });
   }
 
@@ -75,6 +75,7 @@ app.post("/api/notification", async (req, res) => {
     await notificationCollection.insertOne({
       text,
       createdAt: createdAtDate, // บันทึกเวลาที่ปรับแล้ว
+      date,
       hour, // บันทึกค่า ชั่วโมง
       minute, // บันทึกค่า นาที
       isNew
@@ -100,7 +101,7 @@ app.get("/api/notification", async (req, res) => {
     const notifications = await notificationCollection.aggregate([
       {
         $group: {
-          _id: { text: "$text", hour: "$hour", minute: "$minute" }, // ใช้ข้อความ, ชั่วโมง และ นาทีเป็นคีย์ในการกรุ๊ป
+          _id: { text: "$text", hour: "$hour", minute: "$minute", date: "$date" }, // รวม date ในการกรุ๊ป
           createdAt: { $first: "$createdAt" }, // เอาค่าจากอันแรกที่พบ
           isNew: { $first: "$isNew" }
         }
@@ -109,6 +110,7 @@ app.get("/api/notification", async (req, res) => {
         $project: { // คัดเลือกเฉพาะข้อมูลที่ต้องการ
           _id: 0,
           text: "$_id.text",
+          date: "$_id.date", // ส่งค่า date ที่กรุ๊ปไว้
           createdAt: 1,
           hour: "$_id.hour",
           minute: "$_id.minute",
@@ -145,12 +147,11 @@ app.delete("/api/notification", async (req, res) => {
 
 
 
-app.put("/api/notification/:id", async (req, res) => {
-  const { id } = req.params;
-  const { isNew } = req.body;
+app.put("/api/notification", async (req, res) => {
+  const { text, date, hour, minute, isNew } = req.body;
 
-  if (!id) {
-    return res.status(400).json({ message: "Notification ID is required" });
+  if (!text || !date || hour === undefined || minute === undefined) {
+    return res.status(400).json({ message: "Missing identifier fields" });
   }
 
   try {
@@ -160,9 +161,9 @@ app.put("/api/notification/:id", async (req, res) => {
     const notificationCollection = db.collection("notification");
 
     const result = await notificationCollection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { isNew } }
-    );
+    { text, date, hour, minute },
+    { $set: { isNew } }
+  );
 
     await client.close();
 
