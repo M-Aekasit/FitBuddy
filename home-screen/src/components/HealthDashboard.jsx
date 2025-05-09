@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 
 // HealthMetric component
@@ -16,16 +17,24 @@ const HealthMetric = ({
     to={link}
     className={`flex flex-col justify-between rounded-xl shadow-sm hover:shadow-md transition-all bg-white ${className}`}
   >
-    <div className="flex items-center space-x-4 mb-6"> {/* เล่ม space-x */}
+    <div className="flex items-center space-x-4 mb-6">
+      {" "}
+      {/* เล่ม space-x */}
       <div className="text-4xl">{icon}</div> {/* เล่มขนาดไอคอน */}
-      <div className="space-y-2"> {/* เล่มระยะห่างระหว่างข้อความ */}
-        <h3 className="text-2xl font-semibold text-gray-800 tracking-wide">{title}</h3>
+      <div className="space-y-2">
+        {" "}
+        {/* เล่มระยะห่างระหว่างข้อความ */}
+        <h3 className="text-2xl font-semibold text-gray-800 tracking-wide">
+          {title}
+        </h3>
         <p className="text-lg font-bold tracking-wider">{value}</p>
         <p className="text-sm text-gray-500 tracking-wide">{goal}</p>
       </div>
     </div>
     {progress !== undefined && (
-      <div className="w-full bg-gray-200 rounded-full h-3"> {/* เล่มความสูงของ progress bar */}
+      <div className="w-full bg-gray-200 rounded-full h-3">
+        {" "}
+        {/* เล่มความสูงของ progress bar */}
         <div
           className="h-3 rounded-full transition-all"
           style={{
@@ -38,32 +47,58 @@ const HealthMetric = ({
   </Link>
 );
 
+const today = new Date().toLocaleDateString("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+});
+
+// Data
+// const foodCurrent = 1200;
+// const foodGoal = 2000;
+const todayFoodKey = `foodCalories_${new Date().toISOString().split("T")[0]}`;
+const storedFoodCalories = parseInt(localStorage.getItem(todayFoodKey));
+const foodCurrent = !isNaN(storedFoodCalories) ? storedFoodCalories : 0;
+const foodGoal = 2000;
+
+const waterCurrent = 2.1;
+const waterGoal = 3.5;
+
+// const exerciseCurrent = 30;
+// const exerciseGoal = 60;
+
+const todaySportKey = `sportCalories_${new Date().toISOString().split("T")[0]}`;
+const storedSportCalories = parseInt(localStorage.getItem(todaySportKey));
+const exerciseCurrent = !isNaN(storedSportCalories) ? storedSportCalories : 0;
+const exerciseGoal = 850;
+
 const HealthDashboard = () => {
-  const today = new Date().toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  const [results, setResults] = useState(null);
+  const [bmi, setBmi] = useState(null); // 👈 เพิ่มบรรทัดนี้
+  const [bmiCategory, setBmiCategory] = useState(""); // 👈 และอันนี้ด้วย
 
-  // Data
-  // const foodCurrent = 1200;
-  // const foodGoal = 2000;
-  const todayFoodKey = `foodCalories_${new Date().toISOString().split("T")[0]}`;
-  const storedFoodCalories = parseInt(localStorage.getItem(todayFoodKey));
-  const foodCurrent = !isNaN(storedFoodCalories) ? storedFoodCalories : 0;
-  const foodGoal = 2000;
+  // ดึงข้อมูลล่าสุดจาก backend
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch("http://localhost:5000/api/latest", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await res.json();
+      setBmi(data.bmi);
+      setBmiCategory(data.bmiCategory);
+    };
+    fetchData();
+  }, []);
 
-  const waterCurrent = 2.1;
-  const waterGoal = 3.5;
-
-  // const exerciseCurrent = 30;
-  // const exerciseGoal = 60;
-
-  const todaySportKey = `sportCalories_${new Date().toISOString().split("T")[0]}`;
-  const storedSportCalories = parseInt(localStorage.getItem(todaySportKey));
-  const exerciseCurrent = !isNaN(storedSportCalories) ? storedSportCalories : 0;
-  const exerciseGoal = 850;
-
+  // ฟังก์ชันหาตำแหน่ง BMI ใน bar
+  const getBmiPosition = (bmi) => {
+    if (!bmi) return "0%";
+    const maxBMI = 40;
+    const position = (bmi / maxBMI) * 100;
+    return `${Math.min(position, 100)}%`;
+  };
 
   return (
     <div className="p-4  mx-auto space-y-6 bg-gray-100 min-h-screen">
@@ -79,7 +114,9 @@ const HealthDashboard = () => {
       <p className="text-sm text-gray-500 -mt-4">{today}</p>
 
       {/* Health Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10"> {/* เล่ม gap ระหว่างการ์ด */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+        {" "}
+        {/* เล่ม gap ระหว่างการ์ด */}
         <HealthMetric
           title="Food Tracker"
           value={`${foodCurrent} / ${foodGoal} kcal`}
@@ -88,7 +125,7 @@ const HealthDashboard = () => {
           color="#f87171"
           icon="🍎"
           link="/food"
-          className="p-8" // เล่ม padding ให้กรอบใหญ่
+          className="p-8"
         />
         <HealthMetric
           title="Water Intake"
@@ -123,14 +160,18 @@ const HealthDashboard = () => {
       >
         <div className="flex justify-between items-center">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">BMI</h2>
-          <p className="text-3xl font-bold text-green-600">22.5</p>
+          <p className="text-3xl font-bold text-green-600">
+            {results?.bmi ? results.bmi.toFixed(1) : "--"}
+          </p>
         </div>
 
         <div className="space-y-2">
           <div className="w-full bg-gray-100 rounded-full h-3">
             <div
               className="h-3 rounded-full bg-gradient-to-r from-green-400 to-green-600"
-              style={{ width: "50%" }}
+              style={{
+                width: results?.bmi ? getBmiPosition(results.bmi) : "0%",
+              }}
             />
           </div>
           <div className="flex justify-between text-m text-gray-500">
@@ -167,7 +208,7 @@ const HealthDashboard = () => {
 
           {/* Lunch */}
           <div>
-          <h3 className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
+            <h3 className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
               <span className="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
               Lunch
             </h3>
@@ -178,7 +219,7 @@ const HealthDashboard = () => {
 
           {/* Dinner */}
           <div>
-          <h3 className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
+            <h3 className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
               <span className="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
               Dinner
             </h3>
