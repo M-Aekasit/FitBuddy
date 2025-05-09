@@ -30,7 +30,7 @@ function App() {
 
   //send data
   const sendNotificationToServer = async(text) =>{
-    const now = new Date(Date.now() + 7 * 60 * 60 * 1000); 
+    const now = new Date(Date.now()); 
     now.setSeconds(0, 0); 
     const h = now.getHours(); 
     const m = now.getMinutes();
@@ -81,7 +81,26 @@ try {
         const response = await fetch("http://localhost:3000/api/notification");
         const data = await response.json();
         console.log("Fetched notifications:", data);
-        setMessages(data); 
+
+        const sorted = data.sort((a, b) => {
+          const dateA = new Date(Date.UTC(
+            parseInt(a.date.substring(0, 4)),
+            parseInt(a.date.substring(5, 7)) - 1,
+            parseInt(a.date.substring(8, 10)),
+            a.hour,
+            a.minute
+          ));
+          const dateB = new Date(Date.UTC(
+            parseInt(b.date.substring(0, 4)),
+            parseInt(b.date.substring(5, 7)) - 1,
+            parseInt(b.date.substring(8, 10)),
+            b.hour,
+            b.minute
+          ));
+          return dateB - dateA;
+        });
+
+        setMessages(sorted);
       } catch (err) {
         console.error("Error fetching notifications:", err);
       }
@@ -94,8 +113,6 @@ try {
       const h = now.getHours();
       const m = now.getMinutes();
 
-
-
       if (m === 0 && h >= 6 && h < 22) {
         console.log("💧Checking time:", h, m);
         addMessage("💧 Time for a water break! 💧");
@@ -106,11 +123,11 @@ try {
         addMessage("🍽️ Your meal log is waiting! 🍽️");
       }
 
-      if (h === 15 && m==53) {
+      if (h === 16 && m==1) {
         console.log("💪Checking time:", h, m);
         addMessage("💪 Time to get moving!3 💪");
       }
-    }, 5 * 1000); // check 10 sec
+    }, 10 * 1000); // check 10 sec
 
     return () => clearInterval(interval);
   }, []);
@@ -119,7 +136,6 @@ const markAsRead = (msg) => {
   const { text, date, hour, minute } = msg;
   console.log("msg+++", msg);
 
-  // ตรวจสอบว่า date, hour, minute ถูกต้อง
   if (!text || hour === undefined || minute === undefined || !date) {
     console.error('Hour, minute, or date is missing');
     return;
@@ -127,20 +143,20 @@ const markAsRead = (msg) => {
 
   const data = {
     text,
-    date,    // ต้องมีการส่ง date ที่ถูกต้อง
-    hour,    // hour และ minute ก็ต้องถูกต้อง
+    date,    
+    hour,   
     minute,
-    isNew: false, // ตั้งเป็น false เมื่อข้อความถูกอ่านแล้ว
+    isNew: false, 
   };
 
-  console.log("Sending to backend:", data);  // ตรวจสอบข้อมูลก่อนส่ง
+  console.log("Sending to backend:", data);  
 
   fetch('http://localhost:3000/api/notification', {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),  // ส่งข้อมูลที่ตรวจสอบแล้ว
+    body: JSON.stringify(data),  
   })
     .then((response) => {
       if (response.ok) {
@@ -163,8 +179,6 @@ const markAsRead = (msg) => {
       console.error('Error updating notification:', error);
     });
 };
-
-  
 
   const clearMessages = async () => {
     try {
@@ -196,7 +210,7 @@ const markAsRead = (msg) => {
 
       <div className="flex flex-col items-start gap-2 w-full">
         {messages.map((msg) => {
-          console.log("msg", msg); // 👉 ดูค่าที่แท้จริงใน console
+          console.log("msg", msg); 
 
   return (
     <div
