@@ -21,9 +21,9 @@ FitBuddy is a health tracking web application designed to help users monitor and
 
 ## 🧠 Tech Stack  
 
-- **Frontend** : React, JavaScript, CSS  
+- **Frontend** : React, JavaScript, TailwindCSS
 - **Backend** : Node.js, Express.js, JWT
-- **Database** : MongoDB  
+- **Database** : MongoDB 
 
 ## 🛠️ How to Use
 
@@ -126,7 +126,7 @@ img
 
 * Store user-specific health history
 * Implement push notifications or reminders
-* Build a vertical version
+* Build a vercel version
 
 ## 🔗 Source Code
 
@@ -138,12 +138,12 @@ img
 
 All members contributed to **Frontend**, **Backend**, and **Database** development. Responsibilities were divided by feature/pages as follows
 
-| Student ID   | Name                   | Responsibilities (Frontend, Backend, Database)  |
-|--------------|------------------------|-------------------------------------------------|
-| 64340500012  | Chawisa                | Sport, Notification                             |
-| 64340500014  | Thitiporn Suwannawong  | Home, Food, Sport, Diary, Friend, Integrating   |
-| 64340500073  | Witsarut               | Water, Settings                                 |
-| 64340500075  | Aekasit Makham         | Login, Home, BMI Module, Integrating            |
+| Student ID   | Name                   | Responsibilities                                           |
+|--------------|------------------------|------------------------------------------------------------|
+| 64340500012  | Chawisa Ananthean      | Sport, Notification                                        |
+| 64340500014  | Thitiporn Suwannawong  | Home, Food, Sport, Diary, Friend, Integrating, ReadME.md   |
+| 64340500073  | Wisarut Pansang        | Water, Settings                                            |
+| 64340500075  | Aekasit Makham         | Login, Home, BMI Module, Integrating, ReadME.md            |
 
 
 ## 📄 References
