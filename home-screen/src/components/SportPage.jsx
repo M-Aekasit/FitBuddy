@@ -9,7 +9,7 @@ export default function SportPage() {
 
   const getTodayKey = () => {
     const today = new Date().toISOString().split("T")[0];
-    return `trackedCalories_${today}`;
+    return `sportCalories_${today}`;
   };
 
   const todayKey = getTodayKey();
@@ -17,7 +17,7 @@ export default function SportPage() {
   const [page, setPage] = useState("sport");
   const [selectedSport, setSelectedSport] = useState(null);
 
-  const [trackedCalories, setTrackedCalories] = useState(() => {
+  const [sportCalories_, setsportCalories_] = useState(() => {
     const stored = localStorage.getItem(todayKey);
     const parsed = parseInt(stored);
     return !isNaN(parsed) ? parsed : 0;
@@ -31,7 +31,7 @@ export default function SportPage() {
 
   const calorieGoal = 850;
   const progressPercentage = Math.min(
-    (trackedCalories / calorieGoal) * 100,
+    (sportCalories_ / calorieGoal) * 100,
     100
   );
 
@@ -101,8 +101,8 @@ export default function SportPage() {
 
   const calculateCalories = async () => {
     const calories = calculateCaloriesFromSport(selectedSport.type, inputData);
-    const newCalories = trackedCalories + calories;
-    setTrackedCalories(newCalories);
+    const newCalories = sportCalories_ + calories;
+    setsportCalories_(newCalories);
     localStorage.setItem(todayKey, newCalories.toString());
 
     let relevantInputData = { time: parseFloat(inputData.time) };
@@ -127,7 +127,14 @@ export default function SportPage() {
 
     try {
       console.log("Sending data:", dataToSend);
-      await axios.post("http://localhost:5000/api/sport", dataToSend);
+
+      await axios.post("http://localhost:5000/api/sport", {
+        // ตรวจสอบว่าเป็น /api/sport
+        sportType: selectedSport.type,
+        inputData: relevantInputData,
+        calories: Math.round(calories),
+        timestamp: new Date().toISOString(),
+      });
       console.log("Saved to backend");
     } catch (error) {
       console.error("Error saving sport data:", error);
@@ -139,7 +146,8 @@ export default function SportPage() {
   const resetOutdatedData = () => {
     const keys = Object.keys(localStorage);
     keys.forEach((key) => {
-      if (key.startsWith("trackedCalories_") && key !== todayKey) {
+      if (key.startsWith("sportCalories_") && key !== todayKey) {
+
         localStorage.removeItem(key);
       }
     });
@@ -171,7 +179,7 @@ export default function SportPage() {
           <div className="flex justify-between text-gray-600 font-medium mb-1">
             <span>🏃 Calories Burned</span>
             <span>
-              {Math.round(trackedCalories)} / {calorieGoal} kcal
+              {Math.round(sportCalories_)} / {calorieGoal} kcal
             </span>
           </div>
           <div className="w-full h-5 bg-gray-200 rounded-full overflow-hidden">
