@@ -1,11 +1,13 @@
-import express from "express";
+// const express = require("express");
 import cors from "cors";
-import { MongoClient } from "mongodb";
-
+// const { MongoClient, ObjectId } = require("mongodb");
+import express from "express";
+import { MongoClient, ObjectId } from "mongodb";
 const app = express();
 const port = 3000;
 const mongoUrl = "mongodb://localhost:27017"; 
 const dbName = "fitbuddyDB"; 
+// const { ObjectId } = require("mongodb");
 
 // Middleware
 app.use(cors());
@@ -41,9 +43,9 @@ app.post("/api/sports", async (req, res) => {
 });
 // POST API Recieve and save data() sport noti
 app.post("/api/notification", async (req, res) => {
-  const { text, createdAt, hour, minute } = req.body;
+  const { text, createdAt, hour, minute, isNew} = req.body;
 
-  if (!text || !createdAt || hour === undefined || minute === undefined) {
+  if (!text || !createdAt || hour === undefined || minute === undefined|| isNew === undefined) {
     return res.status(400).json({ message: "Missing data" });
   }
 
@@ -74,7 +76,8 @@ app.post("/api/notification", async (req, res) => {
       text,
       createdAt: createdAtDate, // บันทึกเวลาที่ปรับแล้ว
       hour, // บันทึกค่า ชั่วโมง
-      minute // บันทึกค่า นาที
+      minute, // บันทึกค่า นาที
+      isNew
     });
 
     await client.close();
@@ -99,6 +102,7 @@ app.get("/api/notification", async (req, res) => {
         $group: {
           _id: { text: "$text", hour: "$hour", minute: "$minute" }, // ใช้ข้อความ, ชั่วโมง และ นาทีเป็นคีย์ในการกรุ๊ป
           createdAt: { $first: "$createdAt" }, // เอาค่าจากอันแรกที่พบ
+          isNew: { $first: "$isNew" }
         }
       },
       {
@@ -108,6 +112,7 @@ app.get("/api/notification", async (req, res) => {
           createdAt: 1,
           hour: "$_id.hour",
           minute: "$_id.minute",
+          isNew: 1
         }
       }
     ]).toArray();
@@ -135,6 +140,40 @@ app.delete("/api/notification", async (req, res) => {
   } catch (err) {
     console.error("Failed to clear messages from DB:", err);
     res.status(500).json({ message: "Failed to clear messages from DB." });
+  }
+});
+
+
+
+app.put("/api/notification/:id", async (req, res) => {
+  const { id } = req.params;
+  const { isNew } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ message: "Notification ID is required" });
+  }
+
+  try {
+    const client = new MongoClient(mongoUrl);
+    await client.connect();
+    const db = client.db(dbName);
+    const notificationCollection = db.collection("notification");
+
+    const result = await notificationCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { isNew } }
+    );
+
+    await client.close();
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
+
+    res.json({ message: "Notification updated" });
+  } catch (err) {
+    console.error("Error updating notification:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 

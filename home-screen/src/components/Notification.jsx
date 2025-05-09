@@ -12,7 +12,6 @@ function App() {
         
       }
       sendNotificationToServer(text);
-      console.log("2");
       return [{ text, isNew: true, timestamp: getCurrentTimeString() }, ...prev];
     });
   };
@@ -36,21 +35,23 @@ function App() {
       text,
       createdAt: now.toISOString(),
       hour:h,
-      minute:m
+      minute:m,
+      isNew: true
     };
     try {
-      await fetch("http://localhost:3000/api/notification", {
+      const response = await fetch("http://localhost:3000/api/notification", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify(dataToSend)
       });
-      console.log("Notification sent to server");
-    } catch (err) {
-      console.error("Failed to send notification:", err);
+    
+      if (!response.ok) {
+        throw new Error("Failed to send notification");
+      }
+    } catch (error) {
+      console.error("Failed to send notification:", error);
     }
   };
-
-
 
   //load data from DB
   useEffect(() => {
@@ -58,6 +59,7 @@ function App() {
       try {
         const response = await fetch("http://localhost:3000/api/notification");
         const data = await response.json();
+        console.log("Fetched notifications:", data);
         setMessages(data); 
       } catch (err) {
         console.error("Error fetching notifications:", err);
@@ -83,7 +85,7 @@ function App() {
         addMessage("🍽️ Your meal log is waiting! 🍽️");
       }
 
-      if (h === 3 && m==39) {
+      if (h === 12 && m==38) {
         console.log("💪Checking time:", h, m);
         addMessage("💪 Time to get moving! 💪");
       }
@@ -92,21 +94,49 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  const markAsRead = (index) => {
-    setMessages(prev =>
-      prev.map((msg, i) => i === index ? { ...msg, isNew: false } : msg)
-    );
-  };
+  // const markAsRead = (index) => {
+  //   setMessages(prev =>
+  //     prev.map((msg, i) => i === index ? { ...msg, isNew: false } : msg)
+  //   );
+  // };
 
-  const clearMessages = async () => {
+  const markAsRead = async (index) => {
+    const msg = messages[index];
+
+    if (!msg._id) {
+      console.error("Message ID is missing");
+      return;
+    }
+  
+    const updatedMessage = { ...msg, isNew: false };
     try {
-      // ลบข้อมูลในฐานข้อมูลโดยเรียก API จากเซิร์ฟเวอร์
-      const response = await fetch("http://localhost:3000/api/notification", {
-        method: "DELETE", // ใช้ method DELETE เพื่อบอกว่าจะลบข้อมูล
+      const response = await fetch(`http://localhost:3000/api/notification/${msg._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isNew: false })
       });
   
       if (response.ok) {
-        // ล้างข้อมูลใน state ของ React หลังจากลบในฐานข้อมูลเสร็จ
+        setMessages(prev =>
+          prev.map((message, i) => i === index ? updatedMessage : message)
+        );
+        console.log("Message marked as read");
+      } else {
+        console.error("Failed to mark message as read", response.statusText);
+      }
+    } catch (err) {
+      console.error("Error updating message:", err);
+    }
+  };
+  
+
+  const clearMessages = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/notification", {
+        method: "DELETE", 
+      });
+  
+      if (response.ok) {
         setMessages([]);
         console.log("All messages cleared from DB.");
       } else {
