@@ -130,8 +130,8 @@ img
 
 ## 🔗 Source Code
 
-* **Frontend**: ...
-* **Backend**: ...
+* **Frontend** : ...
+* **Backend** : ...
 
 
 ## 👥 Team Members
@@ -150,6 +150,7 @@ All members contributed to **Frontend**, **Backend**, and **Database** developme
 
 * [React Documentation](https://reactjs.org)
 * [MongoDB Docs](https://www.mongodb.com/docs/)
+* [Mongoose](https://mongoosejs.com/docs/connections.html)
 * [MDN JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 * [BMI Info](https://www.calculator.net/bmi-calculator.html)
 
