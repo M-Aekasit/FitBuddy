@@ -151,5 +151,5 @@ All members contributed to **Frontend**, **Backend**, and **Database** developme
 * [React Documentation](https://reactjs.org)
 * [MongoDB Docs](https://www.mongodb.com/docs/)
 * [MDN JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-* [WHO – BMI Info](https://www.who.int/news-room/fact-sheets/detail/obesity-and-overweight)
+* [BMI Info](https://www.calculator.net/bmi-calculator.html)
 
