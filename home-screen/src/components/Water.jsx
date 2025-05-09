@@ -10,6 +10,7 @@ import {
   fetchWaterHistoryFromServer,
   processWaterHistoryData,
   getTodayWaterCount,
+  fetchWaterGoalFromServer,
 } from "../utils/WaterCalculations"
 
 export default function App() {
@@ -18,37 +19,47 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState("main")
   const [waterHistory, setWaterHistory] = useState({})
   const [isLoading, setIsLoading] = useState(true)
+  const [waterGoal, setWaterGoal] = useState(8) // Default value until we fetch from server
   const navigate = useNavigate()
+  const userId = "user123" // In a real app, this would come from authentication
 
-  // Fetch water history from server on component mount
+  // Fetch water history and water goal from server on component mount
   useEffect(() => {
-    async function loadWaterHistory() {
+    
+    async function loadData() {
+      
       try {
         setIsLoading(true)
+  
         // Fetch water history from server
         const serverData = await fetchWaterHistoryFromServer()
-
+  
         // Process the data into the format needed for the UI
         const processedHistory = processWaterHistoryData(serverData)
-
+  
         // Set the water history state
         setWaterHistory(processedHistory)
-
+  
         // Set today's water count
         const todayCount = getTodayWaterCount(processedHistory)
         setWaterCount(todayCount)
-
+  
+        // Fetch water goal from settings
+        
+        const goal = await fetchWaterGoalFromServer(userId)
+        setWaterGoal(goal)
+  
         setIsLoading(false)
       } catch (error) {
-        console.error("Failed to load water history:", error)
+        console.error("Failed to load data:", error)
         setIsLoading(false)
       }
     }
-
-    loadWaterHistory()
-  }, [])
-
   
+    loadData()
+  }, [userId])
+  
+
   const addWater = async () => {
     if (waterCount < 99) {
       setIsAnimating(true)
@@ -107,8 +118,8 @@ export default function App() {
     }
   }
 
-  // Fill percentage
-  const fillPercentage = calculateFillPercentage(waterCount)
+  // Fill percentage based on dynamic water goal
+  const fillPercentage = calculateFillPercentage(waterCount, waterGoal)
   const timeLeftText = calculateTimeRemaining()
   const weekDays = getCurrentWeekDays()
 
@@ -377,7 +388,9 @@ export default function App() {
                   <div className="stats-grid">
                     <div className="stat-card">
                       <p className="stat-label">Daily Goal</p>
-                      <p className="stat-value">{waterCount}/8</p>
+                      <p className="stat-value">
+                        {waterCount}/{waterGoal}
+                      </p>
                       <p className="stat-unit">glasses</p>
                     </div>
                     <div className="stat-card">
@@ -449,8 +462,8 @@ export default function App() {
                 {/* Dynamic history items */}
                 {[1, 2, 3].map((daysAgo) => {
                   const waterAmount = getWaterCountForDay(waterHistory, daysAgo)
-                  const isCompleted = waterAmount >= 8
-                  const statusText = isCompleted ? "Goal completed" : `${8 - waterAmount} glasses left`
+                  const isCompleted = waterAmount >= waterGoal
+                  const statusText = isCompleted ? "Goal completed" : `${waterGoal - waterAmount} glasses left`
 
                   return (
                     <div className="history-item" key={daysAgo}>
@@ -493,14 +506,16 @@ export default function App() {
               {weekDays.map((day) => {
                 const dateKey = day.date
                 const waterAmount = waterHistory[dateKey] || 0
-                const fillPercentage = calculateFillPercentage(waterAmount)
+                const fillPercentage = calculateFillPercentage(waterAmount, waterGoal)
 
                 return (
                   <div key={day.name} className={`day-column ${day.isToday ? "today" : ""}`}>
                     <div className="day-label">{day.name}</div>
                     <div className="day-bar-container">
                       <div className="day-bar-fill" style={{ height: `${fillPercentage}%` }}></div>
-                      <div className="day-bar-text">{waterAmount}/8</div>
+                      <div className="day-bar-text">
+                        {waterAmount}/{waterGoal}
+                      </div>
                     </div>
                   </div>
                 )

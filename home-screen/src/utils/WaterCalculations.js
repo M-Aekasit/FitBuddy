@@ -146,3 +146,34 @@ export const getWaterCountForDay = (waterHistory, daysAgo) => {
   const dateKey = getDateKey(daysAgo)
   return waterHistory[dateKey] || 0
 }
+
+// Fetch water goal from server
+export const fetchWaterGoalFromServer = async (userId = "user123") => {
+  try {
+    console.log("🔄 Fetching water goal from server...", userId)
+
+    const response = await fetch(`http://localhost:5000/api/settings/${userId}`)
+
+    if (response.status === 404) {
+      console.log("⚠️ No settings found, using default water goal")
+      return 8
+    }
+
+    if (!response.ok) {
+      throw new Error(`Server responded with status: ${response.status}`)
+    }
+
+    const data = await response.json()
+    console.log("✅ Received settings:", data)
+
+    const waterGoal = data.settings?.waterGoal || 8
+    console.log("🥤 Water goal:", waterGoal)
+
+    return waterGoal
+  } catch (error) {
+    console.error("❌ Error fetching water goal:", error)
+    return 8
+  }
+}
+
+

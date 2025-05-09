@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
-import { fetchWaterHistoryFromServer, processWaterHistoryData, getTodayWaterCount } from "../utils/WaterCalculations"
+import {
+  fetchWaterHistoryFromServer,
+  processWaterHistoryData,
+  getTodayWaterCount,
+  fetchWaterGoalFromServer,
+} from "../utils/WaterCalculations"
 
 // HealthMetric component
 const HealthMetric = ({ title, value, goal, progress, icon, color, link = "#", className = "" }) => (
@@ -31,15 +36,18 @@ const HealthMetric = ({ title, value, goal, progress, icon, color, link = "#", c
 )
 
 const HealthDashboard = () => {
-  // State for water count
+  // State for water count and goal
   const [waterCurrent, setWaterCurrent] = useState(0)
+  const [waterGoal, setWaterGoal] = useState(8) // Default value until we fetch from server
   const [isLoading, setIsLoading] = useState(true)
-  const waterGoal = 8 // Default water goal
+  const userId = "user123" // In a real app, this would come from authentication
 
-  // Load water count from MongoDB on component mount
+  // Load water count and goal from MongoDB on component mount
   useEffect(() => {
-    const loadWaterCount = async () => {
+    const loadData = async () => {
       try {
+        setIsLoading(true)
+
         // Fetch water history from server
         const serverData = await fetchWaterHistoryFromServer()
 
@@ -49,16 +57,21 @@ const HealthDashboard = () => {
         // Get today's water count
         const todayWaterCount = getTodayWaterCount(processedHistory)
         setWaterCurrent(todayWaterCount)
+
+        // Fetch water goal from settings
+        const goal = await fetchWaterGoalFromServer(userId)
+        setWaterGoal(goal)
+
         setIsLoading(false)
       } catch (error) {
-        console.error("Failed to load water history:", error)
+        console.error("Failed to load data:", error)
         setIsLoading(false)
       }
     }
 
-    // Load initial water count
-    loadWaterCount()
-  }, [])
+    // Load initial water count and goal
+    loadData()
+  }, [userId])
 
   const today = new Date().toLocaleDateString("en-US", {
     month: "long",

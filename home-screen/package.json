@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "node water-server.js",
+    "start": "node setting-server.js",
     "dev": "vite",
-    "server": "nodemon water-server.js",
-    "dev:all": "concurrently \"npm run dev\" \"npm run server\"",
+    "server": "nodemon setting-server.js",
+    "dev:all": "concurrently \"npm run dev\" \"nodemon water-server.js\" \"nodemon setting-server.js\"",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
