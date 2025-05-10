@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import {
+  fetchWaterHistoryFromServer,
+  processWaterHistoryData,
+  getTodayWaterCount,
+  fetchWaterGoalFromServer,
+} from "../utils/WaterCalculations";
 
 // HealthMetric component
 const HealthMetric = ({
@@ -18,12 +24,8 @@ const HealthMetric = ({
     className={`flex flex-col justify-between rounded-xl shadow-sm hover:shadow-md transition-all bg-white ${className}`}
   >
     <div className="flex items-center space-x-4 mb-6">
-      {" "}
-      {/* เล่ม space-x */}
-      <div className="text-4xl">{icon}</div> {/* เล่มขนาดไอคอน */}
+      <div className="text-4xl">{icon}</div>
       <div className="space-y-2">
-        {" "}
-        {/* เล่มระยะห่างระหว่างข้อความ */}
         <h3 className="text-2xl font-semibold text-gray-800 tracking-wide">
           {title}
         </h3>
@@ -33,8 +35,6 @@ const HealthMetric = ({
     </div>
     {progress !== undefined && (
       <div className="w-full bg-gray-200 rounded-full h-3">
-        {" "}
-        {/* เล่มความสูงของ progress bar */}
         <div
           className="h-3 rounded-full transition-all"
           style={{
@@ -53,31 +53,39 @@ const today = new Date().toLocaleDateString("en-US", {
   year: "numeric",
 });
 
-// Data
-// const foodCurrent = 1200;
-// const foodGoal = 2000;
-const todayFoodKey = `foodCalories_${new Date().toISOString().split("T")[0]}`;
-const storedFoodCalories = parseInt(localStorage.getItem(todayFoodKey));
-const foodCurrent = !isNaN(storedFoodCalories) ? storedFoodCalories : 0;
-const foodGoal = 2000;
-
-const waterCurrent = 2.1;
-const waterGoal = 3.5;
-
-// const exerciseCurrent = 30;
-// const exerciseGoal = 60;
-
-const todaySportKey = `sportCalories_${new Date().toISOString().split("T")[0]}`;
-const storedSportCalories = parseInt(localStorage.getItem(todaySportKey));
-const exerciseCurrent = !isNaN(storedSportCalories) ? storedSportCalories : 0;
-const exerciseGoal = 850;
-
 const HealthDashboard = () => {
   const [results, setResults] = useState(null);
-  const [bmi, setBmi] = useState(null); 
-  const [bmiCategory, setBmiCategory] = useState(""); 
+  const [bmi, setBmi] = useState(null);
+  const [bmiCategory, setBmiCategory] = useState("");
 
-  // ดึงข้อมูลล่าสุดจาก backend
+  const [waterCurrent, setWaterCurrent] = useState(0);
+  const [waterGoal, setWaterGoal] = useState(8);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const userId = "user123"; // Replace this with actual user ID in real app
+
+  // Load water data
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const serverData = await fetchWaterHistoryFromServer();
+        const processed = processWaterHistoryData(serverData);
+        const todayCount = getTodayWaterCount(processed);
+        setWaterCurrent(todayCount);
+
+        const goal = await fetchWaterGoalFromServer(userId);
+        setWaterGoal(goal);
+      } catch (err) {
+        console.error("Failed to load water data:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadData();
+  }, [userId]);
+
+  // Load BMI data
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetch("http://localhost:5000/api/latest", {
@@ -92,7 +100,18 @@ const HealthDashboard = () => {
     fetchData();
   }, []);
 
-  // ฟังก์ชันหาตำแหน่ง BMI ใน bar
+  // Food
+  const todayFoodKey = `foodCalories_${new Date().toISOString().split("T")[0]}`;
+  const storedFoodCalories = parseInt(localStorage.getItem(todayFoodKey));
+  const foodCurrent = !isNaN(storedFoodCalories) ? storedFoodCalories : 0;
+  const foodGoal = 2000;
+
+  // Sport
+  const todaySportKey = `sportCalories_${new Date().toISOString().split("T")[0]}`;
+  const storedSportCalories = parseInt(localStorage.getItem(todaySportKey));
+  const exerciseCurrent = !isNaN(storedSportCalories) ? storedSportCalories : 0;
+  const exerciseGoal = 850;
+
   const getBmiPosition = (bmi) => {
     if (!bmi) return "0%";
     const maxBMI = 40;
@@ -115,8 +134,6 @@ const HealthDashboard = () => {
 
       {/* Health Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
-        {" "}
-        {/* เล่ม gap ระหว่างการ์ด */}
         <HealthMetric
           title="Food Tracker"
           value={`${foodCurrent} / ${foodGoal} kcal`}
@@ -129,11 +146,21 @@ const HealthDashboard = () => {
         />
         <HealthMetric
           title="Water Intake"
-          value={`${waterCurrent} / ${waterGoal} L`}
-          goal={`${Math.round(
-            (waterCurrent / waterGoal) * 100
-          )}% of daily goal`}
-          progress={Math.min((waterCurrent / waterGoal) * 100, 100)}
+          value={
+            isLoading
+              ? "Loading..."
+              : `${waterCurrent} / ${waterGoal} glasses`
+          }
+          goal={
+            isLoading
+              ? "Loading..."
+              : `${Math.round((waterCurrent / waterGoal) * 100)}% of daily goal`
+          }
+          progress={
+            isLoading
+              ? 0
+              : Math.min((waterCurrent / waterGoal) * 100, 100)
+          }
           color="#3b82f6"
           icon="💧"
           link="/water"
@@ -182,7 +209,7 @@ const HealthDashboard = () => {
         </div>
       </Link>
 
-      {/* Today's Meal Plan */}
+      {/* Meal Plan */}
       <section className="bg-white p-6 rounded-xl shadow-sm space-y-6">
         <div className="flex justify-between items-center border-b pb-4">
           <h2 className="text-2xl font-bold text-gray-800">
@@ -194,7 +221,6 @@ const HealthDashboard = () => {
         </div>
 
         <div className="space-y-6 divide-y divide-gray-100">
-          {/* Breakfast */}
           <div className="pt-4 first:pt-0">
             <h3 className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
               <span className="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
@@ -205,8 +231,6 @@ const HealthDashboard = () => {
               <li>Protein shake - 180 kcal</li>
             </ul>
           </div>
-
-          {/* Lunch */}
           <div>
             <h3 className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
               <span className="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
@@ -216,8 +240,6 @@ const HealthDashboard = () => {
               <li>Grilled chicken salad - 450 kcal</li>
             </ul>
           </div>
-
-          {/* Dinner */}
           <div>
             <h3 className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
               <span className="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
