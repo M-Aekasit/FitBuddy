@@ -1,8 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  toggleNotificationSetting,
+  updateMainNotificationToggle,
+  turnOffAllNotifications,
+  updateUsername,
+  updatePassword,
+  handleLogout,
+  resetPasswordFields,
+  saveSettingsToServer,
+  fetchSettingsFromServer,
+} from "../utils/SettingCalculations";
 
 export default function SettingsPage() {
+  // สร้าง navigate function จาก React Router
   const navigate = useNavigate();
+
+  // สร้าง state สำหรับเก็บข้อมูลการตั้งค่าทั้งหมด
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [calorieGoal, setCalorieGoal] = useState(2000);
@@ -20,13 +34,103 @@ export default function SettingsPage() {
     waterReminder: true,
     exerciseReminder: true,
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [userId, setUserId] = useState("user123"); // ในระบบจริงควรใช้ ID จากระบบ authentication
+  const [passwordLastChanged, setPasswordLastChanged] = useState(null);
+  const [serverPassword, setServerPassword] = useState("");
 
-  // Function to handle toggling individual notification settings
-  const toggleNotificationSetting = (setting) => {
-    setNotificationSettings((prev) => ({
-      ...prev,
-      [setting]: !prev[setting],
-    }));
+  // เปลี่ยน URL รูปโปรไฟล์เป็น URL ใหม่
+  const [profileImage, setProfileImage] = useState(
+    "https://i.pinimg.com/736x/d9/7b/bb/d97bbb08017ac2309307f0822e63d082.jpg"
+  );
+
+  // สร้าง state สำหรับเก็บการตั้งค่าทั้งหมด
+  const [allSettings, setAllSettings] = useState({});
+
+  // โหลดการตั้งค่าจาก server เมื่อ component โหลด
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchSettingsFromServer(userId);
+
+        if (data && data.settings) {
+          const { settings } = data;
+          // เก็บการตั้งค่าทั้งหมดไว้ใน state
+          setAllSettings(settings);
+
+          // อัปเดต state ด้วยข้อมูลจาก server
+          setDarkMode(settings.darkMode || false);
+          setNotifications(settings.notifications || true);
+          setCalorieGoal(settings.calorieGoal || 2000);
+          setWaterGoal(settings.waterGoal || 8);
+          setUsername(settings.username || "Username");
+          setNotificationSettings(
+            settings.notificationSettings || {
+              foodReminder: true,
+              waterReminder: true,
+              exerciseReminder: true,
+            }
+          );
+
+          // เก็บข้อมูลเกี่ยวกับการเปลี่ยนรหัสผ่านล่าสุด
+          if (settings.passwordLastChanged) {
+            setPasswordLastChanged(new Date(settings.passwordLastChanged));
+          }
+
+          // เก็บรหัสผ่านปัจจุบัน (ถ้ามี)
+          if (settings.currentPassword) {
+            // ในระบบจริงไม่ควรดึงรหัสผ่านมาเก็บไว้ใน state
+            // นี่เป็นเพียงตัวอย่างสำหรับการทดสอบเท่านั้น
+            console.log(
+              "Current password loaded from server:",
+              settings.currentPassword
+            );
+            setServerPassword(settings.currentPassword);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load settings:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadSettings();
+  }, [userId]);
+
+  // บันทึกการตั้งค่าไปยัง server
+  const saveSettings = async () => {
+    try {
+      setIsSaving(true);
+
+      // รวบรวมการตั้งค่าทั้งหมด
+      const settings = {
+        ...allSettings, // เก็บการตั้งค่าเดิมทั้งหมด
+        darkMode,
+        notifications,
+        calorieGoal,
+        waterGoal,
+        username,
+        notificationSettings,
+        profileImage, // ยังคงเก็บรูปโปรไฟล์ไว้ในการตั้งค่า
+        updatedAt: new Date().toISOString(),
+      };
+
+      // อัปเดต state allSettings
+      setAllSettings(settings);
+
+      // บันทึกไปยัง server
+      await saveSettingsToServer(userId, settings);
+
+      alert("Settings saved successfully!");
+    } catch (error) {
+      console.error("Failed to save settings:", error);
+      alert("Failed to save settings. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Function to go back to main settings page
@@ -34,12 +138,31 @@ export default function SettingsPage() {
     setShowNotificationsPage(false);
   };
 
-  // If any notification is enabled, the main notifications toggle should be on
-  const updateMainNotificationToggle = () => {
-    const anyEnabled = Object.values(notificationSettings).some(
-      (value) => value === true
+  // Function to reset password fields
+  const handleResetPasswordFields = () => {
+    resetPasswordFields(setCurrentPassword, setNewPassword, setConfirmPassword);
+  };
+
+  // แสดง loading state
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen bg-gray-50 items-center justify-center">
+        <div className="text-xl font-semibold">Loading settings...</div>
+      </div>
     );
-    setNotifications(anyEnabled);
+  }
+
+  // ฟอร์แมตวันที่เปลี่ยนรหัสผ่านล่าสุด
+  const formatPasswordLastChanged = () => {
+    if (!passwordLastChanged) return "Never";
+
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(passwordLastChanged);
   };
 
   return (
@@ -47,9 +170,10 @@ export default function SettingsPage() {
       {/* Sidebar */}
       <div className="w-64 border-r border-gray-200 p-6 flex flex-col">
         <div className="flex flex-col items-center mb-8">
+          {/* รูปโปรไฟล์ (ไม่สามารถคลิกเพื่อเปลี่ยนได้แล้ว) */}
           <div className="w-50 h-50 rounded-full overflow-hidden mb-2">
             <img
-              src="https://i.pinimg.com/736x/33/86/26/3386260445cf60272605e4ecc4c492f1.jpg"
+              src={profileImage || "/placeholder.svg"}
               alt="Profile"
               className="w-full h-full object-cover"
             />
@@ -60,24 +184,8 @@ export default function SettingsPage() {
         <div className="space-y-4 mb-auto"></div>
 
         <div className="mt-8">
-          <h3 className="text-sm font-semibold mb-4">Support</h3>
+          <h3 className="text-sm font-semibold mb-4"></h3>
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center">
-                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 mr-4">
-                    🏳️
-                  </div>
-                  <span className="text-sm font-medium">Help Center</span>
-                </div>
-                <p className="text-xs text-gray-500 ml-6">
-                  Get help with using the app
-                </p>
-              </div>
-              <span className="text-xs text-blue-500 cursor-pointer">
-                Visit
-              </span>
-            </div>
 
             <div className="flex items-center justify-between">
               <div>
@@ -157,6 +265,11 @@ export default function SettingsPage() {
                   </div>
                   <p className="text-xs text-gray-500 ml-6">
                     Change your password
+                    {passwordLastChanged && (
+                      <span className="block mt-1">
+                        Last changed: {formatPasswordLastChanged()}
+                      </span>
+                    )}
                   </p>
                 </div>
                 <button
@@ -217,11 +330,7 @@ export default function SettingsPage() {
                       setNotifications(!notifications);
                       // If turning off all notifications, set all individual settings to false
                       if (notifications) {
-                        setNotificationSettings({
-                          foodReminder: false,
-                          waterReminder: false,
-                          exerciseReminder: false,
-                        });
+                        turnOffAllNotifications(setNotificationSettings);
                       }
                     }}
                   >
@@ -258,6 +367,14 @@ export default function SettingsPage() {
                   className="w-full p-2 border border-gray-200 rounded"
                 />
               </div>
+
+              <button
+                className="mt-6 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors"
+                onClick={saveSettings}
+                disabled={isSaving}
+              >
+                {isSaving ? "Saving..." : "Save Settings"}
+              </button>
             </div>
           </>
         ) : (
@@ -288,8 +405,19 @@ export default function SettingsPage() {
                       : "bg-gray-200"
                   }`}
                   onClick={() => {
-                    toggleNotificationSetting("foodReminder");
-                    setTimeout(updateMainNotificationToggle, 0);
+                    toggleNotificationSetting(
+                      "foodReminder",
+                      notificationSettings,
+                      setNotificationSettings
+                    );
+                    setTimeout(
+                      () =>
+                        updateMainNotificationToggle(
+                          notificationSettings,
+                          setNotifications
+                        ),
+                      0
+                    );
                   }}
                 >
                   <span
@@ -316,8 +444,19 @@ export default function SettingsPage() {
                       : "bg-gray-200"
                   }`}
                   onClick={() => {
-                    toggleNotificationSetting("waterReminder");
-                    setTimeout(updateMainNotificationToggle, 0);
+                    toggleNotificationSetting(
+                      "waterReminder",
+                      notificationSettings,
+                      setNotificationSettings
+                    );
+                    setTimeout(
+                      () =>
+                        updateMainNotificationToggle(
+                          notificationSettings,
+                          setNotifications
+                        ),
+                      0
+                    );
                   }}
                 >
                   <span
@@ -344,8 +483,19 @@ export default function SettingsPage() {
                       : "bg-gray-200"
                   }`}
                   onClick={() => {
-                    toggleNotificationSetting("exerciseReminder");
-                    setTimeout(updateMainNotificationToggle, 0);
+                    toggleNotificationSetting(
+                      "exerciseReminder",
+                      notificationSettings,
+                      setNotificationSettings
+                    );
+                    setTimeout(
+                      () =>
+                        updateMainNotificationToggle(
+                          notificationSettings,
+                          setNotifications
+                        ),
+                      0
+                    );
                   }}
                 >
                   <span
@@ -357,6 +507,14 @@ export default function SettingsPage() {
                   />
                 </button>
               </div>
+
+              <button
+                className="mt-6 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors"
+                onClick={saveSettings}
+                disabled={isSaving}
+              >
+                {isSaving ? "Saving..." : "Save Notification Settings"}
+              </button>
             </div>
           </>
         )}
@@ -386,13 +544,21 @@ export default function SettingsPage() {
                 </button>
                 <button
                   className="px-4 py-2 bg-blue-500 text-white rounded"
-                  onClick={() => {
-                    if (newUsername.trim()) {
-                      setUsername(newUsername);
-                      setShowUsernameModal(false);
-                      alert("Username updated successfully");
-                    } else {
-                      alert("Username cannot be empty");
+                  onClick={async () => {
+                    // ส่งข้อมูลไปยัง server ทันที
+                    const success = await updateUsername(
+                      newUsername,
+                      setUsername,
+                      setShowUsernameModal,
+                      userId,
+                      allSettings
+                    );
+                    if (success) {
+                      // อัปเดต allSettings
+                      setAllSettings((prev) => ({
+                        ...prev,
+                        username: newUsername,
+                      }));
                     }
                   }}
                 >
@@ -418,6 +584,9 @@ export default function SettingsPage() {
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   className="w-full p-2 border border-gray-200 rounded"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  For testing, use "A123456" or your current password
+                </p>
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">
@@ -446,26 +615,35 @@ export default function SettingsPage() {
                   className="px-4 py-2 bg-gray-200 rounded"
                   onClick={() => {
                     setShowPasswordModal(false);
-                    setCurrentPassword("");
-                    setNewPassword("");
-                    setConfirmPassword("");
+                    handleResetPasswordFields();
                   }}
                 >
                   Cancel
                 </button>
                 <button
                   className="px-4 py-2 bg-blue-500 text-white rounded"
-                  onClick={() => {
-                    if (!currentPassword || !newPassword || !confirmPassword) {
-                      alert("All fields are required");
-                    } else if (newPassword !== confirmPassword) {
-                      alert("New passwords do not match");
-                    } else {
-                      setShowPasswordModal(false);
-                      setCurrentPassword("");
-                      setNewPassword("");
-                      setConfirmPassword("");
-                      alert("Password changed successfully");
+                  onClick={async () => {
+                    const success = await updatePassword(
+                      currentPassword,
+                      newPassword,
+                      confirmPassword,
+                      setShowPasswordModal,
+                      () => handleResetPasswordFields(),
+                      userId,
+                      serverPassword // ส่งรหัสผ่านจาก server ไปด้วย
+                    );
+                    if (success) {
+                      // ถ้าเปลี่ยนรหัสผ่านสำเร็จ อัปเดตวันที่เปลี่ยนรหัสผ่านล่าสุด
+                      setPasswordLastChanged(new Date());
+                      // อัปเดตรหัสผ่านใหม่ใน state
+                      setServerPassword(newPassword);
+                      // อัปเดต allSettings
+                      setAllSettings((prev) => ({
+                        ...prev,
+                        currentPassword: newPassword,
+                        passwordLastChanged: new Date().toISOString(),
+                      }));
+                      console.log("Password changed successfully");
                     }
                   }}
                 >
