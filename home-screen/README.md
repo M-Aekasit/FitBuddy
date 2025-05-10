@@ -120,6 +120,7 @@ img
 * Connecting frontend with backend APIs
 * Storing and fetching user data with MongoDB
 * Building responsive and user-friendly interfaces
+* Integrating multiple components into one functional system  
 
 ## 🧩 Known Issues
 
