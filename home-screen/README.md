@@ -15,9 +15,13 @@ FitBuddy is a health tracking web application designed to help users monitor and
 
 ## 🎯 Objectives
 
-- Help users monitor daily health activities in one platform  
-- Encourage healthy habits with consistent tracking and feedback  
-- Provide tools for understanding and managing body weight (BMI)  
+- Help users monitor daily health activities in one platform
+- Encourage healthy habits with consistent tracking and feedback
+- Provide tools for understanding and managing body weight (BMI)
+- Enable personalized goal setting and progress tracking
+- Support users in maintaining hydration and balanced nutrition
+- Offer a space for self-reflection through diary entries
+- Facilitate social motivation via friend interaction and shared goals
 
 ## 🧠 Tech Stack  
 
