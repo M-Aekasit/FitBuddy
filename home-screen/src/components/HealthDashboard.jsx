@@ -161,7 +161,7 @@ const HealthDashboard = () => {
         <div className="flex justify-between items-center">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">BMI</h2>
           <p className="text-3xl font-bold text-green-600">
-            {results?.bmi ? results.bmi.toFixed(1) : "--"}
+            {bmi !== null ? bmi.toFixed(1) : "--"}
           </p>
         </div>
 
@@ -170,7 +170,7 @@ const HealthDashboard = () => {
             <div
               className="h-3 rounded-full bg-gradient-to-r from-green-400 to-green-600"
               style={{
-                width: results?.bmi ? getBmiPosition(results.bmi) : "0%",
+                width: bmi !== null ? getBmiPosition(bmi) : "0%",
               }}
             />
           </div>
