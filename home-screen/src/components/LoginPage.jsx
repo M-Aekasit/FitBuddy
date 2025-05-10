@@ -42,7 +42,7 @@ function LoginPage({ setIsAuthenticated }) {
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md mx-4">
         {/* Logo Section */}
         <div className="flex justify-center mb-6">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-full">
+          <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white p-3 rounded-full">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-10 w-10"
@@ -151,7 +151,7 @@ function LoginPage({ setIsAuthenticated }) {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-md transition-all duration-300 ${
+            className={`w-full py-3 px-4 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-semibold rounded-lg shadow-md transition-all duration-300 ${
               isLoading ? "opacity-75" : ""
             }`}
           >
