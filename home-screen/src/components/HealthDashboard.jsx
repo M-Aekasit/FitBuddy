@@ -74,8 +74,8 @@ const exerciseGoal = 850;
 
 const HealthDashboard = () => {
   const [results, setResults] = useState(null);
-  const [bmi, setBmi] = useState(null); // 👈 เพิ่มบรรทัดนี้
-  const [bmiCategory, setBmiCategory] = useState(""); // 👈 และอันนี้ด้วย
+  const [bmi, setBmi] = useState(null); 
+  const [bmiCategory, setBmiCategory] = useState(""); 
 
   // ดึงข้อมูลล่าสุดจาก backend
   useEffect(() => {
