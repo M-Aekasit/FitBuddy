@@ -1,16 +1,16 @@
-// import express from "express";
-// import {
-//   saveSettings,
-//   getSettings,
-//   getAllSettings,
-//   deleteSettings,
-// } from "../controllers/settingController.js";
+import express from "express";
+import {
+  saveSettings,
+  getSettings,
+  getAllSettings,
+  deleteSettings,
+} from "../controllers/settingsController.js";
 
-// const router = express.Router();
+const router = express.Router();
 
-// router.post("/api/settings", saveSettings);
-// router.get("/api/settings/:userId", getSettings);
-// router.get("/api/settings", getAllSettings);
-// router.delete("/api/settings/:userId", deleteSettings);
+router.post("/settings", saveSettings);
+router.get("/settings/:userId", getSettings);
+router.get("/settings", getAllSettings);
+router.delete("/settings/:userId", deleteSettings);
 
-// export default router;
+export default router;
