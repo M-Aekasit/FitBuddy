@@ -16,10 +16,11 @@ import SportPage from "./components/SportPage";
 import Food from "./components/Food";
 import FriendPage from "./components/FriendPage";
 import DiaryPage from "./components/DiaryPage";
-import Notification from "./components/Notification";
+import Notification from "./components/Notification.jsx";
 import SettingPage from "./components/SettingPage";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
+
 
 const AppWrapper = ({ isAuthenticated, setIsAuthenticated, loading }) => {
   const location = useLocation();
@@ -67,7 +68,7 @@ function App() {
   useEffect(() => {
     const verifyToken = async () => {
       const token = localStorage.getItem("token");
-      // console.log("Retrieved token:", token);
+      console.log("Retrieved token:", token); 
 
       if (!token) {
         setIsAuthenticated(false);
