@@ -1,130 +1,136 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import {
+  getFormattedDate,
+  calculateFillPercentage,
+  calculateTimeRemaining,
+  getWaterCountForDay,
+  getCurrentWeekDays,
+  saveWaterDataToServer,
+  fetchWaterHistoryFromServer,
+  processWaterHistoryData,
+  getTodayWaterCount,
+  fetchWaterGoalFromServer,
+} from "../utils/WaterCalculations"
 
 export default function App() {
   const [waterCount, setWaterCount] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
   const [currentPage, setCurrentPage] = useState("main")
   const [waterHistory, setWaterHistory] = useState({})
+  const [isLoading, setIsLoading] = useState(true)
+  const [waterGoal, setWaterGoal] = useState(8) // Default value until we fetch from server
   const navigate = useNavigate()
+  const userId = "user123" // In a real app, this would come from authentication
 
-  // Initialize water history with some sample data on first load
+  // Fetch water history and water goal from server on component mount
   useEffect(() => {
-    // Get today's date
-    const today = new Date()
-
-    // Create sample history data for the past week
-    const initialHistory = {}
-
-    for (let i = 1; i <= 7; i++) {
-      const date = new Date(today)
-      date.setDate(today.getDate() - i)
-      const dateKey = date.toISOString().split("T")[0]
-
-      // Random water count between 5-8 for past days
-      initialHistory[dateKey] = i === 1 ? 8 : Math.floor(Math.random() * 4) + 5
+    
+    async function loadData() {
+      
+      try {
+        setIsLoading(true)
+  
+        // Fetch water history from server
+        const serverData = await fetchWaterHistoryFromServer()
+  
+        // Process the data into the format needed for the UI
+        const processedHistory = processWaterHistoryData(serverData)
+  
+        // Set the water history state
+        setWaterHistory(processedHistory)
+  
+        // Set today's water count
+        const todayCount = getTodayWaterCount(processedHistory)
+        setWaterCount(todayCount)
+  
+        // Fetch water goal from settings
+        
+        const goal = await fetchWaterGoalFromServer(userId)
+        setWaterGoal(goal)
+  
+        setIsLoading(false)
+      } catch (error) {
+        console.error("Failed to load data:", error)
+        setIsLoading(false)
+      }
     }
+  
+    loadData()
+  }, [userId])
+  
 
-    // Only set initial history if it doesn't exist yet
-    if (Object.keys(waterHistory).length === 0) {
-      setWaterHistory(initialHistory)
-    }
-  }, [])
-
-  // Update water count for today
-  useEffect(() => {
-    const today = new Date().toISOString().split("T")[0]
-
-    // Update today's water count in history
-    setWaterHistory((prev) => ({
-      ...prev,
-      [today]: waterCount,
-    }))
-  }, [waterCount])
-
-  const addWater = () => {
-    if (waterCount < 8) {
+  const addWater = async () => {
+    if (waterCount < 99) {
       setIsAnimating(true)
-      setTimeout(() => {
-        setWaterCount((prev) => prev + 1)
+      setTimeout(async () => {
+        const newCount = waterCount + 1
+        setWaterCount(newCount)
         setIsAnimating(false)
+
+        // Save to server
+        try {
+          const response = await saveWaterDataToServer({
+            waterCount: newCount,
+            action: "add",
+            timestamp: new Date().toISOString(),
+          })
+          console.log("✅ Water data saved to server")
+
+          // Update water history with the new count
+          setWaterHistory((prev) => ({
+            ...prev,
+            [new Date().toISOString().split("T")[0]]: newCount,
+          }))
+        } catch (error) {
+          console.error("❌ Error saving water data to server:", error)
+        }
       }, 100)
     }
   }
 
-  const decreaseWater = () => {
+  const decreaseWater = async () => {
     if (waterCount > 0) {
       setIsAnimating(true)
-      setTimeout(() => {
-        setWaterCount((prev) => prev - 1)
+      setTimeout(async () => {
+        const newCount = waterCount - 1
+        setWaterCount(newCount)
         setIsAnimating(false)
+
+        // Save to server
+        try {
+          const response = await saveWaterDataToServer({
+            waterCount: newCount,
+            action: "decrease",
+            timestamp: new Date().toISOString(),
+          })
+          console.log("✅ Water data saved to server")
+
+          // Update water history with the new count
+          setWaterHistory((prev) => ({
+            ...prev,
+            [new Date().toISOString().split("T")[0]]: newCount,
+          }))
+        } catch (error) {
+          console.error("❌ Error saving water data to server:", error)
+        }
       }, 100)
     }
   }
 
-  // Fill percentage
-  const fillPercentage = (waterCount / 8) * 100
-
-  const now = new Date()
-  const endOfDay = new Date()
-  endOfDay.setHours(24, 0, 0, 0)
-  const timeDiffMs = endOfDay - now
-  const hoursLeft = Math.floor(timeDiffMs / (1000 * 60 * 60))
-  const minutesLeft = Math.floor((timeDiffMs / (1000 * 60)) % 60)
-  const timeLeftText = hoursLeft > 0 ? `${hoursLeft}h left` : `${minutesLeft}m left`
-
-  // Get formatted date for display
-  const getFormattedDate = (daysAgo) => {
-    const date = new Date()
-    date.setDate(date.getDate() - daysAgo)
-
-    if (daysAgo === 1) return "Yesterday"
-    if (daysAgo === 0) return "Today"
-
-    // For days within the current week, show day name
-    if (daysAgo < 7) {
-      const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-      return dayNames[date.getDay()]
-    }
-
-    // For older dates, show date format
-    return `${date.getDate()} ${date.toLocaleString("default", { month: "short" })}, ${date.getFullYear()}`
-  }
-
-  // Get water count for a specific day
-  const getWaterCountForDay = (daysAgo) => {
-    const date = new Date()
-    date.setDate(date.getDate() - daysAgo)
-    const dateKey = date.toISOString().split("T")[0]
-
-    return waterHistory[dateKey] || 0
-  }
-
-  // Get current week days for weekly progress
-  const getCurrentWeekDays = () => {
-    const days = []
-    const today = new Date()
-    const currentDay = today.getDay() // 0 = Sunday, 1 = Monday, etc.
-
-    // Calculate the Monday of this week
-    const monday = new Date(today)
-    monday.setDate(today.getDate() - currentDay + (currentDay === 0 ? -6 : 1))
-
-    // Generate array of weekdays
-    for (let i = 0; i < 7; i++) {
-      const day = new Date(monday)
-      day.setDate(monday.getDate() + i)
-      days.push({
-        name: day.toLocaleString("default", { weekday: "short" }),
-        date: day.toISOString().split("T")[0],
-        isToday: day.toDateString() === today.toDateString(),
-      })
-    }
-
-    return days
-  }
-
+  // Fill percentage based on dynamic water goal
+  const fillPercentage = calculateFillPercentage(waterCount, waterGoal)
+  const timeLeftText = calculateTimeRemaining()
   const weekDays = getCurrentWeekDays()
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-100 p-6 text-gray-800 items-center justify-center">
+        <div className="text-2xl font-bold">Loading water data...</div>
+      </div>
+    )
+  }
 
   // Settings page
   if (currentPage === "settings") {
@@ -183,7 +189,7 @@ export default function App() {
               </div>
             </div>
           </div>
-          <style jsx>{`
+          <style>{`
             /* CSS styles */
             
             
@@ -356,22 +362,6 @@ export default function App() {
             >
               ← Back
             </button>
-            <button onClick={() => setCurrentPage("settings")} className="settings-button">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-              </svg>
-            </button>
           </div>
 
           {/* Header */}
@@ -398,7 +388,9 @@ export default function App() {
                   <div className="stats-grid">
                     <div className="stat-card">
                       <p className="stat-label">Daily Goal</p>
-                      <p className="stat-value">{waterCount}/8</p>
+                      <p className="stat-value">
+                        {waterCount}/{waterGoal}
+                      </p>
                       <p className="stat-unit">glasses</p>
                     </div>
                     <div className="stat-card">
@@ -469,9 +461,9 @@ export default function App() {
               <div className="history-list">
                 {/* Dynamic history items */}
                 {[1, 2, 3].map((daysAgo) => {
-                  const waterAmount = getWaterCountForDay(daysAgo)
-                  const isCompleted = waterAmount >= 8
-                  const statusText = isCompleted ? "Goal completed" : `${8 - waterAmount} glasses left`
+                  const waterAmount = getWaterCountForDay(waterHistory, daysAgo)
+                  const isCompleted = waterAmount >= waterGoal
+                  const statusText = isCompleted ? "Goal completed" : `${waterGoal - waterAmount} glasses left`
 
                   return (
                     <div className="history-item" key={daysAgo}>
@@ -512,17 +504,18 @@ export default function App() {
 
             <div className="weekly-grid">
               {weekDays.map((day) => {
-                const date = new Date(day.date)
                 const dateKey = day.date
                 const waterAmount = waterHistory[dateKey] || 0
-                const fillPercentage = (waterAmount / 8) * 100
+                const fillPercentage = calculateFillPercentage(waterAmount, waterGoal)
 
                 return (
                   <div key={day.name} className={`day-column ${day.isToday ? "today" : ""}`}>
                     <div className="day-label">{day.name}</div>
                     <div className="day-bar-container">
                       <div className="day-bar-fill" style={{ height: `${fillPercentage}%` }}></div>
-                      <div className="day-bar-text">{waterAmount}/8</div>
+                      <div className="day-bar-text">
+                        {waterAmount}/{waterGoal}
+                      </div>
                     </div>
                   </div>
                 )
