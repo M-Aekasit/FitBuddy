@@ -12,7 +12,7 @@ connectDB();
 
 const app = express();
 app.use(express.json()); // เพิ่ม middleware เพื่อ parse JSON
-app.use(morgan("dev"))
+app.use(morgan("dev"));
 app.use(cors()); // ใช้ CORS เพื่ออนุญาตให้เข้าถึง API จากโดเมนอื่น
 
 const __filename = fileURLToPath(import.meta.url);
@@ -42,6 +42,15 @@ async function loadRoutes() {
           process.exit(1);
         }
       }
+    }
+    
+    if (process.env.NODE_ENV === "production") {
+      const frontendPath = path.join(__dirname, "..", "dist");
+      app.use(express.static(frontendPath));
+
+      app.get("*", (req, res) => {
+        res.sendFile(path.resolve(frontendPath, "index.html"));
+      });
     }
 
     const PORT = process.env.PORT || 5000; // ใช้ค่าจาก .env
