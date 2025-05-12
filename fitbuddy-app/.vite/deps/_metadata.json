@@ -1,8 +1,22 @@
 {
+<<<<<<< HEAD
   "hash": "d3ed4d50",
   "configHash": "6e0e3e3f",
   "lockfileHash": "e3b0c442",
   "browserHash": "70dad7a9",
+=======
+<<<<<<< HEAD
+  "hash": "80b890ff",
+  "configHash": "6e0e3e3f",
+  "lockfileHash": "881e8c76",
+  "browserHash": "9cf8f931",
+=======
+  "hash": "c5b3c2fa",
+  "configHash": "d171857e",
+  "lockfileHash": "adf5bd98",
+  "browserHash": "21f5785c",
+>>>>>>> backend/mergeTest
+>>>>>>> 7e0f763d9fe3b3f368c1e9648ac3d27f18b2050e
   "optimized": {},
   "chunks": {}
 }
