@@ -137,7 +137,7 @@ function App() {
 
       if (h === 16 && m == 45) {
         console.log("💪Checking time:", h, m);
-        addMessage("💪 Time to get moving!3 💪");
+        addMessage("💪 Time to get moving! 💪");
       }
     }, 10 * 1000); // check 10 sec
 
