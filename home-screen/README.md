@@ -124,14 +124,27 @@ img
 
 ## 🧩 Known Issues
 
-* Some features of the **Notification** page are not fully functional.
-* MongoDB must be running locally or hosted (e.g., MongoDB Atlas)
+- **Notification Page**  
+  - "Clear All" button removes data from the database but lacks confirmation or warning  
+  - Notifications are not linked or synchronized with other pages  
+  - Timeline display is unclear and may confuse users  
+
+- **Settings Page**  
+  - Reset password functionality is not connected to actual backend logic  
+  - Dark mode toggle does not function  
+  - Notification settings cannot be adjusted  
+  - Water and food goal settings are non-functional  
+
+- **Database Dependency**  
+  - MongoDB must be running locally or hosted (e.g., MongoDB Atlas) for the app to work properly  
 
 ## 💡 Future Improvements
 
-* Store user-specific health history
-* Implement push notifications or reminders
-* Build a vercel version
+- Store user-specific health history and progress tracking  
+- Implement push notifications/reminders for hydration, meals, etc.  
+- Deploy a production-ready version using Vercel or similar hosting platforms  
+- Improve UX/UI clarity, especially on the timeline and notification flow  
+- Fully implement and connect settings features (password, dark mode, goal management)  
 
 ## 🔗 Source Code
 
