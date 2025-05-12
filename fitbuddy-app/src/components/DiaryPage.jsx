@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
-import axios from 'axios';
+import { useState, useEffect, useRef } from "react";
+import axios from "axios";
 
 export default function DiaryPage() {
   const [rating, setRating] = useState(0);
   const [note, setNote] = useState("");
   const [history, setHistory] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const scrollRef = useRef(null);
 
   const todayStr = new Date().toISOString().split("T")[0];
 
-  // Fetch diary entries on mount
   useEffect(() => {
     const fetchDiary = async () => {
       try {
@@ -27,29 +27,27 @@ export default function DiaryPage() {
     fetchDiary();
   }, []);
 
-  // Save diary entry
   const saveDiary = async () => {
     if (rating === 0 && note.trim() === "") return;
-  
+
     const newEntry = {
       diaryDate: todayStr,
       diaryRate: rating,
       diaryNote: note,
     };
-  
+
     try {
       await axios.post("http://localhost:5000/api/diary", newEntry, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-  
-      // Re-fetch updated history after saving
+
       const res = await axios.get("http://localhost:5000/api/diary");
       if (res.status === 200) {
         setHistory(res.data);
       }
-  
+
       setRating(0);
       setNote("");
     } catch (err) {
@@ -57,22 +55,17 @@ export default function DiaryPage() {
     }
   };
 
-  // Get number of days in a month
-  
   const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
 
-  // Color based on rating
-  const getColorByRating = (rate) => {
-    return {
+  const getColorByRating = (rate) =>
+    ({
       1: "bg-red-300",
       2: "bg-orange-300",
       3: "bg-yellow-300",
       4: "bg-blue-300",
       5: "bg-green-300",
-    }[rate] || "bg-white";
-  };
+    }[rate] || "bg-white");
 
-  // Filter entries for selected month
   const getEntriesForMonth = () => {
     const month = currentDate.getMonth() + 1;
     const year = currentDate.getFullYear();
@@ -82,27 +75,31 @@ export default function DiaryPage() {
     });
   };
 
+  const getRecentAndOlderEntries = () => {
+    const sorted = getEntriesForMonth().sort(
+      (a, b) => new Date(b.diaryDate) - new Date(a.diaryDate)
+    );
+    return {
+      recent: sorted.slice(0, 3),
+      older: sorted.slice(3),
+    };
+  };
+
   const renderCalendar = () => {
     const month = currentDate.getMonth();
     const year = currentDate.getFullYear();
     const days = daysInMonth(month, year);
-    const firstDayOfMonth = new Date(year, month, 1).getDay(); // Sunday = 0
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const cells = [];
 
     const ratingByDate = {};
     getEntriesForMonth().forEach((entry) => {
       ratingByDate[entry.diaryDate] = entry.diaryRate;
     });
 
-    const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const cells = [];
-
-    for (let i = 0; i < firstDayOfMonth; i++) {
-      cells.push(null);
-    }
-
-    for (let day = 1; day <= days; day++) {
-      cells.push(day);
-    }
+    for (let i = 0; i < firstDayOfMonth; i++) cells.push(null);
+    for (let day = 1; day <= days; day++) cells.push(day);
 
     return (
       <div className="flex flex-col gap-2">
@@ -111,7 +108,11 @@ export default function DiaryPage() {
             className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
             onClick={() =>
               setCurrentDate(
-                new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
+                new Date(
+                  currentDate.getFullYear(),
+                  currentDate.getMonth() - 1,
+                  1
+                )
               )
             }
           >
@@ -127,7 +128,11 @@ export default function DiaryPage() {
             className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
             onClick={() =>
               setCurrentDate(
-                new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+                new Date(
+                  currentDate.getFullYear(),
+                  currentDate.getMonth() + 1,
+                  1
+                )
               )
             }
           >
@@ -143,9 +148,8 @@ export default function DiaryPage() {
 
         <div className="grid grid-cols-7 gap-2">
           {cells.map((day, index) => {
-            if (day === null) {
+            if (day === null)
               return <div key={index} className="w-12 h-12"></div>;
-            }
 
             const date = new Date(year, month, day);
             const dateStr = date.toLocaleDateString("en-CA");
@@ -156,9 +160,13 @@ export default function DiaryPage() {
               <div key={index} className="flex justify-center items-center">
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold
-                    ${isToday ? `border-2 border-black-500 text-black-500 ${bgColor}` : bgColor}
-                    ${!isToday && bgColor === "bg-white" ? "text-gray-500" : ""}
-                    hover:scale-110 transition-transform`}
+                  ${
+                    isToday
+                      ? `border-2 border-black-500 text-black-500 ${bgColor}`
+                      : bgColor
+                  }
+                  ${!isToday && bgColor === "bg-white" ? "text-gray-500" : ""}
+                  hover:scale-110 transition-transform`}
                 >
                   {day}
                 </div>
@@ -186,7 +194,9 @@ export default function DiaryPage() {
               <button
                 key={star}
                 onClick={() => setRating(star)}
-                className={`transition-transform ${rating >= star ? "text-yellow-400 scale-110" : "text-gray-300"}`}
+                className={`transition-transform ${
+                  rating >= star ? "text-yellow-400 scale-110" : "text-gray-300"
+                }`}
               >
                 ★
               </button>
@@ -210,33 +220,41 @@ export default function DiaryPage() {
         </section>
 
         <section className="flex-1 flex flex-col gap-8">
-          {/* <div className="bg-white p-8 rounded-2xl shadow-md flex-1 overflow-auto"> */}
-          <div className="bg-white p-8 rounded-2xl shadow-md flex-1 h-[500px] overflow-y-auto scroll-smooth">
+          <div
+            ref={scrollRef}
+            className="bg-white p-8 rounded-2xl shadow-md h-[500px] overflow-y-auto scroll-smooth"
+          >
             <h2 className="text-3xl font-semibold mb-6">Diary History</h2>
             {getEntriesForMonth().length > 0 ? (
               <div className="space-y-6">
-                  {getEntriesForMonth().sort((a, b) => new Date(b.diaryDate) - new Date(a.diaryDate)).map((entry, idx) => (
-                  <div key={idx} className="p-4 bg-gray-100 rounded-lg">
-                    <p className="font-semibold text-lg">{entry.diaryDate}</p>
-                    <div className="flex gap-1 text-2xl mt-1">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span
-                          key={star}
-                          className={entry.diaryRate >= star ? "text-yellow-400" : "text-gray-300"}
-                        >
-                          ★
-                        </span>
-                      ))}
+                {(() => {
+                  const { recent, older } = getRecentAndOlderEntries();
+                  return [...recent, ...older].map((entry, idx) => (
+                    <div key={idx} className="p-4 bg-gray-100 rounded-lg">
+                      <p className="font-semibold text-lg">{entry.diaryDate}</p>
+                      <div className="flex gap-1 text-2xl mt-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span
+                            key={star}
+                            className={
+                              entry.diaryRate >= star
+                                ? "text-yellow-400"
+                                : "text-gray-300"
+                            }
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      <p className="mt-2 text-gray-700">{entry.diaryNote}</p>
                     </div>
-                    <p className="mt-2 text-gray-700">{entry.diaryNote}</p>
-                  </div>
-                ))}
+                  ));
+                })()}
               </div>
             ) : (
               <p className="text-gray-400">No entries for this month.</p>
             )}
-          </div>
-
+          </div>{" "}
           <div className="bg-white p-8 rounded-2xl shadow-md">
             <h2 className="text-3xl font-semibold mb-6">Mood Calendar</h2>
             {renderCalendar()}
