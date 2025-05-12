@@ -60,7 +60,7 @@ FitBuddy is a health tracking web application designed to help users monitor and
    http://localhost:3000
    ```
 
-## 📂 Project Structure
+## 📂 Methodology
 
 ```
 fitbuddy/
@@ -143,12 +143,12 @@ img
 
 All members contributed to **Frontend**, **Backend**, and **Database** development. Responsibilities were divided by feature/pages as follows
 
-| Student ID   | Name                   | Responsibilities                                                         |
-|--------------|------------------------|--------------------------------------------------------------------------|
-| 64340500012  | Chawisa Ananthean      | Sport, Notification                                                      |
-| 64340500014  | Thitiporn Suwannawong  | Home, Food, Sport, Diary, Friend, Integrate code, ReadME.md, powerpoint  |
-| 64340500073  | Wisarut Pansang        | Water, Settings                                                          |
-| 64340500075  | Aekasit Makham         | Login, Home, BMI Module, Integrate code, ReadME.md                       |
+| Student ID   | Name                   | Responsibilities                                                                      |
+|--------------|------------------------|---------------------------------------------------------------------------------------|
+| 64340500012  | Chawisa Ananthean      | Sport, Notification                                                                   |
+| 64340500014  | Thitiporn Suwannawong  | Home, Food, Sport, Diary, Friend, Integrate code, ReadME.md, Powerpoint Presentation  |
+| 64340500073  | Wisarut Pansang        | Water, Settings                                                                       |
+| 64340500075  | Aekasit Makham         | Login, Logout, Home, BMI Module, Integrate code, ReadME.md                            |
 
 
 ## 📄 References
