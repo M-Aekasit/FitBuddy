@@ -1,8 +1,15 @@
 {
+<<<<<<< HEAD
   "hash": "80b890ff",
   "configHash": "6e0e3e3f",
   "lockfileHash": "881e8c76",
   "browserHash": "9cf8f931",
+=======
+  "hash": "c5b3c2fa",
+  "configHash": "d171857e",
+  "lockfileHash": "adf5bd98",
+  "browserHash": "21f5785c",
+>>>>>>> backend/mergeTest
   "optimized": {},
   "chunks": {}
 }
