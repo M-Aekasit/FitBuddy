@@ -3,8 +3,8 @@ import express from "express";
 import { MongoClient, ObjectId } from "mongodb";
 const app = express();
 const port = 3000;
-const mongoUrl = "mongodb://localhost:27017"; 
-const dbName = "fitbuddyDB"; 
+const mongoUrl = "mongodb://localhost:27017";
+const dbName = "fitbuddy-DB";
 
 // Middleware
 app.use(cors());
@@ -28,11 +28,13 @@ app.post("/api/sports", async (req, res) => {
       sportType,
       inputData,
       calories,
-      createdAt: new Date()
+      createdAt: new Date(),
     });
 
     await client.close();
-    res.status(201).json({ message: "Saved successfully", id: result.insertedId });
+    res
+      .status(201)
+      .json({ message: "Saved successfully", id: result.insertedId });
   } catch (err) {
     console.error("Database error:", err);
     res.status(500).json({ message: "Server error" });
@@ -40,9 +42,16 @@ app.post("/api/sports", async (req, res) => {
 });
 // POST API Recieve and save data() sport noti
 app.post("/api/notification", async (req, res) => {
-  const { text, createdAt, date, hour, minute, isNew} = req.body;
+  const { text, createdAt, date, hour, minute, isNew } = req.body;
 
-  if (!text || !createdAt || !date || hour === undefined || minute === undefined|| isNew === undefined) {
+  if (
+    !text ||
+    !createdAt ||
+    !date ||
+    hour === undefined ||
+    minute === undefined ||
+    isNew === undefined
+  ) {
     return res.status(400).json({ message: "Missing data" });
   }
 
@@ -53,9 +62,9 @@ app.post("/api/notification", async (req, res) => {
     const notificationCollection = db.collection("notification");
 
     const exists = await notificationCollection.findOne({
-      text,   
-      hour,   
-      minute  
+      text,
+      hour,
+      minute,
     });
 
     if (exists) {
@@ -64,15 +73,15 @@ app.post("/api/notification", async (req, res) => {
     }
 
     const createdAtDate = new Date(createdAt);
-    createdAtDate.setSeconds(0, 0); 
+    createdAtDate.setSeconds(0, 0);
 
     await notificationCollection.insertOne({
       text,
-      createdAt: createdAtDate, 
+      createdAt: createdAtDate,
       date,
-      hour, 
-      minute, 
-      isNew
+      hour,
+      minute,
+      isNew,
     });
 
     await client.close();
@@ -92,29 +101,36 @@ app.get("/api/notification", async (req, res) => {
     const notificationCollection = db.collection("notification");
 
     // delete same data
-    const notifications = await notificationCollection.aggregate([
-      {
-        $group: {
-          _id: { text: "$text", hour: "$hour", minute: "$minute", date: "$date" }, 
-          createdAt: { $first: "$createdAt" }, 
-          isNew: { $first: "$isNew" }
-        }
-      },
-      {
-        $project: { 
-          _id: 0,
-          text: "$_id.text",
-          date: "$_id.date", 
-          createdAt: 1,
-          hour: "$_id.hour",
-          minute: "$_id.minute",
-          isNew: 1
-        }
-      }
-    ]).toArray();
+    const notifications = await notificationCollection
+      .aggregate([
+        {
+          $group: {
+            _id: {
+              text: "$text",
+              hour: "$hour",
+              minute: "$minute",
+              date: "$date",
+            },
+            createdAt: { $first: "$createdAt" },
+            isNew: { $first: "$isNew" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            text: "$_id.text",
+            date: "$_id.date",
+            createdAt: 1,
+            hour: "$_id.hour",
+            minute: "$_id.minute",
+            isNew: 1,
+          },
+        },
+      ])
+      .toArray();
 
     await client.close();
-    res.status(200).json(notifications); 
+    res.status(200).json(notifications);
   } catch (err) {
     console.error("DB error:", err);
     res.status(500).json({ message: "Server error" });
@@ -139,8 +155,6 @@ app.delete("/api/notification", async (req, res) => {
   }
 });
 
-
-
 app.put("/api/notification", async (req, res) => {
   const { text, date, hour, minute, isNew } = req.body;
 
@@ -155,9 +169,9 @@ app.put("/api/notification", async (req, res) => {
     const notificationCollection = db.collection("notification");
 
     const result = await notificationCollection.updateOne(
-    { text, date, hour, minute },
-    { $set: { isNew } }
-  );
+      { text, date, hour, minute },
+      { $set: { isNew } }
+    );
 
     await client.close();
 
@@ -171,9 +185,9 @@ app.put("/api/notification", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
   fetch("http://localhost:3000/api/notification")
-  .then(res => res.json())
-  .then(data => setMessages(data))
-  .catch(err => console.error("Failed to reload messages:", err));
+    .then((res) => res.json())
+    .then((data) => setMessages(data))
+    .catch((err) => console.error("Failed to reload messages:", err));
 });
 
 // check connect
