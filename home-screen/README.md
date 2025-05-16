@@ -2,6 +2,12 @@
 
 FitBuddy is a health tracking web application designed to help users monitor and improve their daily wellness habits.
 
+## 💡 Introduction
+
+Nowadays, people are placing greater importance on their health, whether it be through proper nutrition, weight control, or regular exercise. However, it is often difficult to know how the food we consume or the activities we perform in our daily lives affect our bodies.
+
+Therefore, our team has developed a website that helps users conveniently monitor their health. The main features of the website include the ability to calculate Body Mass Index (BMI), Basal Metabolic Rate (BMR), and record daily water intake, food consumption, and physical activities.
+
 ## 📌 Features
 
 - 🍽️ **Food Tracker** – Record meals and calorie intake  
