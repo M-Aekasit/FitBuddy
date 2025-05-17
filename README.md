@@ -39,7 +39,7 @@ FitBuddy is a health tracking web application designed to help users monitor and
 2. Navigate to the project folder
 
    ```bash
-   cd fitbuddy
+   cd fitbuddy-app
    ```
 
 3. Install dependencies
@@ -48,16 +48,21 @@ FitBuddy is a health tracking web application designed to help users monitor and
    npm install
    ```
 
-4. Start the development server
+4. Start the development server 
 
    ```bash
-   npm start
+   npm run server
+   ```
+5. Start the development server
+
+   ```bash
+   npm run dev
    ```
 
-5. Open your browser and go to
+6. Open your browser and go to
 
    ```
-   http://localhost:3000
+   http://localhost:5000
    ```
 
 ## 📂 Methodology
