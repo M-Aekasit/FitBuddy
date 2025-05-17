@@ -49,7 +49,7 @@ export default function FriendsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name,
-        sender: "Dr.Suriya",
+        sender: "You",
         calories: {
           burned: friend.calories.burned,
           target: friend.calories.target,
