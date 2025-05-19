@@ -37,7 +37,7 @@ The platform also supports **BMI (Body Mass Index)** and **BMR (Basal Metabolic 
 
 1. Clone the repository  
    ```bash
-   git clone https://github.com/yourusername/fitbuddy.git
+   git clone https://github.com/M-Aekasit/FitBuddy.git
     ```
 
 2. Navigate to the project folder
@@ -170,8 +170,7 @@ https://github.com/user-attachments/assets/a340f2c0-abfc-4e0c-962c-498f6a2120c2
 
 ## 🔗 Source Code
 
-* **Frontend** : ...
-* **Backend** : ...
+https://github.com/M-Aekasit/FitBuddy.git
 
 
 ## 👥 Team Members
