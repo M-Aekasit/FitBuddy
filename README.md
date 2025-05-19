@@ -57,9 +57,10 @@ The platform also supports **BMI (Body Mass Index)** and **BMR (Basal Metabolic 
    ```bash
    npm run server
    ```
-5. Start the development server
+5. New Terminal, Start the development server
 
    ```bash
+   cd fitbuddy-app
    npm run dev
    ```
 
