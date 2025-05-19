@@ -91,44 +91,51 @@ fitbuddy/
 
 ## 🧪 Pages Overview
 
-* **Login/Signin** – Create user account
+### **Login/Signin** – Create user account
 
-https://github.com/user-attachments/assets/c3a6b8f9-8829-4e51-be52-535f3a977c68
+https://github.com/user-attachments/assets/fb4f42e3-2b20-4cdd-a544-79474f2fb110
 
+### **Home** – Dashboard summary of health data
 
-* **Home** – Dashboard summary of health data
+<img width="1280" alt="HomePage" src="https://github.com/user-attachments/assets/36ae4ccb-d0f0-45fe-89d4-81c9345ec001" />
 
-img
+### **Food** – Record meals and calories
 
-* **Food** – Record meals and calories
+https://github.com/user-attachments/assets/7c00013b-8de6-4d8a-b792-87d83c7f8328
 
-img
+### **Water** – Log daily water intake
 
-* **Water** – Log daily water intake
+https://github.com/user-attachments/assets/545934f4-9b61-4065-87d1-1c2a1359eab0
 
-img
+### **Exercise** – Log workouts or activities
 
-* **Exercise** – Log workouts or activities
+https://github.com/user-attachments/assets/8921ff91-e805-4785-9e91-125dcdbf565e
 
-img
+### **BMI** – Calculate Body Mass Index
 
-* **BMI** – Calculate Body Mass Index
+https://github.com/user-attachments/assets/c98d73d5-5400-4830-9d7b-32f092b224d8
 
-img
+### **Friend** – Connect with friends and view shared progress
 
-* **Friend** – Connect with friends and view shared progress
+https://github.com/user-attachments/assets/97af963c-684f-476e-b0fb-7f1a2ef6a10e
 
-img
+### **Diary** – Daily notes and personal thoughts
 
-* **Diary** – Daily notes and personal thoughts
+https://github.com/user-attachments/assets/92a0b5c6-19fb-43e8-9433-34055e708bfe
 
-img
+### **Notifications** –Get reminders for health tasks
 
-* **Settings** – Adjust health goals and app preferences
+<img width="1280" alt="NotificationPage" src="https://github.com/user-attachments/assets/7f0726d8-8b82-47bc-9cf2-a6ad554f8022" />
 
-img
+### **Settings** – Adjust health goals and app preferences
 
+https://github.com/user-attachments/assets/73bfb420-e599-4bbb-aa2f-967558a3c9e2
 
+### **MongoDB** – Keep data in Backend floder
+
+https://github.com/user-attachments/assets/a340f2c0-abfc-4e0c-962c-498f6a2120c2
+
+  
 ## 📚 What We Learned
 
 * Managing frontend state using React and Context API
