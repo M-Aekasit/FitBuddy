@@ -1,6 +1,10 @@
 # 🏃‍♀️ FitBuddy – Health Tracking Web App
 
-FitBuddy is a health tracking web application designed to help users monitor and improve their daily wellness habits.
+Nowadays, people are becoming increasingly health conscious, whether it's through proper nutrition, exercise, or effective weight management. However, it can often be difficult to fully understand how our daily choices impact our overall well-being.
+
+To address this, our team developed **FitBuddy**, a web-based health tracking application designed to help users monitor and improve their daily wellness habits. With FitBuddy, users can easily track food intake, hydration levels, exercise routines, and body metrics. 
+
+The platform also supports **BMI (Body Mass Index)** and **BMR (Basal Metabolic Rate)** calculations, personal reflections through a daily diary, social motivation via friend connections, and customizable goal-setting. They are all in one centralized platform. FitBuddy is designed to be simple, supportive, and smart. It's empowering users to take control of their health anytime, anywhere.
 
 ## 📌 Features
 
@@ -85,6 +89,11 @@ fitbuddy/
 ```
 
 ## 🧪 Pages Overview
+
+* **Login/Signin** – Create user account
+
+https://github.com/user-attachments/assets/c3a6b8f9-8829-4e51-be52-535f3a977c68
+
 
 * **Home** – Dashboard summary of health data
 
@@ -174,5 +183,6 @@ All members contributed to **Frontend**, **Backend**, and **Database** developme
 * https://www.borntodev.com
 * https://www.mongodb.com
 * https://www.lovefitt.com
-* https://www.borntodev.com
+* [https://www.borntodev.com](https://www.youtube.com/watch?si=rScTbisSd5zr5qSI&v=2O2o44Kzy4o&feature=youtu.be)
+* https://www.youtube.com/watch?v=MisqMTzODZg
 
